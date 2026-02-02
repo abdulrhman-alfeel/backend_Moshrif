@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>طلب حذف شركة</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      direction: rtl;
+      background-color: #f9f9f9;
+      padding: 40px;
+    }
+
+    .container_sub {
+      max-width: 200px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 10px;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #0116fb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #c0392b;
+    }
+
+    .response {
+      margin-top: 20px;
+      padding: 10px;
+      text-align: center;
+      border-radius: 6px;
+      display: none;
+      color: #2b3ac0;
+    }
+
+    .success {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    .error {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      resize: vertical;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+  </style>
+</head>
+<body>
+    <div class="container_sub">
+        <svg class="custom-svg" viewBox="0 0 168 160" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" rx="34" fill="#2117FB"/> 
+        <path
+          d="M32 101.553V73.9885C32 68.9949 36.429 65 41.8423 65H67.2681C70.4395 65 71.9705 65.6991 73.5562 67.9462L80.3365 77.3342C82.633 80.5301 87.7729 80.5301 90.0147 77.3342L96.7949 67.9462C98.3806 65.749 99.9663 65 103.083 65H126.158C131.626 65 136 69.0448 136 73.9885V95.0115C136 100.005 131.571 104 126.158 104H109.535C104.067 104 99.693 99.9552 99.693 95.0115C99.693 89.7682 92.2019 87.7209 89.0305 92.1152L83.1798 100.305C81.1567 103.101 79.2976 104 75.1966 104H64.0967C59.9411 104 58.1367 103.101 56.1136 100.305L50.1535 92.0154C46.9821 87.621 39.4911 89.6684 39.4911 94.9116V101.553C39.4911 103.351 38.7802 104 36.8118 104H34.734C32.7655 104 32.0547 103.351 32.0547 101.553H32Z"
+          fill="white"
+        />
+      </svg>
+          <h2>منصة مشرف</h2>
+    </div>
+  <div class="container">
+    <h2>طلب حذف شركة</h2>
+    <input type="text" id="companyId" placeholder="أدخل رقم الشركة أو اسمها" />
+    <input type="text" id="phoneNumber" placeholder="رقم الهاتف" />
+    <textarea id="reason" placeholder="سبب طلب الحذف" rows="5"></textarea>
+    <button id="submitButton">إرسال الطلب</button>
+    <div id="responseMessage" class="response"></div>
+  </div>
+
+  <script>
+    document.getElementById('submitButton').addEventListener('click', deleteCompany);
+
+    async function deleteCompany() {
+
+      
+      const companyId = document.getElementById('companyId').value.trim();
+      const phoneNumber = document.getElementById('phoneNumber').value.trim();
+      const reason = document.getElementById('reason').value.trim();
+      const responseDiv = document.getElementById('responseMessage');
+
+      if (!companyId || !phoneNumber || !reason) {
+        responseDiv.style.display = 'block';
+        responseDiv.className = 'response error';
+        responseDiv.textContent = 'يرجى تعبئة جميع الحقول.';
+        return;
+      }
+
+      try {
+        const response = await fetch('/companies/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: companyId, phone: phoneNumber, reason: reason })
+        });
+
+        const data = await response.json();
+        console.log(response.ok);
+ 
+          responseDiv.style.display = 'block';
+          responseDiv.className = 'response success';
+          responseDiv.textContent = data.message || 'تم حذف الشركة بنجاح.';
+       
+      } catch (error) {
+        responseDiv.style.display = 'block';
+        responseDiv.className = 'response error';
+        responseDiv.textContent = 'حدث خطأ أثناء الاتصال بالخادم.';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "ext": "js,json",
+  "ignore": [
+    "node_modules/**",
+    ".git/**",
+    "logs/**",
+    "pdf/**",
+    "views/**",
+    "uploads/**",
+    "backups/**",
+    "tmp/**",
+    "sessions/**",
+    "**/*.db",
+    "**/*.sqlite",
+    "**/*.sqlite3",
+    "**/*.log"
+  ],
+  "delay": 500,
+  "legacyWatch": true,
+  "verbose": true
+}
