@@ -513,6 +513,40 @@ ${Limit}
     });
   });
 };
+
+
+
+const getBranchRole = (phoneNumber, branchId) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+      SELECT 
+        CASE 
+          WHEN uC.job = 'Admin' THEN 'Admin'
+          ELSE uB.job 
+        END as job
+      FROM usersCompany uC
+      LEFT JOIN usersBransh uB ON uB.user_id = uC.id AND uB.idBransh = ?
+      WHERE REPLACE(TRIM(uC.PhoneNumber), ' ', '') = TRIM(?)
+      LIMIT 1;
+    `;
+
+    if (!phoneNumber || !branchId) {
+      console.log("Missing params for role query");
+      resolve(null);
+      return;
+    }
+
+    db.get(query, [branchId, phoneNumber], (err, row) => {
+      if (err) {
+        console.error("SQL Error in getBranchRole:", err);
+        resolve(null);
+      } else {
+        resolve(row ? row.job : null);
+      }
+    });
+  });
+};
+
 // const selecttablecompanySubProjectall = (
 //   id,
 //   IDfinlty,
@@ -656,8 +690,8 @@ const SELECTTablecompanySubProject = (
       kind === "difference"
         ? `SELECT Contractsigningdate,ProjectStartdate,Nameproject,IDcompanySub,TypeOFContract FROM companySubprojects WHERE id=? AND Disabled =?`
         : kind === "forchat"
-        ? `SELECT ca.id AS ProjectID,ca.Nameproject FROM companySubprojects ca  LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub  WHERE  ca.IDcompanySub=? AND ca.Disabled=? ${type} `
-        : `SELECT COUNT(*) FROM companySubprojects WHERE IDcompanySub=? AND Disabled =?`;
+          ? `SELECT ca.id AS ProjectID,ca.Nameproject FROM companySubprojects ca  LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub  WHERE  ca.IDcompanySub=? AND ca.Disabled=? ${type} `
+          : `SELECT COUNT(*) FROM companySubprojects WHERE IDcompanySub=? AND Disabled =?`;
 
     let data = [id, Disabled];
     db.serialize(function () {
@@ -683,10 +717,10 @@ const SELECTTablecompanySubProjectLast_id = (
       kind === "all"
         ? `SELECT MAX(id) AS last_id,numberBuilding FROM companySubprojects WHERE  Disabled ='true' AND IDcompanySub=?`
         : kind === "max"
-        ? `SELECT MAX(ca.id) AS last_id, ca.id,ca.IDcompanySub,ca.Nameproject,ca.Note,ca.TypeOFContract,ca.GuardNumber,ca.LocationProject,ca.ProjectStartdate,ca.Contractsigningdate,ca.Disabled,EX.Cost AS ConstCompany, Li.urlLink AS Linkevaluation,RE.NumberCompany FROM companySubprojects ca LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub LEFT JOIN Linkevaluation Li ON Li.IDcompanySub =RE.id LEFT JOIN company EX ON EX.id = RE.NumberCompany  WHERE Disabled ='true' AND ${type}=?`
-        : kind === "forchat"
-        ? `SELECT ca.id AS ProjectID,ca.Nameproject FROM companySubprojects ca WHERE ca.Disabled="true" AND ca.id=?`
-        : `SELECT ca.id,ca.IDcompanySub,ca.Nameproject,ca.Note,ca.TypeOFContract,ca.GuardNumber,ca.LocationProject,ca.ProjectStartdate,ca.numberBuilding,ca.Contractsigningdate,ca.Disabled,EX.Cost AS ConstCompany, Li.urlLink AS Linkevaluation ,ca.Referencenumber,ca.Cost_per_Square_Meter,
+          ? `SELECT MAX(ca.id) AS last_id, ca.id,ca.IDcompanySub,ca.Nameproject,ca.Note,ca.TypeOFContract,ca.GuardNumber,ca.LocationProject,ca.ProjectStartdate,ca.Contractsigningdate,ca.Disabled,EX.Cost AS ConstCompany, Li.urlLink AS Linkevaluation,RE.NumberCompany FROM companySubprojects ca LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub LEFT JOIN Linkevaluation Li ON Li.IDcompanySub =RE.id LEFT JOIN company EX ON EX.id = RE.NumberCompany  WHERE Disabled ='true' AND ${type}=?`
+          : kind === "forchat"
+            ? `SELECT ca.id AS ProjectID,ca.Nameproject FROM companySubprojects ca WHERE ca.Disabled="true" AND ca.id=?`
+            : `SELECT ca.id,ca.IDcompanySub,ca.Nameproject,ca.Note,ca.TypeOFContract,ca.GuardNumber,ca.LocationProject,ca.ProjectStartdate,ca.numberBuilding,ca.Contractsigningdate,ca.Disabled,EX.Cost AS ConstCompany, Li.urlLink AS Linkevaluation ,ca.Referencenumber,ca.Cost_per_Square_Meter,
         ca.Project_Space FROM companySubprojects ca LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub LEFT JOIN Linkevaluation Li ON Li.IDcompanySub =RE.id LEFT JOIN  company EX ON EX.id = RE.NumberCompany  WHERE Disabled ='true' AND ca.id=?`;
     db.serialize(function () {
       db.get(stringSql, [id], function (err, result) {
@@ -1257,8 +1291,8 @@ const SELECTTablecompanySubProjectStageCUST = (
     kind === "all"
       ? `SELECT ${type} FROM StagesCUST cu LEFT JOIN companySubprojects pr ON pr.id = cu.ProjectID  WHERE cu.ProjectID=?`
       : kind === "CountDate"
-      ? `SELECT EndDate , StartDate FROM StagesCUST WHERE ProjectID=?`
-      : `SELECT * FROM StagesCUST WHERE ProjectID=? AND trim(StageName)=trim(?)`;
+        ? `SELECT EndDate , StartDate FROM StagesCUST WHERE ProjectID=?`
+        : `SELECT * FROM StagesCUST WHERE ProjectID=? AND trim(StageName)=trim(?)`;
   let data = kind === "all" ? [id] : kind === "CountDate" ? [id] : [id, kind];
   return new Promise((resolve, reject) => {
     db.serialize(function () {
@@ -1274,8 +1308,8 @@ const SELECTTablecompanySubProjectStageCUST = (
   });
 };
 const SELECTTablecompanySubProjectStageCUSTv2 = (id, kind = "") => {
-  
-let stringSql = `
+
+  let stringSql = `
 SELECT
   cu.StageCustID,
   cu.StageID,
@@ -1438,10 +1472,10 @@ const SELECTTablecompanySubProjectStageCUSTONe = (
       ,cu.ProjectID,cu.Type,cu.StageName,cu.Days,cu.StartDate,cu.EndDate,cu.CloseDate,cu.OrderBy,cu.Done,cu.OpenBy,cu.NoteOpen,cu.ClosedBy,cu.NoteClosed,
       RE.NumberCompany,cu.Ratio,cu.attached ${type} FROM StagesCUST cu LEFT JOIN companySubprojects pr ON pr.id = cu.ProjectID LEFT JOIN companySub RE ON RE.id = pr.IDcompanySub WHERE  cu.ProjectID=? AND cu.StageID=? `
       : kind === "notifcation"
-      ? `SELECT max(cu.StageID) AS StageID,pr.Nameproject,pr.IDcompanySub, cu.ProjectID,
+        ? `SELECT max(cu.StageID) AS StageID,pr.Nameproject,pr.IDcompanySub, cu.ProjectID,
       cu.Type,cu.StageName,cu.Days,cu.StartDate,cu.EndDate,cu.CloseDate,cu.OrderBy,cu.Done,cu.OpenBy,cu.NoteOpen,cu.ClosedBy,cu.NoteClosed ,
       RE.NumberCompany FROM StagesCUST cu LEFT JOIN companySubprojects pr ON pr.id = cu.ProjectID LEFT JOIN companySub RE ON RE.id = pr.IDcompanySub WHERE cu.StageID != 'A1' AND ${type} `
-      : `SELECT Done,Days FROM StagesCUST WHERE ProjectID=? AND Done = "true"`;
+        : `SELECT Done,Days FROM StagesCUST WHERE ProjectID=? AND Done = "true"`;
   const data =
     kind === "all" || type === "cu.projectID=? AND cu.StageID=?"
       ? [ProjectID, StageID]
@@ -1661,22 +1695,22 @@ const SELECTTablecompanySubProjectStagesSub = (
       kind === "all"
         ? `SELECT * FROM StagesSub WHERE StagHOMID=? AND ProjectID=? ${where}`
         : kind === "accomplished"
-        ? `SELECT closingoperations FROM StagesSub WHERE Done="true" AND ProjectID=?`
-        : kind === "notification"
-        ? `SELECT cu.StageName,pr.Nameproject ,pr.IDcompanySub,su.ProjectID,su.StagHOMID AS StageID, MAX(su.StageSubID) AS StageSubID ,su.StagHOMID,su.ProjectID,su.StageSubName, su.closingoperations,su.Note,su.Done,su.CloseDate FROM StagesSub su LEFT JOIN StagesCUST cu ON cu.ProjectID = su.ProjectID AND cu.StageID = su.StagHOMID LEFT JOIN companySubprojects pr ON pr.id = su.ProjectID  WHERE  ${type}`
-        : `SELECT * FROM StagesSub WHERE StagHOMID=? AND ProjectID=? AND trim(StageSubName) = trim(?)`;
+          ? `SELECT closingoperations FROM StagesSub WHERE Done="true" AND ProjectID=?`
+          : kind === "notification"
+            ? `SELECT cu.StageName,pr.Nameproject ,pr.IDcompanySub,su.ProjectID,su.StagHOMID AS StageID, MAX(su.StageSubID) AS StageSubID ,su.StagHOMID,su.ProjectID,su.StageSubName, su.closingoperations,su.Note,su.Done,su.CloseDate FROM StagesSub su LEFT JOIN StagesCUST cu ON cu.ProjectID = su.ProjectID AND cu.StageID = su.StagHOMID LEFT JOIN companySubprojects pr ON pr.id = su.ProjectID  WHERE  ${type}`
+            : `SELECT * FROM StagesSub WHERE StagHOMID=? AND ProjectID=? AND trim(StageSubName) = trim(?)`;
     let data =
       kind === "all"
         ? [StageID, ProjectID]
         : kind === "notification" &&
           type !== "su.StagHOMID=? AND su.ProjectID=?"
-        ? [ProjectID]
-        : kind === "notification" &&
-          type === "su.StagHOMID=? AND su.ProjectID=?"
-        ? [StageID, ProjectID]
-        : kind === "accomplished"
-        ? [ProjectID]
-        : [StageID, ProjectID, kind];
+          ? [ProjectID]
+          : kind === "notification" &&
+            type === "su.StagHOMID=? AND su.ProjectID=?"
+            ? [StageID, ProjectID]
+            : kind === "accomplished"
+              ? [ProjectID]
+              : [StageID, ProjectID, kind];
     db.serialize(function () {
       db.all(stringSql, data, function (err, result) {
         if (err) {
@@ -1851,13 +1885,13 @@ const SELECTTablecompanySubProjectexpense = (
     let stringSql =
       type === "all"
         ? "SELECT * FROM Expense WHERE projectID=?  AND InvoiceNo " +
-          plus +
-          " '" +
-          parseInt(lastID) +
-          "' ORDER BY InvoiceNo DESC LIMIT 10"
+        plus +
+        " '" +
+        parseInt(lastID) +
+        "' ORDER BY InvoiceNo DESC LIMIT 10"
         : type === "pdf"
-        ? "SELECT * FROM Expense WHERE projectID=? "
-        : `SELECT InvoiceNo FROM Expense WHERE projectID=?`;
+          ? "SELECT * FROM Expense WHERE projectID=? "
+          : `SELECT InvoiceNo FROM Expense WHERE projectID=?`;
     db.serialize(function () {
       db.all(stringSql, [idproject], function (err, result) {
         if (!err) {
@@ -1907,10 +1941,10 @@ const SELECTTablecompanySubProjectfornotification = (
       type === "Expense"
         ? ` max(Expenseid) AS Expenseid , projectID,InvoiceNo,Amount, Date,Data,Taxable,CreatedDate FROM Expense`
         : type === "Returns"
-        ? ` max(ReturnsId) AS ReturnsId , projectID,Amount,Date,Data,Image FROM Returns`
-        : type === "Revenue"
-        ? ` max(RevenueId) AS RevenueId, projectID,Amount,Date,Data,Bank,Image FROM Revenue`
-        : `max(RequestsID) AS RequestsID, ProjectID AS projectID,Type,Data,Date,InsertBy,Implementedby,Image FROM Requests`;
+          ? ` max(ReturnsId) AS ReturnsId , projectID,Amount,Date,Data,Image FROM Returns`
+          : type === "Revenue"
+            ? ` max(RevenueId) AS RevenueId, projectID,Amount,Date,Data,Bank,Image FROM Revenue`
+            : `max(RequestsID) AS RequestsID, ProjectID AS projectID,Type,Data,Date,InsertBy,Implementedby,Image FROM Requests`;
     db.serialize(function () {
       db.get(
         `SELECT PR.Nameproject,PR.IDcompanySub,RE.NumberCompany,${SqlString} ex 
@@ -1943,10 +1977,10 @@ const SELECTTablecompanySubProjectfornotificationEdit = (
       type === "Expense"
         ? `  Expenseid ,projectID,InvoiceNo,Amount, Date,Data,Taxable,CreatedDate FROM Expense`
         : type === "Returns"
-        ? ` ReturnsId , projectID,Amount,Date,Data,Image FROM Returns`
-        : type === "Revenue"
-        ? `RevenueId, projectID,Amount,Date,Data,Bank,Image FROM Revenue`
-        : `RequestsID, ProjectID AS projectID,Type,Data,Date,InsertBy,Implementedby,Image FROM Requests`;
+          ? ` ReturnsId , projectID,Amount,Date,Data,Image FROM Returns`
+          : type === "Revenue"
+            ? `RevenueId, projectID,Amount,Date,Data,Bank,Image FROM Revenue`
+            : `RequestsID, ProjectID AS projectID,Type,Data,Date,InsertBy,Implementedby,Image FROM Requests`;
     db.serialize(function () {
       db.get(
         `SELECT PR.Nameproject,PR.IDcompanySub,RE.NumberCompany,${SqlString} ex 
@@ -2005,10 +2039,10 @@ const SELECTTablecompanySubProjectREVENUE = (
         types === "pdf"
           ? "SELECT * FROM Revenue WHERE projectID=? "
           : "SELECT * FROM Revenue WHERE projectID=?  AND RevenueId " +
-              plus +
-              " '" +
-              parseInt(lastID) +
-              "' ORDER BY RevenueId DESC LIMIT 10",
+          plus +
+          " '" +
+          parseInt(lastID) +
+          "' ORDER BY RevenueId DESC LIMIT 10",
         [idproject],
         function (err, result) {
           if (err) {
@@ -2056,10 +2090,10 @@ const SELECTTablecompanySubProjectReturned = (
         types === "pdf"
           ? "SELECT * FROM Returns WHERE projectID=? "
           : "SELECT * FROM Returns WHERE projectID=?  AND ReturnsId " +
-              plus +
-              " '" +
-              parseInt(lastID) +
-              "' ORDER BY ReturnsId DESC LIMIT 10",
+          plus +
+          " '" +
+          parseInt(lastID) +
+          "' ORDER BY ReturnsId DESC LIMIT 10",
         [idproject],
         function (err, result) {
           if (err) {
@@ -2172,8 +2206,8 @@ const SELECTSEARCHINFINANCE = (
       type === "Returns"
         ? "ReturnsId"
         : type === "Expense"
-        ? "Expenseid"
-        : "RevenueId";
+          ? "Expenseid"
+          : "RevenueId";
 
     db.serialize(() => {
       db.all(
@@ -2261,8 +2295,8 @@ const SELECTallDatafromTableRequests = async (Type, ProjectID) => {
     db.serialize(async () => {
       db.all(
         "SELECT * FROM Requests WHERE  ProjectID=? AND Type LIKE '%" +
-          Type +
-          "%' ",
+        Type +
+        "%' ",
         [ProjectID],
         function (err, rows) {
           if (err) {
@@ -2288,8 +2322,8 @@ const SELECTDataAndTaketDonefromTableRequests = async (
       type === "all"
         ? `SELECT * FROM Requests WHERE  RequestsID=?`
         : type === "allCount"
-        ? `SELECT COUNT(Done) FROM Requests WHERE ProjectID=?`
-        : `SELECT COUNT(Done) FROM Requests WHERE Done=? AND  ProjectID=?`;
+          ? `SELECT COUNT(Done) FROM Requests WHERE ProjectID=?`
+          : `SELECT COUNT(Done) FROM Requests WHERE Done=? AND  ProjectID=?`;
     let data =
       type === "all" || type === "allCount" ? [RequestsID] : [type, RequestsID];
     db.serialize(async () => {
@@ -2503,25 +2537,25 @@ const SELECTTablePostPublicSearch = (
       type === "بحسب المشروع والتاريخ"
         ? "PR.Nameproject"
         : type === "بحسب الفرع"
-        ? "RE.NameSub"
-        : "ca.postBy";
+          ? "RE.NameSub"
+          : "ca.postBy";
     let plus = parseInt(PostID) === 0 ? ">" : "<";
     let SqlStringOne =
       type === "بحسب المشروع والمستخدم والتاريخ"
         ? `AND  PR.Nameproject LIKE ?  AND ca.postBy LIKE ? AND (ca.PostID) ${plus} ?`
         : type === "بحسب التاريخ"
-        ? `AND (ca.PostID) ${plus} ? `
-        : `AND ${SearchSub} LIKE ?  AND (ca.PostID) ${plus} ?`;
+          ? `AND (ca.PostID) ${plus} ? `
+          : `AND ${SearchSub} LIKE ?  AND (ca.PostID) ${plus} ?`;
     let data =
       type === "بحسب التاريخ"
         ? [id, DateStart, DateEnd, PostID]
         : type === "بحسب المشروع والمستخدم والتاريخ"
-        ? [id, DateStart, DateEnd, `%${nameProject}%`, `%${userName}%`, PostID]
-        : type === "بحسب المشروع والتاريخ"
-        ? [id, DateStart, DateEnd, `%${nameProject}%`, PostID]
-        : type === "بحسب الفرع"
-        ? [id, DateStart, DateEnd, `%${branch}%`, PostID]
-        : [id, DateStart, DateEnd, `%${userName}%`, PostID];
+          ? [id, DateStart, DateEnd, `%${nameProject}%`, `%${userName}%`, PostID]
+          : type === "بحسب المشروع والتاريخ"
+            ? [id, DateStart, DateEnd, `%${nameProject}%`, PostID]
+            : type === "بحسب الفرع"
+              ? [id, DateStart, DateEnd, `%${branch}%`, PostID]
+              : [id, DateStart, DateEnd, `%${userName}%`, PostID];
     let query = `SELECT * FROM (SELECT ca.PostID, ca.postBy, ca.Date, ca.timeminet, ca.url, ca.Type, ca.Data, ca.StageID, cs.StageName,
         EX.NameCompany, RE.NameSub, PR.Nameproject,
         (SELECT COUNT(userName) FROM Comment WHERE PostId = ca.PostID) AS Comment,
@@ -2610,8 +2644,8 @@ const SELECTDataPrivatPost = (PostID, type = "Comment", idEdit = null) => {
           ? "max(fl.LikesID) AS LikesID"
           : "max(fl.CommentID) AS CommentID"
         : type === "Likes"
-        ? "fl.LikesID"
-        : "fl.CommentID";
+          ? "fl.LikesID"
+          : "fl.CommentID";
 
     let Id = idEdit === null ? PostID : idEdit;
     let WhereID = idEdit === null ? "fl.PostId" : "fl.CommentID";
@@ -2798,7 +2832,7 @@ const SELECTTablepostAll = (
     // بناء مصفوفة القيم
     let values = [user];
     if (!isAdminOrBranchManager) values.push(PhoneNumber); // نضيف user_id فقط إذا كان شرط مفعّل
-    values.push(id,formattedDate, PostID);
+    values.push(id, formattedDate, PostID);
     db.serialize(function () {
       db.all(query, values, function (err, result) {
         if (err) {
@@ -3206,7 +3240,7 @@ const SELECTTableViewChate = (chatID) => {
   });
 };
 // AND DateDay BETWEEN strftime('%Y-%m-01',CURRENT_DATE )  AND CURRENT_DATE
-const SELECTTableNavigation = (data, names = [], where = "",equals="!=") => {
+const SELECTTableNavigation = (data, names = [], where = "", equals = "!=") => {
   return new Promise((resolve, reject) => {
     const lastId = Number(data[0] ?? 0);
     const numberCompany = data[1];
@@ -3214,7 +3248,7 @@ const SELECTTableNavigation = (data, names = [], where = "",equals="!=") => {
 
     const placeholders = names.map(() => "?").join(",");
 
-   const namesFilter =
+    const namesFilter =
       names.length > 0
         ? `
           AND ca.tokens IS NOT NULL
@@ -3333,8 +3367,8 @@ const SELECTTableMaxFinancialCustody = async (
         type === "max"
           ? `SELECT Max(idOrder) AS  last_id FROM FinancialCustody WHERE IDCompanySub=? `
           : type === "count"
-          ? `SELECT ${kindOpreation} FROM FinancialCustody WHERE IDCompany=? AND OrderStatus="false" AND RejectionStatus="false"`
-          : `SELECT ${kindOpreation} FROM FinancialCustody WHERE id=? `,
+            ? `SELECT ${kindOpreation} FROM FinancialCustody WHERE IDCompany=? AND OrderStatus="false" AND RejectionStatus="false"`
+            : `SELECT ${kindOpreation} FROM FinancialCustody WHERE id=? `,
         [id],
         function (err, result) {
           if (err) {
@@ -3867,5 +3901,6 @@ module.exports = {
   SELECTTableStageStageSub,
   selectStagestypeforProject,
   selectStagestypeTemplet,
-  Select_table_company_subscriptions_vs2
+  Select_table_company_subscriptions_vs2,
+  getBranchRole
 };
