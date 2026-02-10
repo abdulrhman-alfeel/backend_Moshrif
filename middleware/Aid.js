@@ -5,13 +5,11 @@ const {
   insertTablecompanySubProjectStageCUSTv2,
   insertTableusersBransh,
   insertTableusersProject,
-  insertTableallStagestype,
 } = require("../sql/INsertteble");
 const { DateTime } = require("luxon");
 const moment = require("moment-timezone");
 
 require("dotenv").config();
-
 const crypto = require("crypto");
 
 
@@ -23,6 +21,18 @@ function roomKey (ProjectID,StageID){
     return roomKeys
 }
 
+
+function View_type (chate_type) {
+       
+  let view_type =
+        chate_type === 'Chat_private'
+          ? 'Views_Private'
+          : chate_type === 'Chat_project'
+            ? 'Views_Project'
+            : null;
+
+    return view_type
+}
 
 
 // أبجدية مناسبة (تقدر تغيّرها)
@@ -432,7 +442,7 @@ const AccountDays = (numberBuilding, Days) => {
 };
 const xlsx = require("xlsx");
 const { SELECTTableusersCompanyall } = require("../sql/selected/selectuser");
-const { UPDATECONVERTDATE } = require("../sql/update");
+// const { UPDATECONVERTDATE } = require("../sql/update");
 
 const StageTempletXsl2 = async (
   type = "StagesTempletEXcel.xlsx",
@@ -703,5 +713,6 @@ module.exports = {
   toISO,
   parseRatio0to100,
   generateSubscriptionCode,
-  roomKey
+  roomKey,
+  View_type
 };

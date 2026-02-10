@@ -172,12 +172,21 @@ END;
   db.run(
     `CREATE TABLE IF NOT EXISTS ViewsCHATSTAGE(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE, FOREIGN KEY (chatID) REFERENCES ChatSTAGE (chatID) ON DELETE RESTRICT ON UPDATE RESTRICT) `
   );
+  db.run(
+    `CREATE TABLE IF NOT EXISTS Views_Private(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE) `
+  );
+  db.run(
+    `CREATE TABLE IF NOT EXISTS Views_Project(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE) `
+  );
   // الدردشة
   db.run(
     `CREATE TABLE IF NOT EXISTS Chat(chatID INTEGER PRIMARY KEY AUTOINCREMENT , idSendr TEXT NOT NULL,Type TEXT NULL ,ProjectID INTEGER NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL)`
   );
   db.run(
     `CREATE TABLE IF NOT EXISTS Chat_private(chatID INTEGER PRIMARY KEY AUTOINCREMENT , conversationId TEXT NOT NULL,companyId INTEGER NULL ,idSendr TEXT NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL)`
+  );
+  db.run(
+    `CREATE TABLE IF NOT EXISTS Chat_project(chatID INTEGER PRIMARY KEY AUTOINCREMENT , conversationId TEXT NOT NULL,ProjectID INTEGER NULL ,idSendr TEXT NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL)`
   );
   //  المشاهدات
   db.run(
@@ -414,12 +423,16 @@ ON Views (chatID);`)
 
 
 
-    db.run(`
+db.run(`
 CREATE INDEX IF NOT EXISTS idx_Navigation_IDCompanySub_DateDay
 ON Navigation (IDCompanySub, DateDay);`)
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Navigation_IDCompanySub_id
+db.run(`CREATE INDEX IF NOT EXISTS idx_Navigation_IDCompanySub_id
 ON Navigation (IDCompanySub, id);`)
+
+db.run(`CREATE INDEX IF NOT EXISTS idx_chat_private_room_last
+ON Chat_private (conversationId, chatID);
+`)
 
 
 
@@ -434,6 +447,22 @@ ON Navigation (IDCompanySub, id);`)
   // db.run(`
   //   ALTER TABLE LoginActivaty
   //   ADD COLUMN userID INTEGER NULL `)
+
+  // db.run(`
+  //   ALTER TABLE Chat
+  //   ADD COLUMN count_read_message INTEGER '0' `)
+
+  // db.run(`
+  //   ALTER TABLE ChatSTAGE
+  //   ADD COLUMN count_read_message INTEGER '0' `)
+
+  // db.run(`
+  //   ALTER TABLE Chat_private
+  //   ADD COLUMN read_message TEXT 'false' `)
+
+  // db.run(`
+  //   ALTER TABLE Chat_project
+  //   ADD COLUMN read_message TEXT 'false' `)
 
 
   // قديم 

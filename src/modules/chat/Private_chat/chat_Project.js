@@ -1,93 +1,133 @@
-// chat-gateway/src/server.js
-const { Queue } = require('bullmq');
-const  { randomUUID } = require('crypto');
-const IORedis = require('ioredis');
-const config = require('../../../../config');
+// src/ws/chat-private.js
+const { OpreactionSend_message, ClassChatOprationView } = require('../ChatJobsClass');
+function initChatProjectNamespace(io, redis, persistQueue) {
+  const nsp = io.of('/Chat_project');
+  const GW_ID = process.env.GW_ID || `gw-${process.pid}`;
+  const PRESENCE_TTL = 90;
+  // ---------- helpers ----------
+  const kPresence = (userId) => `presence:u:${userId}`;
+  const roomDM = (conversationId) => `dm:${conversationId}`;
 
+  async function setOnline(userId) {
+    const key = kPresence(userId);
+    const val = JSON.stringify({ gw: GW_ID, ts: Date.now() });
 
-
-
-const GW_ID = process.env.GW_ID || `gw-${process.pid}`;
-
-function presenceKey(userId) {
-  return `presence:u:${userId}`;
-}
-
-async function setOnline(userId) {
-  await redis.set(presenceKey(userId), JSON.stringify({ gw: GW_ID, ts: Date.now() }), { EX: 90 });
-}
-
-async function rateLimit(userId) {
-  const sec = Math.floor(Date.now() / 1000);
-  const key = `rl:chat:u:${userId}:${sec}`;
-  const n = await redis.incr(key);
-  if (n === 1) await redis.expire(key, 3);
-  return n <= 20; // مثال: 20 event/sec
-}
-
-const chat_Project = (io, socket) => {
- const type =socket.handshake.auth?.type;
- if(type !=='project'){
-  return;
- }
-
-
- const userId = Number(socket.handshake.auth?.userId);
-//   const companyId = Number(socket.handshake.auth?.companyId);
-  if (!userId) {
-    socket.disconnect(true);
-    return;
+    // Node-redis v4 يدعم options object غالبًا
+    try {
+      await redis.set(key, val, { EX: PRESENCE_TTL });
+    } catch (e) {
+      // ioredis / wrappers: استخدم الصيغة النصية
+      await redis.set(key, val, 'EX', PRESENCE_TTL);
+    }
   }
 
-  setOnline(userId);
+  async function rateLimit(userId, max = 20) {
+    const sec = Math.floor(Date.now() / 1000);
+    const key = `rl:dm:${userId}:${sec}`;
+    const n = await redis.incr(key);
+    if (n === 1) await redis.expire(key, 3);
+    return n <= max;
+  }
 
-  const hb = setInterval(() => setOnline(userId), 25000);
+  // 🔐 اربطها لاحقاً بجدولك الحقيقي
+  async function canJoinDM({ userId, conversationId }) {
+    // TODO:
+    // SELECT 1 FROM conversation_members WHERE ...
+    return true;
+  }
 
-  socket.on('join', async ({ conversationId }) => {
-    if (!(await rateLimit(userId))) return;
-    socket.join(`conv:${conversationId}`);
-  });
+  // ---------- namespace ----------
+  nsp.on('connection', (socket) => {
+    
+    const userId = Number(socket.handshake.auth?.userId);
+    const companyId = Number(socket.handshake.auth?.companyId);
 
-  socket.on('leave', async ({ conversationId }) => {
-    if (!(await rateLimit(userId))) return;
-    socket.leave(`conv:${conversationId}`);
-  });
 
-  socket.on('sendMessage', async (payload, cb) => {
-    if (!(await rateLimit(userId))) return cb?.({ ok: false, err: 'rate_limited' });
-
-    const messageId = randomUUID();
-    const now = new Date().toISOString();
-
-      const msg = {
-      id: messageId,
-      senderId: userId,
-      ProjectID:payload.ProjectID,
-      Sender :payload.userName,
-      message:payload.messages,
-      timeminet: moment().toISOString(),
-      File:payload.Files,
-      Reply:payload.Reply,
-      arrived:true,
-      kind:'new'
+    if (!userId || !companyId) {
+      socket.disconnect(true);
+      return;
     }
 
-    // 1) Fanout فوري (latency ممتاز)
-    io.to(`conv:${msg.ProjectID}`).emit('message', msg);
+    socket.data.userId = userId;
+    socket.data.companyId = companyId;
 
-    // 2) Persist async
-    await persistQueue.add('persist', msg, {
-      attempts: 10,
-      backoff: { type: 'exponential', delay: 500 },
-      removeOnComplete: true,
-      removeOnFail: 1000,
+    // presence heartbeat
+    setOnline(userId);
+    const hb = setInterval(() => setOnline(userId), 25000);
+
+    // -------- join DM room --------
+    socket.on('newRome', async (conversationId, cb) => {
+      try {
+
+        if (!(await rateLimit(userId))) {
+          return cb?.({ ok: false, err: 'rate_limited' });
+        }
+
+        const allowed = await canJoinDM({ userId, conversationId });
+        if (!allowed) {
+          return cb?.({ ok: false, err: 'forbidden' });
+        }
+
+        const room = roomDM(conversationId);
+        socket.join(room);
+
+        cb?.({ ok: true, room });
+      } catch (e) {
+        cb?.({ ok: false, err: 'server_error' });
+      }
     });
 
-    cb?.({ ok: true, id: messageId, createdAt: now });
+    // -------- leave DM room --------
+    socket.on('leaveDM', ({ conversationId }) => {
+      socket.leave(roomDM(conversationId));
+    });
+
+    // -------- send message --------
+    socket.on('send_message', async (payload, cb) => {
+      try {
+
+        if (!(await rateLimit(userId))) {
+          return cb?.({ ok: false, err: 'rate_limited' });
+        }
+
+        const allowed = await canJoinDM({ userId, conversationId: payload.conversationId });
+        if (!allowed) {
+          return cb?.({ ok: false, err: 'forbidden' });
+        };
+
+        // const messageId = await redis.incr("chat:global:id");
+        const result = await OpreactionSend_message(payload, 'Chat_project');
+       console.log('🚀 Chat_project namespace initialized',result);
+
+        // 🔥 بث فوري للطرفين
+        nsp.to(roomDM(payload.conversationId)).emit('received_message', result);
+
+        // 💾 حفظ Async
+        // await persistQueue.add("persist", result);
+
+        cb?.({ ok: true, id: payload.conversationId });
+      } catch (e) {
+        cb?.({ ok: false, err: 'server_error' });
+      }
+    });
+
+    socket.on('view_message', async (payload, cb) => {
+      if (!(await rateLimit(userId))) {
+        return cb?.({ ok: false, err: 'rate_limited' });
+      };
+
+      await ClassChatOprationView(payload,'Chat_project');
+
+
+    });
+
+    socket.on('disconnect', () => {
+      clearInterval(hb);
+      console.log('❌ DM disconnected', userId);
+    });
   });
 
-  socket.on('disconnect', async () => {
-    clearInterval(hb);
-    // لا تحذف presence فورًا—خلي TTL يحدد (لتجنب flapping)
-  });
+  return nsp;
 }
+
+module.exports = { initChatProjectNamespace };

@@ -1,6 +1,6 @@
 const express = require("express");
 const { userCompany } = require("../src/modules/companies/insert/insertuserCompany");
-const { BringUserCompany, BringvalidityuserinBransh, BringUserCompanyinv2 } = require("../src/modules/companies/select/userCompanyselect");
+const { BringUserCompany, BringvalidityuserinBransh, BringUserCompanyinv2, BringUserChatProject } = require("../src/modules/companies/select/userCompanyselect");
 const { userCompanyUpdat, UpdatUserCompanyinBrinsh,DeletUser,UpdateToken, InsertmultipleProjecsinvalidity, UpdatUserCompanyinBrinshV2, userCompanyUpdatdashbord } = require("../src/modules/companies/insert/UpdatuserCompany");
 const { verifyJWT } = require("../middleware/jwt");
 const { BringDataNotifcation,FilterNotifcation, FilterNotifcationv2, BringDataNotifcationv2 } = require("../src/modules/notifications/InsertNotifcation");
@@ -30,8 +30,12 @@ router.route('/InsertmultipleProjecsinvalidity')
 .put(InsertmultipleProjecsinvalidity(uploadQueue))
 router.route('/BringvalidityuserinBransh')
 .get(BringvalidityuserinBransh(uploadQueue))
+
 router.route('/BringUserCompanyinv2')
 .get(BringUserCompanyinv2(uploadQueue))
+
+router.route('/BringUserChatProject')
+.get(BringUserChatProject(uploadQueue))
 
 
 router.route('/BringUserCompany')

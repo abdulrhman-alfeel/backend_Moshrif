@@ -26,10 +26,6 @@ const {
 
 
 
-// ===== Helpers (بدون مكتبات): تطبيع/تحقق/تنظيف =====
-
-
-
 
 
 // فحص بسيط للقيمة ضمن مصفوفة (بديل آمن للدالة القديمة)
@@ -225,7 +221,7 @@ const insertStageTempletinDatabase = (uploadQueue) => {
         const ratioNum   = Number(parseRatio0to100(elements[4]) || 0);
 
         StageIDnew += 1;
-        const ListID = await insertTableStagestype(userSession?.IDCompany,cleanType);
+        const ListID = await insertTableStagestype(cleanType);
         await insertTablecompanySubProjectStagetemplet([
           StageIDnew,
           cleanType,

@@ -845,7 +845,6 @@ const Postsnotification = async (
       PostID,
       count: Count["COUNT(userName)"],
     };
-    console.log(data);
     // إدراج الإشعار في النظام
     const idmax = await InsertNotifcation(
       arraynameuser,

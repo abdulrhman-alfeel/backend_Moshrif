@@ -1310,7 +1310,6 @@ const ClassCloaseOROpenStage = (uploadQueue) => {
       if (Object.keys(errors).length > 0) {
         return res.status(200).send({ success: "أخطاء في التحقق من المدخلات", message: "أخطاء في التحقق من المدخلات", errors });
       }
-      console.log(errors,stageIdNum)
 
       // 4) جلب بيانات المرحلة
       const bringData = await SELECTTablecompanySubProjectStageCUSTONe(projectIdNum, stageIdNum);

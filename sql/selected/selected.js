@@ -502,149 +502,24 @@ ${Limit}
         WHERE trim(uC.PhoneNumber) =trim(${PhoneNumber})  AND (cS.id) ${plase} ${IDfinlty}   AND (cS.Disabled) =${Disabled}  ORDER BY cS.id ASC  ${Limit}`,
 
         function (err, result) {
+
+          if(result.length > 0) return resolve(result);
+
+
           if (err) {
             reject(err);
             // console.log(err.message);
           } else {
-            resolve(result);
+            resolve([{job:'مدير فرع'}]);
           }
         }
       );
     });
   });
 };
-// const selecttablecompanySubProjectall = (
-//   id,
-//   IDfinlty,
-//   PhoneNumber,
-//   Disabled = "true",
-//   Limit = "LIMIT 7",
-//   kind = "all"
-// ) => {
-//   return new Promise((resolve, reject) => {
-//     let plase = parseInt(IDfinlty) === 0 ? ">" : "<";
 
-//     db.serialize(function () {
-//       db.all(
-//         kind === "all"
-//           ? `
-// SELECT
-//   CASE
-//     WHEN uC.job = 'Admin' THEN 'Admin'
-//     WHEN EXISTS (
-//       SELECT 1
-//       FROM usersBransh bX
-//       WHERE bX.user_id = uC.id
-//         AND bX.idBransh = cS.IDcompanySub
-//         AND bX.job = 'مدير الفرع'
-//     ) THEN 'مدير الفرع'
-//     ELSE (
-//       SELECT MAX(bY.job)
-//       FROM usersBransh bY
-//       WHERE bY.user_id = uC.id
-//         AND bY.idBransh = cS.IDcompanySub
-//     )
-//   END AS job,
-//   cS.id,
-//   cS.IDcompanySub,
-//   cS.Nameproject,
-//   cS.Note,
-//   cS.TypeOFContract,
-//   cS.GuardNumber,
-//   cS.LocationProject,
-//   cS.ProjectStartdate,
-//   cS.numberBuilding,
-//   cS.Contractsigningdate,
-//   cS.Disabled,
-//   cS.Referencenumber,
-//   cS.rate,
-//   cS.cost,
-//   (SELECT COUNT(*) FROM usersProject ut WHERE ut.ProjectID = cS.id) AS countuser,
-//   EX.Cost AS ConstCompany,
-//   EX.DisabledFinance,
-//   JSON_EXTRACT((
-//     SELECT MAX(bZ.ValidityBransh)
-//     FROM usersBransh bZ
-//     WHERE bZ.user_id = uC.id
-//       AND bZ.idBransh = cS.IDcompanySub
-//   ), '$') AS ValidityBransh,
-//   CASE WHEN EXISTS (
-//   SELECT 1
-//   FROM project_subscription ps
-//   JOIN company_subscriptions st
-//     ON st.id = ps.company_subscriptions_id
-//   AND st.status = 'active'
-//   WHERE ps.project_id = cS.id
-// ) THEN 'true' ELSE 'false' END AS status_subscription,
-// ( SELECT st.id
-//   FROM project_subscription ps
-//   JOIN company_subscriptions st
-//     ON st.id = ps.company_subscriptions_id
-//   AND st.status = 'active'   WHERE ps.project_id = cS.id )  AS company_subscriptions_id
-// FROM usersCompany uC
-// JOIN company EX
-//   ON EX.id = uC.IDCompany
-// JOIN companySub RE
-//   ON RE.NumberCompany = EX.id
-// JOIN companySubprojects cS
-//   ON cS.IDcompanySub = RE.id
-// WHERE
-//   REPLACE(TRIM(uC.PhoneNumber), ' ', '') = TRIM(${PhoneNumber})
-//   AND cS.id > ${IDfinlty}
-//   AND cS.Disabled = 'true'     -- إن كان منطقيًا استخدم TRUE
-//  AND (
-//        (uC.job = 'Admin' AND cS.IDcompanySub = ${id})         -- لو أردتها لفرع محدد
-//        OR EXISTS (                                         -- مدير الفرع يرى مشاريع فروعه فقط
-//             SELECT 1
-//             FROM usersBransh b1
-//             WHERE b1.user_id  = uC.id
-//               AND b1.job      = 'مدير الفرع'
-//               AND b1.idBransh = ${id}   AND cS.IDcompanySub = ${id}
-//       )
-//        OR EXISTS (                                         -- المستخدم العادي يرى المشاريع المكلف بها
-//             SELECT 1
-//             FROM usersProject up1
-//             WHERE up1.user_id   = uC.id
-//               AND up1.idBransh  = ${id}       AND cS.IDcompanySub = ${id}
-//               AND up1.ProjectID = cS.id
-//       )
-//   )
-// ORDER BY cS.id ASC
-// ${Limit}
-// ;
-//         `
-//           : `SELECT 
-//         cS.id AS ProjectID,cS.Nameproject
-//         FROM usersCompany uC
-//         LEFT JOIN usersBransh uB 
-//             ON uC.id = uB.user_id 
-//             AND uC.job NOT IN ('Admin') 
-//         LEFT JOIN usersProject uP 
-//             ON uB.idBransh = uP.idBransh 
-//             AND uB.user_id = uP.user_id
-//         LEFT JOIN companySubprojects cS 
-//         ON (
-//           (uC.job = 'Admin' )
-//           OR (uB.job = 'مدير الفرع' )
-//           OR (uC.job NOT IN ('Admin','مدير الفرع') 
-//               AND uP.ProjectID = cS.id )
-//         )
-//         WHERE trim(uC.PhoneNumber) =trim(${PhoneNumber})  AND (cS.id) ${plase} ${IDfinlty}   AND (cS.Disabled) =${Disabled}  ORDER BY cS.id ASC  ${Limit}`,
 
-//         function (err, result) {
-//           if (err) {
-//             reject(err);
-//             // console.log(err.message);
-//           } else {
-//             resolve(result);
-//           }
-//         }
-//       );
-//     });
-//   });
-// };
 
-// جلب المشاريع للمنصة
 const SELECTTablecompanySubProject = (
   id,
   kind = "all",
@@ -2912,13 +2787,22 @@ const SELECTLastTableChateStage = (
   });
 };
 // جلب chatiD
-const SELECTLastTableChateID = (ProjectID, type, userName) => {
+const SELECTLastTableChateID = (ProjectID, type, userName,chate_type) => {
   return new Promise((resolve, reject) => {
-    const stringSql = Number(type)
+    let view_type = chate_type === 'Chat_private' ? 'Views_Private' : chate_type === 'Chat_project' ? 'Views_Project': null;
+
+    const conversationId = roomKey(ProjectID, type);
+    const stringSql =
+    chate_type !== 'Chat' ?      
+    `SELECT chatID FROM ${chate_type}  WHERE conversationId=? AND trim(Sender) !=trim(?)`
+    :
+    Number(type)
       ? `SELECT chatID FROM ChatSTAGE  WHERE ProjectID=? AND StageID =? AND trim(Sender) !=trim(?) `
       : `SELECT chatID FROM Chat  WHERE ProjectID=? AND Type =? AND trim(Sender) !=trim(?) `;
+
+      let data = chate_type !== "Chat" ? [String(conversationId),userName]: [ProjectID, type, userName]
     db.serialize(function () {
-      db.all(stringSql, [ProjectID, type, userName], function (err, result) {
+      db.all(stringSql, data, function (err, result) {
         if (err) {
           reject(err);
           // console.error(err.message);
@@ -2932,9 +2816,15 @@ const SELECTLastTableChateID = (ProjectID, type, userName) => {
 };
 
 //  الاستعلام على اسم الشخص ومعرف الرسالة
-const SELECTTableViewChateUser = (chatID, userName, type) => {
+const SELECTTableViewChateUser = (chatID, userName, type,chate_type) => {
   return new Promise((resolve, reject) => {
-    const stringSql = Number(type)
+    let view_type = chate_type === 'Chat_private' ? 'Views_Private' : chate_type === 'Chat_project' ? 'Views_Project': null;
+
+    const stringSql = 
+    view_type !== null ?
+    `SELECT * FROM ${view_type} WHERE chatID=? AND trim(userName)=trim(?)`
+    :
+    Number(type)
       ? `SELECT * FROM ViewsCHATSTAGE WHERE chatID=? AND trim(userName)=trim(?)`
       : `SELECT * FROM Views WHERE chatID=? AND trim(userName)=trim(?)`;
     db.serialize(function () {
@@ -2946,6 +2836,25 @@ const SELECTTableViewChateUser = (chatID, userName, type) => {
           resolve(result);
         }
       });
+    });
+  });
+};
+const SELECTLastTableChatDontEmpty = (ProjectID, StageID, id, chate_type='Chat_private') => {
+  return new Promise((resolve, reject) => {
+    db.serialize(function () {
+      db.all(
+        `SELECT * FROM ${chate_type}  WHERE conversationId=? AND  chatID > ? `,
+        [String(roomKey(ProjectID, StageID)), id],
+        function (err, result) {
+          if (err) {
+            reject(err);
+            // console.error(err.message);
+          } else {
+            resolve(result.reverse());
+            // console.log(result)
+          }
+        }
+      );
     });
   });
 };
@@ -3058,11 +2967,11 @@ const SELECTLastmassgeuserinchat = (
   });
 };
 //  جلب مشاهدات رسائل الشات
-const SELECTTableViewChateStage = (chatID) => {
+const SELECTTableViewChateStage = (chatID,type="ViewsCHATSTAGE") => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
-        `SELECT * FROM ViewsCHATSTAGE WHERE chatID=?`,
+        `SELECT * FROM ${type} WHERE chatID=?`,
         [chatID],
         function (err, result) {
           if (err) {
@@ -3141,7 +3050,7 @@ const SELECTLastTableChate = (ProjectID, Type, count = 80, kind = "Chat") => {
     const sql =
       kind === "Chat"
         ? `SELECT * FROM Chat WHERE ProjectID = ? AND Type = ? ORDER BY rowid DESC LIMIT ?`
-        : `SELECT * FROM Chat_private WHERE trim(conversationId) = trim(?) ORDER BY rowid DESC LIMIT ?`;
+        : `SELECT * FROM ${kind} WHERE trim(conversationId) = trim(?) ORDER BY rowid DESC LIMIT ?`;
 
     const params =
       kind === "Chat"
@@ -3158,9 +3067,134 @@ const SELECTLastTableChate = (ProjectID, Type, count = 80, kind = "Chat") => {
   });
 };
 
-// SELECT * FROM Chat  WHERE ProjectID='1010629306' AND Type ='تحضير' AND Sender LIKE '%عبدالله حسين%' AND chatID > 0  ORDER BY rowid DESC, chatID ASC LIMIT 10
-// SELECT * FROM Chat  WHERE ProjectID= '1010629306' AND Type ='تحضير' AND Sender LIKE  '%Software %'  OR message LIKE '%Software %' AND chatID  < 9669  ORDER BY chatID DESC LIMIT 1
-// SELECT * FROM ChatSTAGE  WHERE ProjectID=114 AND StageID =23 AND message LIKE "%عبوود%"     ORDER BY chatID DESC LIMIT 20
+
+function getChatRooms(userId,  chatID = 0) {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      WITH last_msg AS (
+        SELECT
+          cp.*,
+          ROW_NUMBER() OVER (
+            PARTITION BY trim(cp.conversationId)
+            ORDER BY cp.chatID DESC
+          ) AS rn
+        FROM Chat_private cp
+        WHERE trim(cp.conversationId) LIKE (? || ':%')
+        OR trim(cp.conversationId) LIKE ('%:' || ?)
+      ),
+      rooms AS (
+        SELECT
+          lm.*,
+          CAST(substr(trim(lm.conversationId), 1, instr(trim(lm.conversationId), ':') - 1) AS INTEGER) AS leftId,
+          CAST(substr(trim(lm.conversationId), instr(trim(lm.conversationId), ':') + 1) AS INTEGER) AS rightId
+        FROM last_msg lm
+        WHERE lm.rn = 1
+      ),
+      final AS (
+        SELECT
+          r.*,
+          CASE
+            WHEN r.leftId = ? THEN r.rightId
+            WHEN r.rightId = ? THEN r.leftId
+            ELSE NULL
+          END AS otherUserId
+        FROM rooms r
+      )
+      SELECT
+        f.chatID,
+        f.conversationId,
+        f.Sender,
+        f.message,
+        f.Date,
+        f.timeminet,
+        f.otherUserId,
+        uc.userName AS otherUserName
+      FROM final f
+      JOIN usersCompany uc
+        ON uc.id = f.otherUserId
+      WHERE
+      uc.id != ? AND f.chatID > ?
+      ORDER BY f.chatID ASC
+      LIMIT 2;
+    `;
+
+
+    const params = [
+      userId, userId,     
+      userId, userId,   
+      userId,     
+      chatID
+    ];
+
+    db.all(sql, params, (err, rows) => {
+      if (err) return reject(err);
+
+      let nextCursor = null;
+      if (rows.length) nextCursor = { lastChatId: rows[rows.length - 1].chatID };
+
+      resolve({ items: rows, nextCursor });
+    });
+  });
+}
+function get_ALL_ChatRooms(componentId,  chatID = 0) {
+  return new Promise((resolve, reject) => {
+  const sql = `
+  WITH parsed AS (
+    SELECT
+      cp.*,
+      CAST(substr(trim(cp.conversationId), 1, instr(trim(cp.conversationId), ':') - 1) AS INTEGER) AS userA,
+      CAST(substr(trim(cp.conversationId), instr(trim(cp.conversationId), ':') + 1) AS INTEGER) AS userB
+    FROM Chat_private cp
+    WHERE instr(trim(cp.conversationId), ':') > 0
+  ),
+  last_msg AS (
+    SELECT
+      p.*,
+      ROW_NUMBER() OVER (
+        PARTITION BY p.conversationId
+        ORDER BY p.chatID DESC
+      ) AS rn_last
+    FROM parsed p
+  )
+  SELECT
+    l.conversationId,
+    (COALESCE(ua.userName, 'User ' || l.userA) || ' - ' || COALESCE(ub.userName, 'User ' || l.userB)) AS roomTitle,
+    l.chatID    AS lastChatID,
+    l.Sender    AS lastSender,
+    l.message   AS lastMessage,
+    l.Date      AS lastDate,
+    l.timeminet AS lastTimeminet
+  FROM last_msg l
+  LEFT JOIN usersCompany ua
+    ON ua.id = l.userA
+  AND (l.companyId IS NULL OR ua.IDCompany = l.companyId)
+  LEFT JOIN usersCompany ub
+    ON ub.id = l.userB
+  AND (l.companyId IS NULL OR ub.IDCompany = l.companyId)
+  WHERE l.rn_last = 1  AND ub.IDCompany = ? AND l.chatID > ?
+  ORDER BY l.chatID DESC 
+  LIMIT 50;
+    `;
+
+
+    const params = [
+    componentId,    
+      chatID
+    ];
+
+    db.all(sql, params, (err, rows) => {
+      if (err) return reject(err);
+
+      let nextCursor = null;
+      if (rows.length) nextCursor = { lastChatId: rows[rows.length - 1].chatID };
+
+      resolve({ items: rows, nextCursor });
+    });
+  });
+}
+
+
+
 
 const SELECTfilterTableChate = (ProjectID, Type, userName, count = 0) => {
   return new Promise((resolve, reject) => {
@@ -3187,12 +3221,12 @@ const SELECTfilterTableChate = (ProjectID, Type, userName, count = 0) => {
   });
 };
 //  جلب مشاهدات رسائل الشات
-const SELECTTableViewChate = (chatID) => {
+const SELECTTableViewChate = (chatID,userName,type="Views") => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
-        `SELECT * FROM Views WHERE chatID=?`,
-        [chatID],
+        `SELECT * FROM ${type} WHERE  chatID=? AND userName=?`,
+        [chatID,userName],
         function (err, result) {
           if (err) {
             reject(err);
@@ -3867,5 +3901,8 @@ module.exports = {
   SELECTTableStageStageSub,
   selectStagestypeforProject,
   selectStagestypeTemplet,
-  Select_table_company_subscriptions_vs2
+  Select_table_company_subscriptions_vs2,
+  SELECTLastTableChatDontEmpty,
+  getChatRooms,
+  get_ALL_ChatRooms
 };

@@ -170,7 +170,6 @@ const Subscripation_new = async (id,project_count,IDCompany,res,Status="active")
     
       // جلب بيانات نوع الباقة
       const data_types = await SELECT_Table_subscription_types_one_object(id);
-      console.log(data_types);
       if (data_types.length === 0) {
         return res
           .status(200)

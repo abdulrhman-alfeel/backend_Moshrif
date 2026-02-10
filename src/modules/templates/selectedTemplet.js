@@ -16,6 +16,7 @@ const BringStageHomeTemplet = (uploadQueue) => {
       ) {
         return res.status(400).send({ error: "StageIDtemplet is required" });
       }
+
       // Logic to fetch the stage home template by StageIDtemplet
       // This is a placeholder; replace with actual database query
       const stageHomeTemplate = await SELECTFROMTableStageTempletall(

@@ -73,19 +73,15 @@ const BringProjectdashbord = () => {
       if (!userSession) {
         return res.status(401).send("Invalid session");
       }
-      const { IDCompany, IDcompanySub, IDfinlty, type = "cache" } = req.query;
+      const {  IDcompanySub, IDfinlty } = req.query;
       const PhoneNumber = userSession.PhoneNumber;
-      const projects = await getProjectsForUser(
+       const projects = await getProjectsForUser(
         PhoneNumber,
         IDcompanySub,
         IDfinlty
       );
-      const arrayReturnProject = await BringTotalbalance(
-        IDcompanySub,
-        IDCompany,
-        projects
-      );
-      const data = { success: true, data: arrayReturnProject };
+      
+      const data = { success: true, data: projects, boss: projects[0]?.job };
       res.status(200).send(data);
     } catch (err) {
       console.error(err);
@@ -93,6 +89,7 @@ const BringProjectdashbord = () => {
     }
   };
 };
+
 const BringProject = () => {
   return async (req, res) => {
     try {
@@ -110,7 +107,7 @@ const BringProject = () => {
         IDfinlty
       );
       
-      const data = { success: true, data: projects, boss: projects[0]?.job };
+      const data = { success: true, data:projects[0]?.id ? projects: [], boss: projects[0]?.job };
       res.status(200).send(data);
 
     } catch (err) {

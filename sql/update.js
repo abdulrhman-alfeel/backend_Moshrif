@@ -952,6 +952,22 @@ const UPDATETableChate = (data) => {
     }
   );
 };
+
+const UpdateTableViewsChate = (data,chate_type,setUpdat="count_read_message = count_read_message + 1") => {
+  
+  db.serialize(function () {
+    db.run(
+      `UPDATE ${chate_type} SET ${setUpdat} WHERE chatID = ? `,
+      data,
+      function (err) {
+        if (err) {
+          console.error(err.message);
+        }
+        // console.log(`Row with the ID ${this.lastID} has been inserted.`);
+      }
+    );
+  });
+};
 const UPDATETableProjectdataforchat = (data) => {
   db.run(
     `UPDATE Projectdataforchat SET Disabled=? WHERE ProjectID=? AND PhoneNumber=?`,
@@ -1241,5 +1257,6 @@ module.exports = {
   UpdateState_Comany_all,
   Update_subscription_types,
   UpdateState_company_subscriptions,
-  Updatetran_ref_company_subscriptions
+  Updatetran_ref_company_subscriptions,
+  UpdateTableViewsChate
 };

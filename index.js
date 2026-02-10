@@ -19,7 +19,6 @@ const helmet = require("helmet");
 const errorHandler = require("./middleware/errorHandler");
 const { deleteFilesInFolder } = require("./middleware/Fsfile");
 const { CreateTable } = require("./sql/createteble");
-const { ChatOpration } = require("./src/modules/chat/ChatJobs");
 const {  handleUploadErrors } = require("./middleware/uploads");
 const {  bucket } = require("./bucketClooud");
 const limiter = require("./middleware/loginLimiter.js");
@@ -56,6 +55,8 @@ const db = require("./sql/sqlite.js");
 const payment_route = require("./routes/payment_route.js");
 const { UpdateState_Comany_all } = require("./sql/update.js");
 const { initChatPrivateNamespace } = require("./src/modules/chat/Private_chat/chat-private.js");
+const { initChatProjectNamespace } = require("./src/modules/chat/Private_chat/chat_Project.js");
+const { ChatOpration } = require("./src/modules/chat/ChatJobs.js");
 
 // ---- Logging --------------------------------------------------------------
 // app.use(
@@ -249,16 +250,10 @@ const redis = new IORedis(config.redis);
 const persistQueue = new Queue('chat_persist', { connection: redis });
 
 initChatPrivateNamespace(io, redis, persistQueue);
+initChatProjectNamespace(io, redis, persistQueue);
 
-io.on("connection", (socket) => {
-  socket.on("newRome", (nameroom) => {
-    socket.join(nameroom);
-  });
+ChatOpration(io,redis, persistQueue);
 
-  ChatOpration(socket, io);
-  // ChatOprationView(socket, io);
-  socket.on("disconnect", (data) => {});
-});
 
 
 // Error handling middleware

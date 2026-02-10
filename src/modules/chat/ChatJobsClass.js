@@ -2,14 +2,13 @@ const { DeleteTableChate } = require('../../../sql/delete');
 const {
   insertTableChate,
   insertTableChateStage,
-  insertTableViewsChateStage,
   insertTableViewsChate,
   insertTableChat_private,
+  insertTableChat_project,
 } = require('../../../sql/INsertteble');
 const {
   SELECTTableChateStageOtherroad,
   SELECTTableViewChateStage,
-  SELECTTableChateotherroad,
   SELECTTableViewChate,
   SELECTLastTableChateStage,
   SELECTLastTableChate,
@@ -17,11 +16,12 @@ const {
   SELECTLastTableChateTypeDontEmpty,
   SELECTLastTableChateID,
   SELECTTableViewChateUser,
-  SELECTLastmassgeuserinchat,
   SELECTfilterTableChate,
-  select_table_company_subscriptions,
+  SELECTLastTableChatDontEmpty,
+  getChatRooms,
+  get_ALL_ChatRooms,
 } = require('../../../sql/selected/selected');
-const { ChateNotfication, ChateNotficationdelete } = require('../notifications/NotifcationProject');
+const {  ChateNotficationdelete } = require('../notifications/NotifcationProject');
 const { insertPostURL } = require('../posts/insertPost');
 const { deleteFileSingle } = require('../../../middleware/Fsfile');
 const { uploaddata, bucket } = require('../../../bucketClooud');
@@ -29,29 +29,21 @@ const { fFmpegFunction } = require('../../../middleware/ffmpeg');
 const { io } = require('../../../importMIn');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-const IORedis = require('ioredis');
 const { GoogleAuth } = require('google-auth-library');
 const { Deleteposts } = require('../posts/updatPost');
 const moment = require('moment');
-const { parsePositiveInt, esc, isNonEmpty, lenBetween, toISO } = require('../../../middleware/Aid');
-const config = require('../../../config');
+const {
+  parsePositiveInt,
+  esc,
+  toISO,
+  View_type,
+} = require('../../../middleware/Aid');
+const { UpdateTableViewsChate } = require('../../../sql/update');
 
-const redis = new IORedis(config.redis);
 
 //   عمليات استقبال وارسال ومشاهدة شات المراحل
 
 // عملية ارسال واستقبال لشات المراحل
-const ClassChatOpration = async (Socket, io) => {
-  try {
-    Socket.on('send_message', async (data) => {
-      const result = await OpreactionSend_message(data);
-
-      io.to(`${data.ProjectID}:${data?.StageID}`).timeout(50).emit('received_message', result);
-    });
-  } catch (err) {
-    // console.log(err.message);
-  }
-};
 
 // === Helpers خفيفة ===
 function safeJsonParse(value, fallback = null) {
@@ -79,9 +71,30 @@ function shouldCreatePostForStage(stageId) {
 const OpreactionSend_message = async (data, type = 'chat') => {
   let result = {
     ...data,
-  };
 
+    arrived: true,
+  };
   try {
+    // if (type === 'Chat_private') {
+    //   result = {
+    //     conversationId: data.conversationId ,
+    //     companyId: data.companyId ,
+    //     ...result,
+    //   };
+    // } else if (type === 'Chat_project') {
+    //   result = {
+    //     conversationId: data.conversationId ,
+    //     ProjectID: data.ProjectID ,
+    //     ...result,
+    //   };
+    // }else{
+    //   result = {
+    //     ProjectID: data.ProjectID ,
+    //     StageID: data?.StageID ,
+    //     ...result,
+    //   };
+    // }
+
     if (data?.kind === 'delete') {
       // ===== مسار الحذف =====
       const chackdata = await bringdatachate(data, 'delete', type);
@@ -109,13 +122,11 @@ const OpreactionSend_message = async (data, type = 'chat') => {
       // توزيع البيانات حسب بنية قواعدك
       let newData = [];
 
-      if (type === 'Chat_private') {
+      if (type === 'Chat_private' || type === 'Chat_project') {
         newData = Datadistribution_Chat_private(data);
       } else {
         newData = Datadistribution(data);
       }
-
-      console.log(data, 'hello');
 
       // let chatID = null;
       // إدراج في جدول المرحلة أو العام
@@ -125,8 +136,10 @@ const OpreactionSend_message = async (data, type = 'chat') => {
         } else {
           result.chatID = await insertTableChate(newData);
         }
-      } else {
+      } else if (type === 'Chat_private') {
         result.chatID = await insertTableChat_private(newData);
+      } else if (type === 'Chat_project') {
+        result.chatID = await insertTableChat_project(newData);
       }
 
       if (result) {
@@ -140,22 +153,12 @@ const OpreactionSend_message = async (data, type = 'chat') => {
             } catch (_) {}
           }
         }
-        console.log(result, type);
 
         result.File = safeJsonParse(result.File, {});
         result.Reply = safeJsonParse(result.Reply, {});
-        result.arrived = true;
         result.kind = 'new';
-
-        // await ChateNotfication(
-        //     data.ProjectID,
-        //     data?.StageID,
-        //     data.message,
-        //     data.Sender,
-        //     data.Reply,
-        //     data.File
-        //   );
       }
+      console.log('OpreactionSend_message result:', result);
 
       return result;
     } else {
@@ -213,36 +216,11 @@ const bringdatachate = async (data, type = 'new', kind_opreation = 'chat') => {
     chackdata = Number(data?.StageID)
       ? await SELECTTableChateStageOtherroad(id, data.Sender, sqltype)
       : await SELECTTableChateStageOtherroad(id, data.Sender, sqltype, 'Chat');
-  } else if (kind_opreation === 'Chat_private') {
-    chackdata = await SELECTTableChateStageOtherroad(id, data.Sender, sqltype, 'Chat_private');
+  } else {
+    chackdata = await SELECTTableChateStageOtherroad(id, data.Sender, sqltype, kind_opreation);
   }
 
   return chackdata;
-};
-const Chackarrivedmassage = () => {
-  return async (req, res) => {
-    const userSession = req.session.user;
-    const { StageID, idSendr } = req.query;
-    if (!userSession) {
-      res.status(401).send('Invalid session');
-      console.log('Invalid session');
-    }
-
-    const chackdata = Number(StageID)
-      ? await SELECTTableChateStageOtherroad(
-          idSendr,
-          userSession.userName,
-          'idSendr=? AND Sender=?',
-        )
-      : await SELECTTableChateStageOtherroad(
-          idSendr,
-          userSession.userName,
-          'idSendr=? AND Sender=?',
-          'Chat',
-        );
-
-    res.send({ success: chackdata }).status(200);
-  };
 };
 
 const PostFilemassage = () => {
@@ -305,7 +283,7 @@ const Datadistribution_Chat_private = (data) => {
   try {
     let newData = [
       data.conversationId,
-      data.companyId,
+      data.companyId ?? data.ProjectID,
       data.idSendr,
       data.Sender,
       esc(data.message),
@@ -353,7 +331,7 @@ const DeleteChatfromdatabaseanddatabaseuser = async (data, type) => {
         ...data,
         ...dataopration,
       };
-      await DeleteTableChate('Chat_private', chatID);
+      await DeleteTableChate(type, chatID);
     }
 
     return dataopration;
@@ -363,13 +341,13 @@ const DeleteChatfromdatabaseanddatabaseuser = async (data, type) => {
 };
 
 // **************
-const specialStages = ['قرارات', 'استشارات', 'اعتمادات'];
+// const specialStages = ['قرارات', 'استشارات', 'اعتمادات'];
 
 // جلب الرسائل الناقصة
 const ClassChackTableChat = () => {
   return async (req, res) => {
     try {
-      const { ProjectID, StageID, lengthChat,chate_type="Chat" } = req.query;
+      const { ProjectID, StageID, lengthChat, chate_type = 'Chat' } = req.query;
 
       const userSession = req.session.user;
       if (!userSession) {
@@ -384,23 +362,18 @@ const ClassChackTableChat = () => {
       // }
 
       let arrayResult = [];
-      //  جلب طول البيانات
-      const Listchat = chate_type === 'Chat' ? Number(StageID)
-        ? await SELECTLastmassgeuserinchat(ProjectID, StageID, userSession.userName)
-        : await SELECTLastmassgeuserinchat(ProjectID, StageID, userSession.userName, 'Chat') : await SELECTLastmassgeuserinchat(ProjectID, StageID, userSession.userName, chate_type) ;
       // جلب البيانات
       let result;
-   
-   
-            console.log(arrayResult,chate_type);
-
-      if(chate_type === 'Chat_private'){
-        result =  await SELECTLastTableChate(ProjectID, StageID, 80,chate_type);
-      }else {
-        if (Listchat.last_id !== null && lengthChat > 0) {
+      if (chate_type === 'Chat_private' || chate_type === 'Chat_project') {
+        result =
+          lengthChat > 0
+            ? await SELECTLastTableChatDontEmpty(ProjectID, StageID, lengthChat, chate_type)
+            : await SELECTLastTableChate(ProjectID, StageID, 80, chate_type);
+      } else {
+        if (lengthChat > 0) {
           result = Number(StageID)
-            ? await SELECTLastTableChateStageDontEmpty(ProjectID, StageID, Listchat?.last_id)
-            : await SELECTLastTableChateTypeDontEmpty(ProjectID, StageID, Listchat?.last_id);
+            ? await SELECTLastTableChateStageDontEmpty(ProjectID, StageID, lengthChat)
+            : await SELECTLastTableChateTypeDontEmpty(ProjectID, StageID, lengthChat);
         } else {
           result = Number(StageID)
             ? await SELECTLastTableChateStage(ProjectID, StageID, 80)
@@ -451,27 +424,32 @@ const filterTableChat = () => {
   };
 };
 // عملية مشاهدة لرسائل شات
-const ClassChatOprationView = async (data) => {
+const ClassChatOprationView = async (data, chate_type = 'Chat') => {
   return new Promise(async (resolve, reject) => {
     try {
+      const view_type = View_type(chate_type);
       let result;
-      if (Number(data.type)) {
-        result = await SELECTTableViewChateStage(data.chatID);
-      } else {
-        result = await SELECTTableViewChate(data.chatID);
+      if (chate_type !== 'Chat') {
+        result = await SELECTTableViewChate(data.chatID, data.userName, view_type);
+        if (result?.length <= 0) {
+          await insertTableViewsChate([data.chatID, data.userName], view_type);
+        }
       }
-      const view = result?.find(
-        (item) => item.userName === data.userName && item.chatID === data.chatID,
-      );
-      if (!view) {
+      if (Number(data.type)) {
+        result = await SELECTTableViewChate(data.chatID, data.userName, 'ViewsCHATSTAGE');
+      } else {
+        result = await SELECTTableViewChate(data.chatID, data.userName);
+      }
+
+      if (result?.length <= 0) {
         if (Number(data.type)) {
-          await insertTableViewsChateStage([data.chatID, data.userName]);
+          await insertTableViewsChate([data.chatID, data.userName], 'ViewsCHATSTAGE');
         } else {
           await insertTableViewsChate([data.chatID, data.userName]);
-        }
-        result = await verification(data);
-        resolve(result);
+        };
+
       }
+      resolve(true);
     } catch (err) {
       // console.log(err);
     }
@@ -480,11 +458,11 @@ const ClassChatOprationView = async (data) => {
 //  لطلب المشاهدات الناقسة للرسالة
 const ClassViewChat = () => {
   return async (req, res) => {
-    const { type, chatID } = req.query;
+    const { type, chatID, chate_type = 'Chat' } = req.query;
+
     const data = { chatID: chatID, type: type };
 
-    const result = await verification(data);
-
+    const result = await verification(data, chate_type);
     res.send({ success: true, data: result }).status(200);
   };
 };
@@ -510,18 +488,11 @@ const ClassreceiveMessageViews = () => {
       const userName = String(rawUserName ?? '').trim();
       const ProjectID = parsePositiveInt(req.body?.ProjectID);
       const type = sanitizeType(req.body?.type);
-
-      const errors = {};
-      if (!isNonEmpty(userName) || !lenBetween(userName, 2, 100))
-        errors.userName = 'اسم المستخدم غير صالح';
-      if (!Number.isFinite(ProjectID)) errors.ProjectID = 'رقم المشروع غير صالح';
-      if (!isNonEmpty(type)) errors.type = 'نوع القناة/المرحلة غير صالح';
-      if (Object.keys(errors).length) {
-        return res.status(400).json({ error: 'أخطاء في التحقق من المدخلات', details: errors });
-      }
+      const chate_type = req.body?.chate_type;
 
       // ✅ جلب رسائل آخر ID بحسب المشروع والنوع والمستخدم
-      const list = await SELECTLastTableChateID(ProjectID, type, userName);
+      const list = await SELECTLastTableChateID(ProjectID, type, userName, chate_type);
+
       const items = Array.isArray(list) ? list : [];
 
       if (items.length === 0) {
@@ -539,14 +510,13 @@ const ClassreceiveMessageViews = () => {
           const exists = await SELECTTableViewChateUser(chatID, userName, type);
           if (!exists || exists.length === 0) {
             const viewSend = {
-              ProjectID,
               chatID,
               userName,
               Date: toISO(), // وقت UTC ISO
               type,
             };
 
-            await ClassChatOprationView(viewSend);
+            await ClassChatOprationView(viewSend, chate_type);
             updated++;
           }
         } catch (e) {
@@ -563,13 +533,19 @@ const ClassreceiveMessageViews = () => {
   };
 };
 
-const verification = async (data) => {
+const verification = async (data, chate_type = 'Chat') => {
   let result;
   try {
-    if (Number(data.type)) {
-      result = await SELECTTableViewChateStage(data.chatID);
+    const view_type = View_type(chate_type);
+
+    if (view_type !== null) {
+      result = await SELECTTableViewChateStage(data.chatID, view_type);
     } else {
-      result = await SELECTTableViewChate(data.chatID);
+      if (Number(data.type)) {
+        result = await SELECTTableViewChateStage(data.chatID);
+      } else {
+        result = await SELECTTableViewChateStage(data.chatID, 'Views');
+      }
     }
 
     return result;
@@ -639,58 +615,92 @@ const insertdatafile = () => {
     try {
       const { chate_type = 'Chat' } = req.query;
 
+      let result = req.body ?? {};
       let chat = chate_type === 'Chat';
       const conversationId = chat
         ? `${result.ProjectID}:${result?.StageID}`
-        : req.body?.conversationId;
-      let result = req.body ?? {};
+        : result?.conversationId;
 
+      console.log('conversationId:', chate_type);
       if (chat) {
         result = await OpreactionSend_message(req.body);
         io.to(conversationId).timeout(50).emit('received_message', result);
       } else {
-        const messageId = await redis.incr('chat:global:id');
-
-        result = {
-          chatID: messageId,
-          conversationId: result.conversationId,
-          companyId: result.companyId,
-          idSendr: result.idSendr,
-          Sender: result.Sender,
-          message: result.message,
-          timeminet: moment().toISOString(),
-          File: result.File,
-          Reply: result.Reply,
-          arrived: true,
-          kind: 'new',
-        };
+        result = await OpreactionSend_message(req.body, chate_type);
         const nap = io.of(`/${chate_type}`);
-
-        console.log(conversationId, messageId);
         nap.to(`dm:${conversationId}`).timeout(50).emit('received_message', result);
       }
 
       res.send({ chatID: result?.chatID }).status(200);
     } catch (err) {
       res.send({ success: 'فشل تنفيذ المهمة' }).status(401);
-
-      // console.log(err.message);
     }
   };
 };
 
+const Bring_chat_room =  () => {
+  return async (req, res) => {
+
+  try {
+    const { lastChatId = 0 } = req.query;
+    const userSession = req.session.user;
+
+    if (!userSession) {
+      res.status(401).send('Invalid session');
+      console.log('Invalid session');
+    }
+
+    const result = await getChatRooms(userSession.userID, lastChatId);
+    res.send(result).status(200);
+  } catch (err) {
+    res.send({ success: 'فشل تنفيذ المهمة' }).status(401);
+  }
+}
+};
+
+
+const Bring_All_ChatRooms =  () => {
+  return async (req, res) => {
+  try {
+    const {  chatID = 0 } = req.query;
+  
+  const userSession = req.session.user;
+
+  if (!userSession) {
+    res.status(401).send('Invalid session');
+    console.log('Invalid session');
+  };
+  if(userSession.job !== 'Admin'){
+    res.status(403).send('Forbidden: Access is denied');
+    console.log('Forbidden: Access is denied');
+  };
+  try {
+    const result = await get_ALL_ChatRooms(userSession.IDCompany, chatID);
+    res.send(result).status(200);
+
+  } catch (err) {
+    console.log('Error fetching chat rooms:', err);
+    res.status(500).send({ success: 'Failed to fetch chat rooms' });  
+  }
+}catch  (err) {
+  console.log('Error in Bring_All_ChatRooms:', err);
+  res.status(500).send({ success: 'Failed to fetch chat rooms' });      
+}
+}
+};
+  
 module.exports = {
-  ClassChatOpration,
   ClassChatOprationView,
   ClassChackTableChat,
   ClassViewChat,
   ClassreceiveMessageViews,
   PostFilemassage,
-  Chackarrivedmassage,
   OpreactionSend_message,
   initializeUpload,
   insertdatafile,
   generateResumableUrl,
   filterTableChat,
   sendNote,
+  Bring_chat_room,
+  Bring_All_ChatRooms
 };

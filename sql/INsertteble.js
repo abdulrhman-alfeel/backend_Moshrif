@@ -704,8 +704,7 @@ const insertTableChateStage = (data) => {
 };
 const insertTableChat_private = (data) => {
   return new Promise((resolve,reject)=>{
-    console.log(  `INSERT INTO Chat_private (conversationId,companyId,idSendr, Sender,message,timeminet,File,Reply) VALUES (?,?,?,?,?,?,?,?)`,
-        data,)
+
     db.serialize(function () {
       db.run(
         `INSERT INTO Chat_private (conversationId,companyId,idSendr, Sender,message,timeminet,File,Reply) VALUES (?,?,?,?,?,?,?,?)`,
@@ -721,10 +720,28 @@ const insertTableChat_private = (data) => {
     });
   })
 };
-const insertTableViewsChateStage = (data) => {
+const insertTableChat_project = (data) => {
+  return new Promise((resolve,reject)=>{
+
+    db.serialize(function () {
+      db.run(
+        `INSERT INTO Chat_project (conversationId,ProjectID,idSendr, Sender,message,timeminet,File,Reply) VALUES (?,?,?,?,?,?,?,?)`,
+        data,
+        function (err) {
+          if (err) {
+            console.error(err);
+          }
+          resolve(this.lastID)
+          
+        }
+      );
+    });
+  })
+};
+const insertTableViewsChateStage = (data,type='ViewsCHATSTAGE') => {
   db.serialize(function () {
     db.run(
-      `INSERT INTO ViewsCHATSTAGE (chatID, userName) VALUES (?,?)`,
+      `INSERT INTO ${type} (chatID, userName) VALUES (?,?)`,
       data,
       function (err) {
         if (err) {
@@ -754,10 +771,11 @@ const insertTableChate = (data) => {
   })
 };
 
-const insertTableViewsChate = (data) => {
+const insertTableViewsChate = (data,type='Views') => {
+  
   db.serialize(function () {
     db.run(
-      `INSERT INTO Views (chatID, userName) VALUES (?,?)`,
+      `INSERT INTO ${type} (chatID, userName) VALUES (?,?)`,
       data,
       function (err) {
         if (err) {
@@ -768,6 +786,7 @@ const insertTableViewsChate = (data) => {
     );
   });
 };
+
 const insertTableNavigation = (data) => {
   db.serialize(function () {
     db.run(
@@ -1075,5 +1094,6 @@ module.exports = {
   insert_table_project_subscription,
 
 
-  insertTableChat_private
+  insertTableChat_private,
+  insertTableChat_project
 };

@@ -4,11 +4,12 @@ const {
   ClassViewChat,
   ClassreceiveMessageViews,
   PostFilemassage,
-  Chackarrivedmassage,
   initializeUpload,
   insertdatafile,
   generateResumableUrl,
   filterTableChat,
+  Bring_chat_room,
+  Bring_All_ChatRooms,
 } = require("../src/modules/chat/ChatJobsClass");
 const { verifyJWT } = require("../middleware/jwt");
 const { BringDataprojectAndStages } = require("../src/modules/chat/ChatJobs");
@@ -27,10 +28,11 @@ const chatroute = ({ uploadQueue }) => {
   router.route("/filterTableChat").get(filterTableChat(uploadQueue));
   router.route("/Viewed").post(ClassreceiveMessageViews(uploadQueue));
   router.route("/BringDataprojectAndStages").get(BringDataprojectAndStages(uploadQueue));
-  router.route("/Chackarrivedmassage").get(Chackarrivedmassage(uploadQueue));
   router.route("/initializeUpload").get(initializeUpload(uploadQueue));
   router.route("/insertdatafile").post(insertdatafile(uploadQueue));
   router.route("/generate-resumable-url").post(generateResumableUrl(uploadQueue));
+  router.route("/Bring_chat_room").get(Bring_chat_room(uploadQueue));
+  router.route("/Bring_All_ChatRooms").get(Bring_All_ChatRooms(uploadQueue));
   return router;
 };
 
