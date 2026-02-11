@@ -1,48 +1,38 @@
-const { roomKey } = require("../../middleware/Aid");
-const db = require("../sqlite");
+const { roomKey } = require('../../middleware/Aid');
+const db = require('../sqlite');
 // الشركة
 
-const SELECTTablecompany = (id, type = "*") => {
+const SELECTTablecompany = (id, type = '*') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT ${type} FROM company WHERE id=?`,
-        [id],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT ${type} FROM company WHERE id=?`, [id], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
-const SELECTTablecompanyall = (type = "*") => {
+const SELECTTablecompanyall = (type = '*') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.all(
-        `SELECT ${type} FROM company WHERE  Suptype!='مجاني' `,
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.all(`SELECT ${type} FROM company WHERE  Suptype!='مجاني' `, function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
-const SELECTTablecompanyRegistrationall = (
-  type = "companyRegistration",
-  count = 0
-) => {
+const SELECTTablecompanyRegistrationall = (type = 'companyRegistration', count = 0) => {
   return new Promise((resolve, reject) => {
-    let Plus = parseInt(count) === 0 ? ">" : "<";
+    let Plus = parseInt(count) === 0 ? '>' : '<';
     db.serialize(function () {
       db.all(
         `SELECT * FROM ${type} WHERE  id ${Plus} ?  ORDER BY id DESC LIMIT 10`,
@@ -54,44 +44,36 @@ const SELECTTablecompanyRegistrationall = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SELECTTablecompanyRegistration = (id, type = "*") => {
+const SELECTTablecompanyRegistration = (id, type = '*') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT ${type} FROM companyRegistration WHERE id=?`,
-        [id],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT ${type} FROM companyRegistration WHERE id=?`, [id], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
-const SELECTTablecompanyApi = (id, type = "*") => {
+const SELECTTablecompanyApi = (id, type = '*') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT ${type} FROM company WHERE Api=?`,
-        [id],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT ${type} FROM company WHERE Api=?`, [id], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
@@ -109,15 +91,12 @@ const SELECTTablecompanyName = (id) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SelectVerifycompanyexistence = (
-  CommercialRegistrationNumber,
-  type = "company"
-) => {
+const SelectVerifycompanyexistence = (CommercialRegistrationNumber, type = 'company') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
@@ -130,7 +109,7 @@ const SelectVerifycompanyexistence = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -148,7 +127,7 @@ const SelectVerifycompanyexistencePhonenumber = (PhoneNumber) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -158,19 +137,15 @@ const SelectVerifycompanyexistencePhonenumber = (PhoneNumber) => {
 const SELECTTablecompanySubCount = (id) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.all(
-        `SELECT COUNT(*) FROM companySub WHERE NumberCompany=?`,
-        [id],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
-          // console.log(result, "selecttable");
+      db.all(`SELECT COUNT(*) FROM companySub WHERE NumberCompany=?`, [id], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+        // console.log(result, "selecttable");
+      });
     });
   });
 };
@@ -226,17 +201,13 @@ ORDER BY RE.id;
             resolve(result);
           }
           // console.log(result, "selecttable");
-        }
+        },
       );
     });
   });
 };
 
-const SELECTTablecompanySub = (
-  id,
-  type = "*",
-  where = `NumberCompany=${id}`
-) => {
+const SELECTTablecompanySub = (id, type = '*', where = `NumberCompany=${id}`) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
@@ -250,7 +221,7 @@ const SELECTTablecompanySub = (
             resolve(result);
           }
           // console.log(result, "selecttable");
-        }
+        },
       );
     });
   });
@@ -269,7 +240,7 @@ const SELECTTablecompanySubID = (NameSub, NumberCompany) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -280,18 +251,14 @@ const SELECTTablecompanySubID = (NameSub, NumberCompany) => {
 const SELECTTableUsernameBrinsh = (id) => {
   return new Promise((resolve, reject) => {
     db.serialize(async () => {
-      db.get(
-        `SELECT NameSub FROM companySub WHERE id=?`,
-        [id],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT NameSub FROM companySub WHERE id=?`, [id], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
@@ -299,36 +266,28 @@ const SELECTTableUsernameBrinsh = (id) => {
 const SELECTTablecompanySubAnotherway = (id) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT * FROM companySub WHERE id=?`,
-        [id],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT * FROM companySub WHERE id=?`, [id], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
 const SELECTTablecompanySubLinkevaluation = (id) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT * FROM Linkevaluation WHERE IDcompanySub=?`,
-        [id],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            console.log(err.message);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT * FROM Linkevaluation WHERE IDcompanySub=?`, [id], function (err, result) {
+        if (err) {
+          reject(err);
+          console.log(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
@@ -348,7 +307,7 @@ const SELECTTusersProjectProjectall = (PhoneNumber) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
-        "SELECT ProjectID FROM usersProject ut LEFT JOIN usersCompany uy ON uy.id = ut.user_id  WHERE trim(uy.PhoneNumber)=trim(?)",
+        'SELECT ProjectID FROM usersProject ut LEFT JOIN usersCompany uy ON uy.id = ut.user_id  WHERE trim(uy.PhoneNumber)=trim(?)',
         [PhoneNumber],
         function (err, result) {
           if (err) {
@@ -357,7 +316,7 @@ const SELECTTusersProjectProjectall = (PhoneNumber) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -368,7 +327,7 @@ const SELECTTABLEcompanyProjectall = (id) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
-        "SELECT id FROM companySubprojects WHERE IDcompanySub=?",
+        'SELECT id FROM companySubprojects WHERE IDcompanySub=?',
         [id],
         function (err, result) {
           if (err) {
@@ -377,44 +336,45 @@ const SELECTTABLEcompanyProjectall = (id) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 
+// CASE
+//   WHEN uC.job = 'Admin' THEN 'Admin'
+//   WHEN EXISTS (
+//     SELECT 1
+//     FROM usersBransh bX
+//     WHERE bX.user_id = uC.id
+//       AND bX.idBransh = cS.IDcompanySub
+//       AND bX.job = 'مدير الفرع'
+//   ) THEN 'مدير الفرع'
+//   ELSE (
+//     SELECT MAX(bY.job)
+//     FROM usersBransh bY
+//     WHERE bY.user_id = uC.id
+//       AND bY.idBransh = cS.IDcompanySub
+//   )
+// END AS job,
+
 const selecttablecompanySubProjectall = (
   id,
   IDfinlty,
   PhoneNumber,
-  Disabled = "true",
-  Limit = "LIMIT 7",
-  kind = "all"
+  Disabled = 'true',
+  Limit = 'LIMIT 7',
+  kind = 'all',
 ) => {
   return new Promise((resolve, reject) => {
-    let plase = parseInt(IDfinlty) === 0 ? ">" : "<";
+    let plase = parseInt(IDfinlty) === 0 ? '>' : '<';
 
     db.serialize(function () {
       db.all(
-        kind === "all"
+        kind === 'all'
           ? `
 SELECT
-  CASE
-    WHEN uC.job = 'Admin' THEN 'Admin'
-    WHEN EXISTS (
-      SELECT 1
-      FROM usersBransh bX
-      WHERE bX.user_id = uC.id
-        AND bX.idBransh = cS.IDcompanySub
-        AND bX.job = 'مدير الفرع'
-    ) THEN 'مدير الفرع'
-    ELSE (
-      SELECT MAX(bY.job)
-      FROM usersBransh bY
-      WHERE bY.user_id = uC.id
-        AND bY.idBransh = cS.IDcompanySub
-    )
-  END AS job,
   cS.id,
   cS.IDcompanySub,
   cS.Nameproject,
@@ -502,37 +462,59 @@ ${Limit}
         WHERE trim(uC.PhoneNumber) =trim(${PhoneNumber})  AND (cS.id) ${plase} ${IDfinlty}   AND (cS.Disabled) =${Disabled}  ORDER BY cS.id ASC  ${Limit}`,
 
         function (err, result) {
-
-          if(result.length > 0) return resolve(result);
-
+          if (result.length > 0) return resolve(result);
 
           if (err) {
             reject(err);
             // console.log(err.message);
           } else {
-            resolve([{job:'مدير فرع'}]);
+            resolve([{ job: 'مدير فرع' }]);
           }
-        }
+        },
       );
     });
   });
 };
 
+const getBranchRole = (phoneNumber, branchId) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+      SELECT 
+        CASE 
+          WHEN uC.job = 'Admin' THEN 'Admin'
+          ELSE uB.job 
+        END as job
+      FROM usersCompany uC
+      LEFT JOIN usersBransh uB ON uB.user_id = uC.id AND uB.idBransh = ?
+      WHERE REPLACE(TRIM(uC.PhoneNumber), ' ', '') = TRIM(?)
+      LIMIT 1;
+    `;
 
+    if (!phoneNumber || !branchId) {
+      console.log('Missing params for role query');
+      resolve(null);
+      return;
+    }
 
-const SELECTTablecompanySubProject = (
-  id,
-  kind = "all",
-  Disabled = "true",
-  type = ""
-) => {
+    db.get(query, [branchId, phoneNumber], (err, row) => {
+      if (err) {
+        console.error('SQL Error in getBranchRole:', err);
+        resolve(null);
+      } else {
+        resolve(row ? row.job : null);
+      }
+    });
+  });
+};
+
+const SELECTTablecompanySubProject = (id, kind = 'all', Disabled = 'true', type = '') => {
   return new Promise((resolve, reject) => {
     let stringSql =
-      kind === "difference"
+      kind === 'difference'
         ? `SELECT Contractsigningdate,ProjectStartdate,Nameproject,IDcompanySub,TypeOFContract FROM companySubprojects WHERE id=? AND Disabled =?`
-        : kind === "forchat"
-        ? `SELECT ca.id AS ProjectID,ca.Nameproject FROM companySubprojects ca  LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub  WHERE  ca.IDcompanySub=? AND ca.Disabled=? ${type} `
-        : `SELECT COUNT(*) FROM companySubprojects WHERE IDcompanySub=? AND Disabled =?`;
+        : kind === 'forchat'
+          ? `SELECT ca.id AS ProjectID,ca.Nameproject FROM companySubprojects ca  LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub  WHERE  ca.IDcompanySub=? AND ca.Disabled=? ${type} `
+          : `SELECT COUNT(*) FROM companySubprojects WHERE IDcompanySub=? AND Disabled =?`;
 
     let data = [id, Disabled];
     db.serialize(function () {
@@ -548,20 +530,16 @@ const SELECTTablecompanySubProject = (
   });
 };
 
-const SELECTTablecompanySubProjectLast_id = (
-  id,
-  kind = "all",
-  type = "RE.id"
-) => {
+const SELECTTablecompanySubProjectLast_id = (id, kind = 'all', type = 'RE.id') => {
   return new Promise((resolve, reject) => {
     let stringSql =
-      kind === "all"
+      kind === 'all'
         ? `SELECT MAX(id) AS last_id,numberBuilding FROM companySubprojects WHERE  Disabled ='true' AND IDcompanySub=?`
-        : kind === "max"
-        ? `SELECT MAX(ca.id) AS last_id, ca.id,ca.IDcompanySub,ca.Nameproject,ca.Note,ca.TypeOFContract,ca.GuardNumber,ca.LocationProject,ca.ProjectStartdate,ca.Contractsigningdate,ca.Disabled,EX.Cost AS ConstCompany, Li.urlLink AS Linkevaluation,RE.NumberCompany FROM companySubprojects ca LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub LEFT JOIN Linkevaluation Li ON Li.IDcompanySub =RE.id LEFT JOIN company EX ON EX.id = RE.NumberCompany  WHERE Disabled ='true' AND ${type}=?`
-        : kind === "forchat"
-        ? `SELECT ca.id AS ProjectID,ca.Nameproject FROM companySubprojects ca WHERE ca.Disabled="true" AND ca.id=?`
-        : `SELECT ca.id,ca.IDcompanySub,ca.Nameproject,ca.Note,ca.TypeOFContract,ca.GuardNumber,ca.LocationProject,ca.ProjectStartdate,ca.numberBuilding,ca.Contractsigningdate,ca.Disabled,EX.Cost AS ConstCompany, Li.urlLink AS Linkevaluation ,ca.Referencenumber,ca.Cost_per_Square_Meter,
+        : kind === 'max'
+          ? `SELECT MAX(ca.id) AS last_id, ca.id,ca.IDcompanySub,ca.Nameproject,ca.Note,ca.TypeOFContract,ca.GuardNumber,ca.LocationProject,ca.ProjectStartdate,ca.Contractsigningdate,ca.Disabled,EX.Cost AS ConstCompany, Li.urlLink AS Linkevaluation,RE.NumberCompany FROM companySubprojects ca LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub LEFT JOIN Linkevaluation Li ON Li.IDcompanySub =RE.id LEFT JOIN company EX ON EX.id = RE.NumberCompany  WHERE Disabled ='true' AND ${type}=?`
+          : kind === 'forchat'
+            ? `SELECT ca.id AS ProjectID,ca.Nameproject FROM companySubprojects ca WHERE ca.Disabled="true" AND ca.id=?`
+            : `SELECT ca.id,ca.IDcompanySub,ca.Nameproject,ca.Note,ca.TypeOFContract,ca.GuardNumber,ca.LocationProject,ca.ProjectStartdate,ca.numberBuilding,ca.Contractsigningdate,ca.Disabled,EX.Cost AS ConstCompany, Li.urlLink AS Linkevaluation ,ca.Referencenumber,ca.Cost_per_Square_Meter,
         ca.Project_Space FROM companySubprojects ca LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub LEFT JOIN Linkevaluation Li ON Li.IDcompanySub =RE.id LEFT JOIN  company EX ON EX.id = RE.NumberCompany  WHERE Disabled ='true' AND ca.id=?`;
     db.serialize(function () {
       db.get(stringSql, [id], function (err, result) {
@@ -589,18 +567,13 @@ const SELECTTablecompanySubProjectindividual = (id, IDcompanySub) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 // فلتر المشاريع
-const SELECTTablecompanySubProjectFilter = (
-  search,
-  IDcompanySub,
-  PhoneNumber,
-  type = "app"
-) => {
+const SELECTTablecompanySubProjectFilter = (search, IDcompanySub, PhoneNumber, type = 'app') => {
   return new Promise((resolve, reject) => {
     let stringSql =
       `SELECT 
@@ -654,7 +627,7 @@ const SELECTTablecompanySubProjectFilter = (
       LEFT JOIN companySub RE ON RE.id = cS.IDcompanySub
       LEFT JOIN company EX ON EX.id = RE.NumberCompany
       ` +
-      (type === "app"
+      (type === 'app'
         ? ` WHERE REPLACE(TRIM(uC.PhoneNumber), ' ', '') = TRIM(${PhoneNumber}) AND cS.Disabled = 'true' AND cS.IDcompanySub=${IDcompanySub} AND (cS.Nameproject LIKE '%${search}%' OR cS.numberBuilding LIKE '%${search}%') ORDER BY cS.id ASC`
         : ` WHERE cS.Disabled = 'true' AND cS.IDcompanySub=${IDcompanySub} AND (cS.Nameproject LIKE '%${search}%' OR cS.numberBuilding LIKE '%${search}%') ORDER BY cS.id ASC`);
     db.serialize(function () {
@@ -670,13 +643,13 @@ const SELECTTablecompanySubProjectFilter = (
   });
 };
 // طلب تاريخ المشروع
-const SELECTProjectStartdate = (id, kind = "all", type = "id") => {
+const SELECTProjectStartdate = (id, kind = 'all', type = 'id') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
-        kind === "all"
+        kind === 'all'
           ? `SELECT pr.ProjectStartdate,pr.Contractsigningdate,pr.Nameproject,pr.numberBuilding,pr.id,pr.IDcompanySub, RE.NumberCompany,pr.TypeOFContract FROM companySubprojects pr LEFT JOIN companySub RE ON RE.id = pr.IDcompanySub  WHERE pr.${type}=? `
-          : "SELECT ca.id,EX.Cost AS ConstCompany FROM companySubprojects ca LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub LEFT JOIN company EX ON EX.id = RE.NumberCompany  WHERE ca.id=?",
+          : 'SELECT ca.id,EX.Cost AS ConstCompany FROM companySubprojects ca LEFT JOIN companySub RE ON RE.id = ca.IDcompanySub LEFT JOIN company EX ON EX.id = RE.NumberCompany  WHERE ca.id=?',
         [id],
         function (err, result) {
           if (err) {
@@ -685,7 +658,7 @@ const SELECTProjectStartdate = (id, kind = "all", type = "id") => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -704,7 +677,7 @@ const SELECTProjectStartdateapis = (id, idSub) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -727,58 +700,49 @@ const SELECTProjectid = () => {
 const SELECTStageid = () => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.all(
-        `SELECT ProjectID, StageID FROM StagesCUST  `,
-        function (err, result) {
-          if (err) {
-            // console.error(err.message);
-            // reject(err);
-            resolve(false);
-          } else {
-            resolve(result);
-          }
+      db.all(`SELECT ProjectID, StageID FROM StagesCUST  `, function (err, result) {
+        if (err) {
+          // console.error(err.message);
+          // reject(err);
+          resolve(false);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
 const SELECTStageallid = (id) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.all(
-        `SELECT StageCustID FROM StagesCUST  WHERE ProjectID =${id}`,
-        function (err, result) {
-          if (err) {
-            // console.error(err.message);
-            // reject(err);
-            resolve(false);
-          } else {
-            resolve(result);
-          }
+      db.all(`SELECT StageCustID FROM StagesCUST  WHERE ProjectID =${id}`, function (err, result) {
+        if (err) {
+          // console.error(err.message);
+          // reject(err);
+          resolve(false);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
 const SELECTStageSubid = (
-  type = "StagesCUST",
-  data = "ProjectID, StageID",
-  WHERE = "StageID=?"
+  type = 'StagesCUST',
+  data = 'ProjectID, StageID',
+  WHERE = 'StageID=?',
 ) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT ${data} FROM ${type} WHERE  ${WHERE} `,
-        function (err, result) {
-          if (err) {
-            // console.error(err.message);
-            // reject(err);
-            resolve(false);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT ${data} FROM ${type} WHERE  ${WHERE} `, function (err, result) {
+        if (err) {
+          // console.error(err.message);
+          // reject(err);
+          resolve(false);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
@@ -820,7 +784,7 @@ const SELECTSUMAmountandBring = (id) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -853,7 +817,7 @@ const SELECTdataprojectandbrinshandcompany = (id) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -871,7 +835,7 @@ const SELECTIDcompanyANDpreoject = (id) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -889,7 +853,7 @@ const selectprojectdatabycompany = (id) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -909,12 +873,12 @@ const SELECTFROMTableStageTempletall = (Type, number = 0) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SELECTFROMTableStageTempletaObject = (number, IDCompany, add = "") => {
+const SELECTFROMTableStageTempletaObject = (number, IDCompany, add = '') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
@@ -925,7 +889,7 @@ const SELECTFROMTableStageTempletaObject = (number, IDCompany, add = "") => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -941,17 +905,13 @@ const SELECTFROMTableStageTempletadays = (StageID, type, IDCompany) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 // SELECT * FROM StagesSubTemplet WHERE StageID=A1  AND Stagestype_id=92  AND  StageSubID  > 0 ORDER BY StageSubID ASC liMIT 10
-const SELECTFROMTableSubStageTempletall = (
-  StageID,
-  Stagestype_id,
-  number = 0
-) => {
+const SELECTFROMTableSubStageTempletall = (StageID, Stagestype_id, number = 0) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
@@ -962,7 +922,7 @@ const SELECTFROMTableSubStageTempletall = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -972,7 +932,7 @@ const SELECTFROMTableStageTempletmax = (type, IDCompany) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       let arrays =
-        type === "عام"
+        type === 'عام'
           ? `SELECT max(StageIDtemplet) AS StageIDtemplet , StageID
         FROM StagesTemplet WHERE  IDCompany=${IDCompany}  AND StageID !='A1'`
           : `SELECT max(StageIDtemplet) , StageID,
@@ -1018,7 +978,7 @@ WHERE TRIM(Type) = TRIM("${Type}")
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -1035,7 +995,7 @@ const selectStagestypeforProject = (IDCompany) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -1043,27 +1003,20 @@ const selectStagestypeforProject = (IDCompany) => {
 const selectStagestypeTemplet = (IDCompany) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.all(
-        `SELECT * FROM Stagestype WHERE IDCompany = ${IDCompany} `,
-        function (err, result) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result);
-          }
+      db.all(`SELECT * FROM Stagestype WHERE IDCompany = ${IDCompany} `, function (err, result) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
 
 // المراحل الفرعية
 
-const SELECTFROMTablecompanysubprojectStagesubTeplet = (
-  StageID,
-  Stagestype_id,
-  IDCompany
-) => {
+const SELECTFROMTablecompanysubprojectStagesubTeplet = (StageID, Stagestype_id, IDCompany) => {
   // console.log(StageID, "helll stageID");
   return new Promise((resolve, reject) => {
     const sql = `
@@ -1083,20 +1036,12 @@ const SELECTFROMTablecompanysubprojectStagesubTeplet = (
     );
 `;
 
-    const params = [
-      StageID,
-      Stagestype_id,
-      IDCompany,
-      StageID,
-      Stagestype_id,
-      StageID,
-      IDCompany,
-    ];
+    const params = [StageID, Stagestype_id, IDCompany, StageID, Stagestype_id, StageID, IDCompany];
 
     db.serialize(function () {
       db.all(sql, params, function (err, result) {
         if (err) {
-          console.log(err, "err");
+          console.log(err, 'err');
           reject(err);
         } else {
           resolve(result);
@@ -1123,18 +1068,14 @@ const SELECTTableStageCUST_IMAGE = (ProjectID, StageID, count = 0) => {
     });
   });
 };
-const SELECTTablecompanySubProjectStageCUST = (
-  id,
-  kind = "all",
-  type = "*"
-) => {
+const SELECTTablecompanySubProjectStageCUST = (id, kind = 'all', type = '*') => {
   let stringSql =
-    kind === "all"
+    kind === 'all'
       ? `SELECT ${type} FROM StagesCUST cu LEFT JOIN companySubprojects pr ON pr.id = cu.ProjectID  WHERE cu.ProjectID=?`
-      : kind === "CountDate"
-      ? `SELECT EndDate , StartDate FROM StagesCUST WHERE ProjectID=?`
-      : `SELECT * FROM StagesCUST WHERE ProjectID=? AND trim(StageName)=trim(?)`;
-  let data = kind === "all" ? [id] : kind === "CountDate" ? [id] : [id, kind];
+      : kind === 'CountDate'
+        ? `SELECT EndDate , StartDate FROM StagesCUST WHERE ProjectID=?`
+        : `SELECT * FROM StagesCUST WHERE ProjectID=? AND trim(StageName)=trim(?)`;
+  let data = kind === 'all' ? [id] : kind === 'CountDate' ? [id] : [id, kind];
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(stringSql, data, function (err, result) {
@@ -1148,9 +1089,8 @@ const SELECTTablecompanySubProjectStageCUST = (
     });
   });
 };
-const SELECTTablecompanySubProjectStageCUSTv2 = (id, kind = "") => {
-  
-let stringSql = `
+const SELECTTablecompanySubProjectStageCUSTv2 = (id, kind = '') => {
+  let stringSql = `
 SELECT
   cu.StageCustID,
   cu.StageID,
@@ -1301,24 +1241,19 @@ ${kind || ''}
 // ;
 // `
 // جلب كائن واحد من المراحل
-const SELECTTablecompanySubProjectStageCUSTONe = (
-  ProjectID,
-  StageID,
-  kind = "all",
-  type = ""
-) => {
+const SELECTTablecompanySubProjectStageCUSTONe = (ProjectID, StageID, kind = 'all', type = '') => {
   const stringSql =
-    kind === "all"
+    kind === 'all'
       ? `SELECT cu.rate,pr.cost,cu.StageName, pr.Nameproject,pr.Contractsigningdate,pr.ProjectStartdate,pr.IDcompanySub, cu.StageID
       ,cu.ProjectID,cu.Type,cu.StageName,cu.Days,cu.StartDate,cu.EndDate,cu.CloseDate,cu.OrderBy,cu.Done,cu.OpenBy,cu.NoteOpen,cu.ClosedBy,cu.NoteClosed,
       RE.NumberCompany,cu.Ratio,cu.attached ${type} FROM StagesCUST cu LEFT JOIN companySubprojects pr ON pr.id = cu.ProjectID LEFT JOIN companySub RE ON RE.id = pr.IDcompanySub WHERE  cu.ProjectID=? AND cu.StageID=? `
-      : kind === "notifcation"
-      ? `SELECT max(cu.StageID) AS StageID,pr.Nameproject,pr.IDcompanySub, cu.ProjectID,
+      : kind === 'notifcation'
+        ? `SELECT max(cu.StageID) AS StageID,pr.Nameproject,pr.IDcompanySub, cu.ProjectID,
       cu.Type,cu.StageName,cu.Days,cu.StartDate,cu.EndDate,cu.CloseDate,cu.OrderBy,cu.Done,cu.OpenBy,cu.NoteOpen,cu.ClosedBy,cu.NoteClosed ,
       RE.NumberCompany FROM StagesCUST cu LEFT JOIN companySubprojects pr ON pr.id = cu.ProjectID LEFT JOIN companySub RE ON RE.id = pr.IDcompanySub WHERE cu.StageID != 'A1' AND ${type} `
-      : `SELECT Done,Days FROM StagesCUST WHERE ProjectID=? AND Done = "true"`;
+        : `SELECT Done,Days FROM StagesCUST WHERE ProjectID=? AND Done = "true"`;
   const data =
-    kind === "all" || type === "cu.projectID=? AND cu.StageID=?"
+    kind === 'all' || type === 'cu.projectID=? AND cu.StageID=?'
       ? [ProjectID, StageID]
       : [ProjectID];
   return new Promise((resolve, reject) => {
@@ -1347,7 +1282,7 @@ const SELECTTableStagesCUST_Image = (ProjectID, StageID) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -1367,19 +1302,19 @@ const SELECTTableStageStageSub = (ProjectID, StageID) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 
 // جلب اجمالي عدد المراحل الرئيسية المغلقة والمفتوحة
-const SELECTTablecompanySubProjectStageCUSTCount = (id, kind = "all") => {
+const SELECTTablecompanySubProjectStageCUSTCount = (id, kind = 'all') => {
   let stringSql =
-    kind === "all"
+    kind === 'all'
       ? `SELECT COUNT(Type) FROM StagesCUST WHERE ProjectID=?`
       : `SELECT COUNT(Type) FROM StagesCUST WHERE ProjectID=? AND trim(Done)=trim(?)`;
-  let data = kind === "all" ? [id] : [id, kind];
+  let data = kind === 'all' ? [id] : [id, kind];
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(stringSql, data, function (err, result) {
@@ -1394,17 +1329,12 @@ const SELECTTablecompanySubProjectStageCUSTCount = (id, kind = "all") => {
   });
 };
 // جلب اجمالي عدد المراحل الفرعية المغلقة والمفتوحة
-const SELECTTablecompanySubProjectStageCUSTSubCount = (
-  StagHOMID,
-  ProjectID,
-  kind = "all"
-) => {
+const SELECTTablecompanySubProjectStageCUSTSubCount = (StagHOMID, ProjectID, kind = 'all') => {
   let stringSql =
-    kind === "all"
+    kind === 'all'
       ? `SELECT COUNT(StageSubName) FROM StagesSub WHERE StagHOMID=? AND ProjectID=?`
       : `SELECT COUNT(StageSubName) FROM StagesSub WHERE StagHOMID=? AND ProjectID=? AND trim(Done)=trim(?)`;
-  let data =
-    kind === "all" ? [StagHOMID, ProjectID] : [StagHOMID, ProjectID, kind];
+  let data = kind === 'all' ? [StagHOMID, ProjectID] : [StagHOMID, ProjectID, kind];
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(stringSql, data, function (err, result) {
@@ -1420,14 +1350,14 @@ const SELECTTablecompanySubProjectStageCUSTSubCount = (
 };
 
 // جمع المراحل الفرعية للمشروع ككل
-const SELECTTablecompanybrinshStagesSubAll = (ProjectID, kind = "all") => {
+const SELECTTablecompanybrinshStagesSubAll = (ProjectID, kind = 'all') => {
   // console.log(ProjectID, kind)
   return new Promise((resolve, reject) => {
     let stringSql =
-      kind === "all"
+      kind === 'all'
         ? `SELECT COUNT(StageSubName) FROM StagesSub WHERE ProjectID=?`
         : `SELECT COUNT(StageSubName) FROM StagesSub WHERE  ProjectID=? AND Done = ?`;
-    let data = kind === "all" ? [ProjectID] : [ProjectID, kind];
+    let data = kind === 'all' ? [ProjectID] : [ProjectID, kind];
     db.serialize(function () {
       db.get(stringSql, data, function (err, result) {
         if (err) {
@@ -1443,25 +1373,24 @@ const SELECTTablecompanybrinshStagesSubAll = (ProjectID, kind = "all") => {
 };
 
 // جلب مراحل المشروع حسب تاريخ النهاية والترتيب ومعرف اخر مرحلة في نفس المشروع
-const SELECTTablecompanySubProjectStageCUSTAccordingEndDateandStageIDandStartDate =
-  (id) => {
-    return new Promise((resolve, reject) => {
-      db.serialize(function () {
-        db.get(
-          `SELECT MAX(StageID) AS StageID ,MAX(OrderBy) AS OrderBy,EndDate, (SELECT SUM(Ratio) FROM StagesCUST WHERE ProjectID=? ) AS TotalRatio  FROM StagesCUST WHERE ProjectID=? AND  StageID != "A1" `,
-          [id, id],
-          function (err, result) {
-            if (err) {
-              reject(err);
-              // console.error(err.message);
-            } else {
-              resolve(result);
-            }
+const SELECTTablecompanySubProjectStageCUSTAccordingEndDateandStageIDandStartDate = (id) => {
+  return new Promise((resolve, reject) => {
+    db.serialize(function () {
+      db.get(
+        `SELECT MAX(StageID) AS StageID ,MAX(OrderBy) AS OrderBy,EndDate, (SELECT SUM(Ratio) FROM StagesCUST WHERE ProjectID=? ) AS TotalRatio  FROM StagesCUST WHERE ProjectID=? AND  StageID != "A1" `,
+        [id, id],
+        function (err, result) {
+          if (err) {
+            reject(err);
+            // console.error(err.message);
+          } else {
+            resolve(result);
           }
-        );
-      });
+        },
+      );
     });
-  };
+  });
+};
 //  ملاحظات مراحل المشروع
 const SELECTTablecompanySubProjectStageNotes = (ProjectID, StageID) => {
   return new Promise((resolve, reject) => {
@@ -1477,7 +1406,7 @@ const SELECTTablecompanySubProjectStageNotes = (ProjectID, StageID) => {
             // console.log(result);
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -1495,14 +1424,14 @@ const SELECTTableStageNotesAllproject = (ProjectID) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 const SELECTTablecompanySubProjectStageNotesOneObject = (
   data,
-  type = "sn.StagHOMID=? AND sn.ProjectID=?"
+  type = 'sn.StagHOMID=? AND sn.ProjectID=?',
 ) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
@@ -1517,7 +1446,7 @@ const SELECTTablecompanySubProjectStageNotesOneObject = (
             // console.log(result);
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -1527,31 +1456,29 @@ const SELECTTablecompanySubProjectStageNotesOneObject = (
 const SELECTTablecompanySubProjectStagesSub = (
   ProjectID,
   StageID,
-  kind = "all",
-  type = "su.StagHOMID=? AND su.ProjectID=?",
-  where = ""
+  kind = 'all',
+  type = 'su.StagHOMID=? AND su.ProjectID=?',
+  where = '',
 ) => {
   return new Promise((resolve, reject) => {
     let stringSql =
-      kind === "all"
+      kind === 'all'
         ? `SELECT * FROM StagesSub WHERE StagHOMID=? AND ProjectID=? ${where}`
-        : kind === "accomplished"
-        ? `SELECT closingoperations FROM StagesSub WHERE Done="true" AND ProjectID=?`
-        : kind === "notification"
-        ? `SELECT cu.StageName,pr.Nameproject ,pr.IDcompanySub,su.ProjectID,su.StagHOMID AS StageID, MAX(su.StageSubID) AS StageSubID ,su.StagHOMID,su.ProjectID,su.StageSubName, su.closingoperations,su.Note,su.Done,su.CloseDate FROM StagesSub su LEFT JOIN StagesCUST cu ON cu.ProjectID = su.ProjectID AND cu.StageID = su.StagHOMID LEFT JOIN companySubprojects pr ON pr.id = su.ProjectID  WHERE  ${type}`
-        : `SELECT * FROM StagesSub WHERE StagHOMID=? AND ProjectID=? AND trim(StageSubName) = trim(?)`;
+        : kind === 'accomplished'
+          ? `SELECT closingoperations FROM StagesSub WHERE Done="true" AND ProjectID=?`
+          : kind === 'notification'
+            ? `SELECT cu.StageName,pr.Nameproject ,pr.IDcompanySub,su.ProjectID,su.StagHOMID AS StageID, MAX(su.StageSubID) AS StageSubID ,su.StagHOMID,su.ProjectID,su.StageSubName, su.closingoperations,su.Note,su.Done,su.CloseDate FROM StagesSub su LEFT JOIN StagesCUST cu ON cu.ProjectID = su.ProjectID AND cu.StageID = su.StagHOMID LEFT JOIN companySubprojects pr ON pr.id = su.ProjectID  WHERE  ${type}`
+            : `SELECT * FROM StagesSub WHERE StagHOMID=? AND ProjectID=? AND trim(StageSubName) = trim(?)`;
     let data =
-      kind === "all"
+      kind === 'all'
         ? [StageID, ProjectID]
-        : kind === "notification" &&
-          type !== "su.StagHOMID=? AND su.ProjectID=?"
-        ? [ProjectID]
-        : kind === "notification" &&
-          type === "su.StagHOMID=? AND su.ProjectID=?"
-        ? [StageID, ProjectID]
-        : kind === "accomplished"
-        ? [ProjectID]
-        : [StageID, ProjectID, kind];
+        : kind === 'notification' && type !== 'su.StagHOMID=? AND su.ProjectID=?'
+          ? [ProjectID]
+          : kind === 'notification' && type === 'su.StagHOMID=? AND su.ProjectID=?'
+            ? [StageID, ProjectID]
+            : kind === 'accomplished'
+              ? [ProjectID]
+              : [StageID, ProjectID, kind];
     db.serialize(function () {
       db.all(stringSql, data, function (err, result) {
         if (err) {
@@ -1581,18 +1508,14 @@ const SELECTTablecompanySubProjectStagesSubSingl = (StageSubID) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 
 //  الملاحظات للمراحل الفرعية للمراحل الرئيسية في المشروع
-const SELECTTablecompanySubProjectStageSubNotes = (
-  ProjectID,
-  StageID,
-  StagSubHOMID
-) => {
+const SELECTTablecompanySubProjectStageSubNotes = (ProjectID, StageID, StagSubHOMID) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
@@ -1605,7 +1528,7 @@ const SELECTTablecompanySubProjectStageSubNotes = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -1634,7 +1557,7 @@ const SELECTTablecompanySubProjectStageSubNotes = (
 // LEFT JOIN usersCompany u2 ON trim(u2.PhoneNumber) = trim(rs.Implementedby)
 // WHERE cs.IDcompanySub = 1;
 
-const SelectOrdertabletotalreport = (type = "IDcompanySub") => {
+const SelectOrdertabletotalreport = (type = 'IDcompanySub') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
@@ -1656,12 +1579,12 @@ const SelectOrdertabletotalreport = (type = "IDcompanySub") => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SelectdetailsOrders = (type = "IDcompanySub") => {
+const SelectdetailsOrders = (type = 'IDcompanySub') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
@@ -1709,30 +1632,26 @@ ORDER BY cs.Nameproject, rs.Type ;
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 //  المصروفات
-const SELECTTablecompanySubProjectexpense = (
-  idproject,
-  type = "all",
-  lastID = 0
-) => {
+const SELECTTablecompanySubProjectexpense = (idproject, type = 'all', lastID = 0) => {
   return new Promise((resolve, reject) => {
-    let plus = parseInt(lastID) === 0 ? ">" : "<";
+    let plus = parseInt(lastID) === 0 ? '>' : '<';
 
     let stringSql =
-      type === "all"
-        ? "SELECT * FROM Expense WHERE projectID=?  AND InvoiceNo " +
+      type === 'all'
+        ? 'SELECT * FROM Expense WHERE projectID=?  AND InvoiceNo ' +
           plus +
           " '" +
           parseInt(lastID) +
           "' ORDER BY InvoiceNo DESC LIMIT 10"
-        : type === "pdf"
-        ? "SELECT * FROM Expense WHERE projectID=? "
-        : `SELECT InvoiceNo FROM Expense WHERE projectID=?`;
+        : type === 'pdf'
+          ? 'SELECT * FROM Expense WHERE projectID=? '
+          : `SELECT InvoiceNo FROM Expense WHERE projectID=?`;
     db.serialize(function () {
       db.all(stringSql, [idproject], function (err, result) {
         if (!err) {
@@ -1746,12 +1665,12 @@ const SELECTTablecompanySubProjectexpense = (
 const SELECTTablecompanySubProjectexpenseObjectOneforArchif = (
   InvoiceNo,
   projectID,
-  type = "all"
+  type = 'all',
 ) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
-        type === "all"
+        type === 'all'
           ? `SELECT * FROM Expense WHERE InvoiceNo=? AND projectID=?`
           : `SELECT PR.Nameproject,  MAX(Expenseid) AS Expenseid , projectID ,InvoiceNo,Amount,Date,Data,ClassificationName,Image,Taxable,CreatedDate FROM Expense ex 
           LEFT JOIN companySubprojects PR ON PR.id = ex.projectID 
@@ -1765,27 +1684,24 @@ const SELECTTablecompanySubProjectexpenseObjectOneforArchif = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SELECTTablecompanySubProjectfornotification = (
-  projectID,
-  type = "Expense"
-) => {
+const SELECTTablecompanySubProjectfornotification = (projectID, type = 'Expense') => {
   return new Promise((resolve, reject) => {
-    let project = type === "RequestsID" ? "ProjectID" : "projectID";
-    let projecttype = type === "Requests" ? " ex.projectID" : " ex.ProjectID";
+    let project = type === 'RequestsID' ? 'ProjectID' : 'projectID';
+    let projecttype = type === 'Requests' ? ' ex.projectID' : ' ex.ProjectID';
 
     let SqlString =
-      type === "Expense"
+      type === 'Expense'
         ? ` max(Expenseid) AS Expenseid , projectID,InvoiceNo,Amount, Date,Data,Taxable,CreatedDate FROM Expense`
-        : type === "Returns"
-        ? ` max(ReturnsId) AS ReturnsId , projectID,Amount,Date,Data,Image FROM Returns`
-        : type === "Revenue"
-        ? ` max(RevenueId) AS RevenueId, projectID,Amount,Date,Data,Bank,Image FROM Revenue`
-        : `max(RequestsID) AS RequestsID, ProjectID AS projectID,Type,Data,Date,InsertBy,Implementedby,Image FROM Requests`;
+        : type === 'Returns'
+          ? ` max(ReturnsId) AS ReturnsId , projectID,Amount,Date,Data,Image FROM Returns`
+          : type === 'Revenue'
+            ? ` max(RevenueId) AS RevenueId, projectID,Amount,Date,Data,Bank,Image FROM Revenue`
+            : `max(RequestsID) AS RequestsID, ProjectID AS projectID,Type,Data,Date,InsertBy,Implementedby,Image FROM Requests`;
     db.serialize(function () {
       db.get(
         `SELECT PR.Nameproject,PR.IDcompanySub,RE.NumberCompany,${SqlString} ex 
@@ -1801,7 +1717,7 @@ const SELECTTablecompanySubProjectfornotification = (
             // console.log(result, "hello");
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -1809,19 +1725,19 @@ const SELECTTablecompanySubProjectfornotification = (
 
 const SELECTTablecompanySubProjectfornotificationEdit = (
   id,
-  type = "Expense",
-  kind = "Expenseid"
+  type = 'Expense',
+  kind = 'Expenseid',
 ) => {
   return new Promise((resolve, reject) => {
-    let project = type === "Requests" ? " ex.projectID" : " ex.ProjectID";
+    let project = type === 'Requests' ? ' ex.projectID' : ' ex.ProjectID';
     let SqlString =
-      type === "Expense"
+      type === 'Expense'
         ? `  Expenseid ,projectID,InvoiceNo,Amount, Date,Data,Taxable,CreatedDate FROM Expense`
-        : type === "Returns"
-        ? ` ReturnsId , projectID,Amount,Date,Data,Image FROM Returns`
-        : type === "Revenue"
-        ? `RevenueId, projectID,Amount,Date,Data,Bank,Image FROM Revenue`
-        : `RequestsID, ProjectID AS projectID,Type,Data,Date,InsertBy,Implementedby,Image FROM Requests`;
+        : type === 'Returns'
+          ? ` ReturnsId , projectID,Amount,Date,Data,Image FROM Returns`
+          : type === 'Revenue'
+            ? `RevenueId, projectID,Amount,Date,Data,Bank,Image FROM Revenue`
+            : `RequestsID, ProjectID AS projectID,Type,Data,Date,InsertBy,Implementedby,Image FROM Requests`;
     db.serialize(function () {
       db.get(
         `SELECT PR.Nameproject,PR.IDcompanySub,RE.NumberCompany,${SqlString} ex 
@@ -1837,21 +1753,17 @@ const SELECTTablecompanySubProjectfornotificationEdit = (
             // console.log(result, "hello");
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 
 //  طلب كائن واحد من المصروفات
-const SELECTTablecompanySubProjectexpenseObjectOne = (
-  ID,
-  kind = "all",
-  type = "projectID"
-) => {
+const SELECTTablecompanySubProjectexpenseObjectOne = (ID, kind = 'all', type = 'projectID') => {
   return new Promise((resolve, reject) => {
     let stringSql =
-      kind === "all"
+      kind === 'all'
         ? `SELECT * FROM Expense WHERE Expenseid=?`
         : `SELECT MAX(Expenseid), InvoiceNo FROM Expense WHERE ${type}=?`;
     db.serialize(function () {
@@ -1868,18 +1780,14 @@ const SELECTTablecompanySubProjectexpenseObjectOne = (
 };
 
 // العهد
-const SELECTTablecompanySubProjectREVENUE = (
-  idproject,
-  lastID = 0,
-  types = "all"
-) => {
+const SELECTTablecompanySubProjectREVENUE = (idproject, lastID = 0, types = 'all') => {
   return new Promise((resolve, reject) => {
-    let plus = parseInt(lastID) === 0 ? ">" : "<";
+    let plus = parseInt(lastID) === 0 ? '>' : '<';
     db.serialize(function () {
       db.all(
-        types === "pdf"
-          ? "SELECT * FROM Revenue WHERE projectID=? "
-          : "SELECT * FROM Revenue WHERE projectID=?  AND RevenueId " +
+        types === 'pdf'
+          ? 'SELECT * FROM Revenue WHERE projectID=? '
+          : 'SELECT * FROM Revenue WHERE projectID=?  AND RevenueId ' +
               plus +
               " '" +
               parseInt(lastID) +
@@ -1893,7 +1801,7 @@ const SELECTTablecompanySubProjectREVENUE = (
             // console.log(result);
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -1901,36 +1809,28 @@ const SELECTTablecompanySubProjectREVENUE = (
 const SELECTTablecompanySubProjectREVENUEObjectOne = (RevenueId) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT * FROM Revenue  WHERE RevenueId=?`,
-        [RevenueId],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT * FROM Revenue  WHERE RevenueId=?`, [RevenueId], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
 
 // المرتجعات
-const SELECTTablecompanySubProjectReturned = (
-  idproject,
-  lastID = 0,
-  types = "all"
-) => {
+const SELECTTablecompanySubProjectReturned = (idproject, lastID = 0, types = 'all') => {
   return new Promise((resolve, reject) => {
-    let plus = parseInt(lastID) === 0 ? ">" : "<";
+    let plus = parseInt(lastID) === 0 ? '>' : '<';
 
     db.serialize(function () {
       db.all(
-        types === "pdf"
-          ? "SELECT * FROM Returns WHERE projectID=? "
-          : "SELECT * FROM Returns WHERE projectID=?  AND ReturnsId " +
+        types === 'pdf'
+          ? 'SELECT * FROM Returns WHERE projectID=? '
+          : 'SELECT * FROM Returns WHERE projectID=?  AND ReturnsId ' +
               plus +
               " '" +
               parseInt(lastID) +
@@ -1943,7 +1843,7 @@ const SELECTTablecompanySubProjectReturned = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -1951,45 +1851,37 @@ const SELECTTablecompanySubProjectReturned = (
 const SELECTTablecompanySubProjectReturnedObjectOne = (idproject) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT * FROM Returns WHERE ReturnsId=?`,
-        [idproject],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT * FROM Returns WHERE ReturnsId=?`, [idproject], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
-const SELECTTableFinance = (id, type = "Returns", typeid = "ReturnsId") => {
+const SELECTTableFinance = (id, type = 'Returns', typeid = 'ReturnsId') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT * FROM ${type} WHERE ${typeid}=?`,
-        [id],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT * FROM ${type} WHERE ${typeid}=?`, [id], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
 const SELECTTableFinanceapi = (
-  type = "Returns",
+  type = 'Returns',
   id,
   NumberCompany,
   IDcompanySub,
-  Referencenumber
+  Referencenumber,
 ) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
@@ -2003,7 +1895,7 @@ const SELECTTableFinanceapi = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -2012,43 +1904,26 @@ const SELECTTableFinanceapi = (
 const SELECTTableSavepdf = (idproject) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT * FROM Savepdf WHERE projectID=?`,
-        [idproject],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            console.log(err.message);
-            resolve(0);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT * FROM Savepdf WHERE projectID=?`, [idproject], function (err, result) {
+        if (err) {
+          reject(err);
+          console.log(err.message);
+          resolve(0);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
 
 // عملية فلتر البحث في المالية
-const SELECTSEARCHINFINANCE = (
-  type,
-  projectID,
-  from,
-  to,
-  fromtime,
-  totime,
-  count
-) => {
+const SELECTSEARCHINFINANCE = (type, projectID, from, to, fromtime, totime, count) => {
   // console.log(type, projectID, from, to, fromtime, totime);
   // console.log(type);
   return new Promise((resolve, reject) => {
-    let plus = parseInt(count) === 0 ? ">" : "<";
-    let idtype =
-      type === "Returns"
-        ? "ReturnsId"
-        : type === "Expense"
-        ? "Expenseid"
-        : "RevenueId";
+    let plus = parseInt(count) === 0 ? '>' : '<';
+    let idtype = type === 'Returns' ? 'ReturnsId' : type === 'Expense' ? 'Expenseid' : 'RevenueId';
 
     db.serialize(() => {
       db.all(
@@ -2061,7 +1936,7 @@ const SELECTSEARCHINFINANCE = (
           } else {
             resolve(rows);
           }
-        }
+        },
       );
     });
   });
@@ -2082,7 +1957,7 @@ const SELECTTablecompanySubProjectarchives = (idproject) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -2102,7 +1977,7 @@ const SELECTTablearchivesNamefolder = (FolderName, idproject) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -2123,7 +1998,7 @@ const SELECTTablecompanySubProjectarchivesotherroad = async (ArchivesID) => {
             resolve(rows);
           }
           // client.sAdd("Archives", JSON.stringify(rows));
-        }
+        },
       );
     });
   });
@@ -2135,9 +2010,7 @@ const SELECTallDatafromTableRequests = async (Type, ProjectID) => {
   return new Promise((resolve, reject) => {
     db.serialize(async () => {
       db.all(
-        "SELECT * FROM Requests WHERE  ProjectID=? AND Type LIKE '%" +
-          Type +
-          "%' ",
+        "SELECT * FROM Requests WHERE  ProjectID=? AND Type LIKE '%" + Type + "%' ",
         [ProjectID],
         function (err, rows) {
           if (err) {
@@ -2148,25 +2021,21 @@ const SELECTallDatafromTableRequests = async (Type, ProjectID) => {
             resolve(rows);
           }
           // client.sAdd("Archives", JSON.stringify(rows));
-        }
+        },
       );
     });
   });
 };
-const SELECTDataAndTaketDonefromTableRequests = async (
-  RequestsID,
-  type = "all"
-) => {
+const SELECTDataAndTaketDonefromTableRequests = async (RequestsID, type = 'all') => {
   // console.log(type, "hhhhhhhhhhh");
   return new Promise((resolve, reject) => {
     let sqlString =
-      type === "all"
+      type === 'all'
         ? `SELECT * FROM Requests WHERE  RequestsID=?`
-        : type === "allCount"
-        ? `SELECT COUNT(Done) FROM Requests WHERE ProjectID=?`
-        : `SELECT COUNT(Done) FROM Requests WHERE Done=? AND  ProjectID=?`;
-    let data =
-      type === "all" || type === "allCount" ? [RequestsID] : [type, RequestsID];
+        : type === 'allCount'
+          ? `SELECT COUNT(Done) FROM Requests WHERE ProjectID=?`
+          : `SELECT COUNT(Done) FROM Requests WHERE Done=? AND  ProjectID=?`;
+    let data = type === 'all' || type === 'allCount' ? [RequestsID] : [type, RequestsID];
     db.serialize(async () => {
       db.get(sqlString, data, function (err, rows) {
         // console.log(RequestsID);
@@ -2186,18 +2055,18 @@ const SELECTDataAndTaketDonefromTableRequests = async (
 const SELECTallDatafromTableRequestsV2 = async (
   Type,
   ProjectID,
-  type = "part",
+  type = 'part',
   Done,
   lastID,
-  whereAdd
+  whereAdd,
 ) => {
   return new Promise((resolve, reject) => {
-    let plus = parseInt(lastID) === 0 ? ">" : "<";
+    let plus = parseInt(lastID) === 0 ? '>' : '<';
     db.serialize(async () => {
       let add = `(SELECT us.userName FROM usersCompany us WHERE us.PhoneNumber =re.InsertBy) AS InsertBy ,(SELECT us.userName FROM usersCompany us WHERE us.PhoneNumber =re.Implementedby) AS Implementedby`;
 
       db.all(
-        type === "part"
+        type === 'part'
           ? `SELECT re.* ,${add}, CASE
         WHEN re.Image IS NOT NULL THEN json_extract(re.Image, '$') 
         ELSE NULL
@@ -2230,7 +2099,7 @@ LIMIT 10`,
             resolve(rows);
           }
           // client.sAdd("Archives", JSON.stringify(rows));
-        }
+        },
       );
     });
   });
@@ -2238,13 +2107,13 @@ LIMIT 10`,
 
 const SELECTDataAndTaketDonefromTableRequests2 = async (
   RequestsID,
-  type = "part",
+  type = 'part',
   Done,
-  whereAdd
+  whereAdd,
 ) => {
   return new Promise((resolve, reject) => {
     let sqlString =
-      type === "part"
+      type === 'part'
         ? `SELECT COUNT(Done) FROM Requests WHERE Done=? AND  ProjectID=?`
         : `SELECT COUNT(Done) FROM Requests re LEFT JOIN companySubprojects PR ON PR.id = re.ProjectID WHERE  ${whereAdd} Done=? AND PR.IDcompanySub=? `;
     let data = [Done, RequestsID];
@@ -2300,9 +2169,9 @@ const SELECTDataAndTaketDonefromTableRequests2 = async (
 // console.log(where);
 
 //  جلب المنشورات للصفحة العامة
-const SELECTTablePostPublic = (id, Date, PostID, where = "") => {
+const SELECTTablePostPublic = (id, Date, PostID, where = '') => {
   return new Promise((resolve, reject) => {
-    let plus = parseInt(PostID) === 0 ? ">" : "<";
+    let plus = parseInt(PostID) === 0 ? '>' : '<';
     db.serialize(function () {
       db.all(
         `SELECT * FROM (SELECT PostID,postBy,Date,timeminet,url,Type,Data,StageID,NameCompany,NameSub,Nameproject
@@ -2325,7 +2194,7 @@ const SELECTTablePostPublic = (id, Date, PostID, where = "") => {
             // console.log(result);
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -2353,7 +2222,7 @@ const SELECTTablePostPublicOneObject = (PostID) => {
             // console.log(result);
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -2367,36 +2236,36 @@ const SELECTTablePostPublicSearch = (
   userName,
   branch,
   PostID,
-  userJob = "موظف",
+  userJob = 'موظف',
   user,
-  PhoneNumber
+  PhoneNumber,
 ) => {
   return new Promise((resolve, reject) => {
-    const isAdminOrBranchManager = userJob === "موظف";
+    const isAdminOrBranchManager = userJob === 'موظف';
 
     let SearchSub =
-      type === "بحسب المشروع والتاريخ"
-        ? "PR.Nameproject"
-        : type === "بحسب الفرع"
-        ? "RE.NameSub"
-        : "ca.postBy";
-    let plus = parseInt(PostID) === 0 ? ">" : "<";
+      type === 'بحسب المشروع والتاريخ'
+        ? 'PR.Nameproject'
+        : type === 'بحسب الفرع'
+          ? 'RE.NameSub'
+          : 'ca.postBy';
+    let plus = parseInt(PostID) === 0 ? '>' : '<';
     let SqlStringOne =
-      type === "بحسب المشروع والمستخدم والتاريخ"
+      type === 'بحسب المشروع والمستخدم والتاريخ'
         ? `AND  PR.Nameproject LIKE ?  AND ca.postBy LIKE ? AND (ca.PostID) ${plus} ?`
-        : type === "بحسب التاريخ"
-        ? `AND (ca.PostID) ${plus} ? `
-        : `AND ${SearchSub} LIKE ?  AND (ca.PostID) ${plus} ?`;
+        : type === 'بحسب التاريخ'
+          ? `AND (ca.PostID) ${plus} ? `
+          : `AND ${SearchSub} LIKE ?  AND (ca.PostID) ${plus} ?`;
     let data =
-      type === "بحسب التاريخ"
+      type === 'بحسب التاريخ'
         ? [id, DateStart, DateEnd, PostID]
-        : type === "بحسب المشروع والمستخدم والتاريخ"
-        ? [id, DateStart, DateEnd, `%${nameProject}%`, `%${userName}%`, PostID]
-        : type === "بحسب المشروع والتاريخ"
-        ? [id, DateStart, DateEnd, `%${nameProject}%`, PostID]
-        : type === "بحسب الفرع"
-        ? [id, DateStart, DateEnd, `%${branch}%`, PostID]
-        : [id, DateStart, DateEnd, `%${userName}%`, PostID];
+        : type === 'بحسب المشروع والمستخدم والتاريخ'
+          ? [id, DateStart, DateEnd, `%${nameProject}%`, `%${userName}%`, PostID]
+          : type === 'بحسب المشروع والتاريخ'
+            ? [id, DateStart, DateEnd, `%${nameProject}%`, PostID]
+            : type === 'بحسب الفرع'
+              ? [id, DateStart, DateEnd, `%${branch}%`, PostID]
+              : [id, DateStart, DateEnd, `%${userName}%`, PostID];
     let query = `SELECT * FROM (SELECT ca.PostID, ca.postBy, ca.Date, ca.timeminet, ca.url, ca.Type, ca.Data, ca.StageID, cs.StageName,
         EX.NameCompany, RE.NameSub, PR.Nameproject,
         (SELECT COUNT(userName) FROM Comment WHERE PostId = ca.PostID) AS Comment,
@@ -2434,11 +2303,7 @@ const SELECTTablePostPublicSearch = (
   });
 };
 //  جلب معرف الفرع ومعرف الشركة
-const SELECTTableIDcompanytoPost = (
-  projectID,
-  type = "pr.id",
-  select = "pr.id"
-) => {
+const SELECTTableIDcompanytoPost = (projectID, type = 'pr.id', select = 'pr.id') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
@@ -2452,13 +2317,13 @@ const SELECTTableIDcompanytoPost = (
             resolve(result);
             // console.log(result, "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
           }
-        }
+        },
       );
     });
   });
 };
 
-const SELECTCOUNTCOMMENTANDLIKPOST = (PostID, type = "Comment") => {
+const SELECTCOUNTCOMMENTANDLIKPOST = (PostID, type = 'Comment') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
@@ -2471,29 +2336,29 @@ const SELECTCOUNTCOMMENTANDLIKPOST = (PostID, type = "Comment") => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 
-const SELECTDataPrivatPost = (PostID, type = "Comment", idEdit = null) => {
+const SELECTDataPrivatPost = (PostID, type = 'Comment', idEdit = null) => {
   return new Promise((resolve, reject) => {
     let idString =
       idEdit === null
-        ? type === "Likes"
-          ? "max(fl.LikesID) AS LikesID"
-          : "max(fl.CommentID) AS CommentID"
-        : type === "Likes"
-        ? "fl.LikesID"
-        : "fl.CommentID";
+        ? type === 'Likes'
+          ? 'max(fl.LikesID) AS LikesID'
+          : 'max(fl.CommentID) AS CommentID'
+        : type === 'Likes'
+          ? 'fl.LikesID'
+          : 'fl.CommentID';
 
     let Id = idEdit === null ? PostID : idEdit;
-    let WhereID = idEdit === null ? "fl.PostId" : "fl.CommentID";
+    let WhereID = idEdit === null ? 'fl.PostId' : 'fl.CommentID';
     // console.log(idEdit);
 
     let SqlString =
-      type === "Likes"
+      type === 'Likes'
         ? `${idString},fl.PostId,fl.Date,fl.userName`
         : `${idString},fl.PostId,fl.commentText,fl.Date,fl.userName`;
     db.serialize(function () {
@@ -2508,7 +2373,7 @@ const SELECTDataPrivatPost = (PostID, type = "Comment", idEdit = null) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -2528,7 +2393,7 @@ const SELECTDataPrivatPostonObject = (PostID) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -2548,7 +2413,7 @@ const SELECTTableCommentPostPublic = (PostId, count) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -2568,7 +2433,7 @@ const SELECTTableCommentID = (PostId) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -2578,18 +2443,14 @@ const SELECTTableCommentID = (PostId) => {
 const SELECTTableLikesPostPublic = (PostId) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.all(
-        `SELECT * FROM Likes WHERE PostId =?`,
-        [PostId],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.all(`SELECT * FROM Likes WHERE PostId =?`, [PostId], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
@@ -2608,24 +2469,17 @@ const SELECTTableLikesPostPublicotherroad = (PostId, userName) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SELECTTablepostAll = (
-  id,
-  formattedDate,
-  PostID,
-  user,
-  userJob,
-  PhoneNumber
-) => {
+const SELECTTablepostAll = (id, formattedDate, PostID, user, userJob, PhoneNumber) => {
   return new Promise((resolve, reject) => {
-    let plus = parseInt(PostID) === 0 ? ">" : "<";
+    let plus = parseInt(PostID) === 0 ? '>' : '<';
 
     // التحقق إذا كان مدير فرع أو admin
-    const isAdminOrBranchManager = userJob === "موظف";
+    const isAdminOrBranchManager = userJob === 'موظف';
 
     // إعداد الاستعلام حسب نوع المستخدم
     let query = `
@@ -2673,7 +2527,7 @@ const SELECTTablepostAll = (
     // بناء مصفوفة القيم
     let values = [user];
     if (!isAdminOrBranchManager) values.push(PhoneNumber); // نضيف user_id فقط إذا كان شرط مفعّل
-    values.push(id,formattedDate, PostID);
+    values.push(id, formattedDate, PostID);
     db.serialize(function () {
       db.all(query, values, function (err, result) {
         if (err) {
@@ -2744,16 +2598,16 @@ const SELECTLengthTableChateStage = (ProjectID, StageID) => {
     db.serialize(function () {
       db.get(
         // 'SELECT COUNT(*) FROM PRAGMA table_info(ChatSTAGE) WHERE ProjectID=? AND StageID =?',
-        "SELECT COUNT(*) FROM ChatSTAGE WHERE ProjectID=? AND StageID =?",
+        'SELECT COUNT(*) FROM ChatSTAGE WHERE ProjectID=? AND StageID =?',
         [ProjectID, StageID],
         function (err, result) {
           if (err) {
             reject(err);
             // console.error(err.message);
           } else {
-            resolve(result["COUNT(*)"]);
+            resolve(result['COUNT(*)']);
           }
-        }
+        },
       );
     });
   });
@@ -2763,13 +2617,13 @@ const SELECTLastTableChateStage = (
   ProjectID,
   StageID,
   count = 1,
-  kind = "all",
-  type = "ChatSTAGE"
+  kind = 'all',
+  type = 'ChatSTAGE',
 ) => {
-  let Type = type === "ChatSTAGE" ? "StageID" : "Type";
+  let Type = type === 'ChatSTAGE' ? 'StageID' : 'Type';
   return new Promise((resolve, reject) => {
     let stringSql =
-      kind === "all"
+      kind === 'all'
         ? `SELECT * FROM ChatSTAGE  WHERE ProjectID=? AND StageID =? ORDER BY rowid DESC, datetime(timeminet) ASC LIMIT ${count} `
         : `SELECT File,Date FROM ${type}  WHERE ProjectID=? AND  ${Type}=? `;
 
@@ -2787,20 +2641,25 @@ const SELECTLastTableChateStage = (
   });
 };
 // جلب chatiD
-const SELECTLastTableChateID = (ProjectID, type, userName,chate_type) => {
+const SELECTLastTableChateID = (ProjectID, type, userName, chate_type) => {
   return new Promise((resolve, reject) => {
-    let view_type = chate_type === 'Chat_private' ? 'Views_Private' : chate_type === 'Chat_project' ? 'Views_Project': null;
+    let view_type =
+      chate_type === 'Chat_private'
+        ? 'Views_Private'
+        : chate_type === 'Chat_project'
+          ? 'Views_Project'
+          : null;
 
     const conversationId = roomKey(ProjectID, type);
     const stringSql =
-    chate_type !== 'Chat' ?      
-    `SELECT chatID FROM ${chate_type}  WHERE conversationId=? AND trim(Sender) !=trim(?)`
-    :
-    Number(type)
-      ? `SELECT chatID FROM ChatSTAGE  WHERE ProjectID=? AND StageID =? AND trim(Sender) !=trim(?) `
-      : `SELECT chatID FROM Chat  WHERE ProjectID=? AND Type =? AND trim(Sender) !=trim(?) `;
+      chate_type !== 'Chat'
+        ? `SELECT chatID FROM ${chate_type}  WHERE conversationId=? AND trim(Sender) !=trim(?)`
+        : Number(type)
+          ? `SELECT chatID FROM ChatSTAGE  WHERE ProjectID=? AND StageID =? AND trim(Sender) !=trim(?) `
+          : `SELECT chatID FROM Chat  WHERE ProjectID=? AND Type =? AND trim(Sender) !=trim(?) `;
 
-      let data = chate_type !== "Chat" ? [String(conversationId),userName]: [ProjectID, type, userName]
+    let data =
+      chate_type !== 'Chat' ? [String(conversationId), userName] : [ProjectID, type, userName];
     db.serialize(function () {
       db.all(stringSql, data, function (err, result) {
         if (err) {
@@ -2816,17 +2675,21 @@ const SELECTLastTableChateID = (ProjectID, type, userName,chate_type) => {
 };
 
 //  الاستعلام على اسم الشخص ومعرف الرسالة
-const SELECTTableViewChateUser = (chatID, userName, type,chate_type) => {
+const SELECTTableViewChateUser = (chatID, userName, type, chate_type) => {
   return new Promise((resolve, reject) => {
-    let view_type = chate_type === 'Chat_private' ? 'Views_Private' : chate_type === 'Chat_project' ? 'Views_Project': null;
+    let view_type =
+      chate_type === 'Chat_private'
+        ? 'Views_Private'
+        : chate_type === 'Chat_project'
+          ? 'Views_Project'
+          : null;
 
-    const stringSql = 
-    view_type !== null ?
-    `SELECT * FROM ${view_type} WHERE chatID=? AND trim(userName)=trim(?)`
-    :
-    Number(type)
-      ? `SELECT * FROM ViewsCHATSTAGE WHERE chatID=? AND trim(userName)=trim(?)`
-      : `SELECT * FROM Views WHERE chatID=? AND trim(userName)=trim(?)`;
+    const stringSql =
+      view_type !== null
+        ? `SELECT * FROM ${view_type} WHERE chatID=? AND trim(userName)=trim(?)`
+        : Number(type)
+          ? `SELECT * FROM ViewsCHATSTAGE WHERE chatID=? AND trim(userName)=trim(?)`
+          : `SELECT * FROM Views WHERE chatID=? AND trim(userName)=trim(?)`;
     db.serialize(function () {
       db.all(stringSql, [chatID, userName], function (err, result) {
         if (err) {
@@ -2839,7 +2702,7 @@ const SELECTTableViewChateUser = (chatID, userName, type,chate_type) => {
     });
   });
 };
-const SELECTLastTableChatDontEmpty = (ProjectID, StageID, id, chate_type='Chat_private') => {
+const SELECTLastTableChatDontEmpty = (ProjectID, StageID, id, chate_type = 'Chat_private') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
@@ -2853,7 +2716,7 @@ const SELECTLastTableChatDontEmpty = (ProjectID, StageID, id, chate_type='Chat_p
             resolve(result.reverse());
             // console.log(result)
           }
-        }
+        },
       );
     });
   });
@@ -2872,7 +2735,7 @@ const SELECTLastTableChateStageDontEmpty = (ProjectID, StageID, id) => {
             resolve(result.reverse());
             // console.log(result)
           }
-        }
+        },
       );
     });
   });
@@ -2891,7 +2754,7 @@ const SELECTLastTableChateTypeDontEmpty = (ProjectID, StageID, id) => {
             resolve(result.reverse());
             // console.log(result)
           }
-        }
+        },
       );
     });
   });
@@ -2899,46 +2762,36 @@ const SELECTLastTableChateTypeDontEmpty = (ProjectID, StageID, id) => {
 
 const SELECTTableChateStageOtherroad = (
   idSendr,
-  userName = "",
-  type = "trim(idSendr)=trim(?)",
-  table = "ChatSTAGE"
+  userName = '',
+  type = 'trim(idSendr)=trim(?)',
+  table = 'ChatSTAGE',
 ) => {
   return new Promise((resolve, reject) => {
-    let data =
-      type === "trim(idSendr)=trim(?)" ? [idSendr] : [idSendr, userName];
+    let data = type === 'trim(idSendr)=trim(?)' ? [idSendr] : [idSendr, userName];
     db.serialize(function () {
-      db.get(
-        `SELECT * FROM ${table} WHERE ${type}`,
-        data,
-        function (err, result) {
-          if (err) {
-            console.log(err.message);
-            resolve(false);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT * FROM ${table} WHERE ${type}`, data, function (err, result) {
+        if (err) {
+          console.log(err.message);
+          resolve(false);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
 
 //  معرفة اخر رسائل المستخدم في الدردشة
 // معرفة اخر رسائل المستخدم في الدردشة
-const SELECTLastmassgeuserinchat = (
-  ProjectID,
-  StageID,
-  userName,
-  type = "ChatSTAGE"
-) => {
+const SELECTLastmassgeuserinchat = (ProjectID, StageID, userName, type = 'ChatSTAGE') => {
   return new Promise((resolve, reject) => {
-    let kind = type === "ChatSTAGE" ? "StageID" : "Type";
-    let whereSql = "";
+    let kind = type === 'ChatSTAGE' ? 'StageID' : 'Type';
+    let whereSql = '';
     let params = [];
     const room = roomKey(ProjectID, StageID);
     // 1. استخدام المعاملات ? بدلاً من دمج النصوص
     if (type === 'Chat_private') {
-      whereSql = "conversationId = ?";
+      whereSql = 'conversationId = ?';
       params = [room];
     } else {
       whereSql = `ProjectID = ? AND ${kind} = ?`;
@@ -2961,27 +2814,23 @@ const SELECTLastmassgeuserinchat = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 //  جلب مشاهدات رسائل الشات
-const SELECTTableViewChateStage = (chatID,type="ViewsCHATSTAGE") => {
+const SELECTTableViewChateStage = (chatID, type = 'ViewsCHATSTAGE') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.all(
-        `SELECT * FROM ${type} WHERE chatID=?`,
-        [chatID],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            // console.error(err.message);
-          } else {
-            resolve(result);
-          }
+      db.all(`SELECT * FROM ${type} WHERE chatID=?`, [chatID], function (err, result) {
+        if (err) {
+          reject(err);
+          // console.error(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
@@ -2992,16 +2841,16 @@ const SELECTLengthTableChate = (ProjectID, Type) => {
     db.serialize(function () {
       db.get(
         // 'SELECT COUNT(*) FROM PRAGMA table_info(ChatSTAGE) WHERE ProjectID=? AND Type =?',
-        "SELECT COUNT(*) FROM Chat WHERE ProjectID=? AND Type =?",
+        'SELECT COUNT(*) FROM Chat WHERE ProjectID=? AND Type =?',
         [ProjectID, Type],
         function (err, result) {
           if (err) {
             reject(err);
             // console.error(err.message);
           } else {
-            resolve(result["COUNT(*)"]);
+            resolve(result['COUNT(*)']);
           }
-        }
+        },
       );
     });
   });
@@ -3019,7 +2868,7 @@ const SELECTTableChate = (ProjectID, Type) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -3027,33 +2876,28 @@ const SELECTTableChate = (ProjectID, Type) => {
 const SELECTTableChateotherroad = (idSendr) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT * FROM Chat WHERE idSendr=?`,
-        [idSendr],
-        function (err, result) {
-          if (err) {
-            reject(err);
-            console.log(err.message);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT * FROM Chat WHERE idSendr=?`, [idSendr], function (err, result) {
+        if (err) {
+          reject(err);
+          console.log(err.message);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
-const SELECTLastTableChate = (ProjectID, Type, count = 80, kind = "Chat") => {
+const SELECTLastTableChate = (ProjectID, Type, count = 80, kind = 'Chat') => {
   return new Promise((resolve, reject) => {
-
     const limit = Number(count) || 1;
 
     const sql =
-      kind === "Chat"
+      kind === 'Chat'
         ? `SELECT * FROM Chat WHERE ProjectID = ? AND Type = ? ORDER BY rowid DESC LIMIT ?`
         : `SELECT * FROM ${kind} WHERE trim(conversationId) = trim(?) ORDER BY rowid DESC LIMIT ?`;
 
     const params =
-      kind === "Chat"
+      kind === 'Chat'
         ? [Number(ProjectID), String(Type), limit]
         : [String(roomKey(ProjectID, Type)), limit];
 
@@ -3067,8 +2911,7 @@ const SELECTLastTableChate = (ProjectID, Type, count = 80, kind = "Chat") => {
   });
 };
 
-
-function getChatRooms(userId,  chatID = 0) {
+function getChatRooms(userId,userName,PhoneNumber, chatID = 0) {
   return new Promise((resolve, reject) => {
     const sql = `
       WITH last_msg AS (
@@ -3097,7 +2940,19 @@ function getChatRooms(userId,  chatID = 0) {
             WHEN r.leftId = ? THEN r.rightId
             WHEN r.rightId = ? THEN r.leftId
             ELSE NULL
-          END AS otherUserId
+          END AS otherUserId,
+(
+  SELECT COUNT(*)
+  FROM Chat_private m
+  WHERE trim(m.conversationId) = trim(r.conversationId)
+    AND CAST(m.idSendr AS INTEGER) != ?
+    AND NOT EXISTS (
+      SELECT *
+      FROM Views_Private vp
+      WHERE vp.chatID = m.chatID
+        AND trim(vp.userName) = trim(?)
+    )
+) AS unreadCount
         FROM rooms r
       )
       SELECT
@@ -3108,23 +2963,18 @@ function getChatRooms(userId,  chatID = 0) {
         f.Date,
         f.timeminet,
         f.otherUserId,
-        uc.userName AS otherUserName
+        uc.userName AS otherUserName,
+        f.unreadCount
       FROM final f
       JOIN usersCompany uc
         ON uc.id = f.otherUserId
       WHERE
       uc.id != ? AND f.chatID > ?
       ORDER BY f.chatID ASC
-      LIMIT 2;
+      LIMIT 20;
     `;
 
-
-    const params = [
-      userId, userId,     
-      userId, userId,   
-      userId,     
-      chatID
-    ];
+    const params = [userId, userId, userId, userId,PhoneNumber,userName, userId, chatID];
 
     db.all(sql, params, (err, rows) => {
       if (err) return reject(err);
@@ -3136,9 +2986,15 @@ function getChatRooms(userId,  chatID = 0) {
     });
   });
 }
-function get_ALL_ChatRooms(componentId,  chatID = 0) {
+
+
+
+
+// console.log(getChatRooms(1, 0,"Software Engineer",502464530).then(result => console.log(result)).catch(err => console.error(err)));
+
+function get_ALL_ChatRooms(componentId, chatID = 0) {
   return new Promise((resolve, reject) => {
-  const sql = `
+    const sql = `
   WITH parsed AS (
     SELECT
       cp.*,
@@ -3176,11 +3032,81 @@ function get_ALL_ChatRooms(componentId,  chatID = 0) {
   LIMIT 50;
     `;
 
+    const params = [componentId, chatID];
 
-    const params = [
-    componentId,    
-      chatID
-    ];
+    db.all(sql, params, (err, rows) => {
+      if (err) return reject(err);
+
+      let nextCursor = null;
+      if (rows.length) nextCursor = { lastChatId: rows[rows.length - 1].lastChatID };
+      resolve({ items: rows, nextCursor });
+    });
+  });
+}
+function getChatRooms_project(userId,userName,PhoneNumber,ProjectID, chatID = 0) {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      WITH last_msg AS (
+        SELECT
+          cp.*,
+          ROW_NUMBER() OVER (
+            PARTITION BY trim(cp.conversationId)
+            ORDER BY cp.chatID DESC
+          ) AS rn
+        FROM Chat_project cp
+        WHERE trim(cp.conversationId) LIKE (? || ':%')
+        OR trim(cp.conversationId) LIKE ('%:' || ?) AND cp.ProjectID = ?
+      ),
+      rooms AS (
+        SELECT
+          lm.*,
+          CAST(substr(trim(lm.conversationId), 1, instr(trim(lm.conversationId), ':') - 1) AS INTEGER) AS leftId,
+          CAST(substr(trim(lm.conversationId), instr(trim(lm.conversationId), ':') + 1) AS INTEGER) AS rightId
+        FROM last_msg lm
+        WHERE lm.rn = 1
+      ),
+      final AS (
+        SELECT
+          r.*,
+          CASE
+            WHEN r.leftId = ? THEN r.rightId
+            WHEN r.rightId = ? THEN r.leftId
+            ELSE NULL
+          END AS otherUserId,
+(
+  SELECT COUNT(*)
+  FROM Chat_project m
+  WHERE trim(m.conversationId) = trim(r.conversationId)
+    AND CAST(m.idSendr AS INTEGER) != ? AND m.ProjectID = ?
+    AND NOT EXISTS (
+      SELECT *
+      FROM Views_Project vp
+      WHERE vp.chatID = m.chatID
+        AND trim(vp.userName) = trim(?)
+    )
+) AS unreadCount
+        FROM rooms r
+      )
+      SELECT
+        f.chatID,
+        f.conversationId,
+        f.Sender,
+        f.message,
+        f.Date,
+        f.timeminet,
+        f.otherUserId,
+        uc.userName AS otherUserName,
+        f.unreadCount
+      FROM final f
+      JOIN usersCompany uc
+        ON uc.id = f.otherUserId
+      WHERE
+      uc.id != ? AND f.chatID > ?
+      ORDER BY f.chatID ASC
+      LIMIT 20;
+    `;
+
+    const params = [userId, userId,ProjectID, userId, userId,PhoneNumber,ProjectID, userName, userId, chatID];
 
     db.all(sql, params, (err, rows) => {
       if (err) return reject(err);
@@ -3196,11 +3122,64 @@ function get_ALL_ChatRooms(componentId,  chatID = 0) {
 
 
 
+// console.log(getChatRooms_project(1, "Software Engineer", 502464530, 1).then(result => console.log(result)).catch(err => console.error(err)));
+
+function get_ALL_ChatRooms_project(ProjectID, chatID = 0) {
+  return new Promise((resolve, reject) => {
+    const sql = `
+  WITH parsed AS (
+    SELECT
+      cp.*,
+      CAST(substr(trim(cp.conversationId), 1, instr(trim(cp.conversationId), ':') - 1) AS INTEGER) AS userA,
+      CAST(substr(trim(cp.conversationId), instr(trim(cp.conversationId), ':') + 1) AS INTEGER) AS userB
+    FROM Chat_project cp
+    WHERE instr(trim(cp.conversationId), ':') > 0 AND cp.ProjectID = ?
+  ),
+  last_msg AS (
+    SELECT
+      p.*,
+      ROW_NUMBER() OVER (
+        PARTITION BY p.conversationId
+        ORDER BY p.chatID DESC
+      ) AS rn_last
+    FROM parsed p
+  )
+  SELECT
+    l.conversationId,
+    (COALESCE(ua.userName, 'User ' || l.userA) || ' - ' || COALESCE(ub.userName, 'User ' || l.userB)) AS roomTitle,
+    l.chatID    AS lastChatID,
+    l.Sender    AS lastSender,
+    l.message   AS lastMessage,
+    l.Date      AS lastDate,
+    l.timeminet AS lastTimeminet
+  FROM last_msg l
+  LEFT JOIN usersCompany ua
+    ON ua.id = l.userA
+  LEFT JOIN usersCompany ub
+    ON ub.id = l.userB
+  WHERE l.rn_last = 1  AND l.chatID > ?
+  ORDER BY l.chatID DESC 
+  LIMIT 50;
+    `;
+
+    const params = [ProjectID, chatID];
+
+    db.all(sql, params, (err, rows) => {
+      if (err) return reject(err);
+
+      let nextCursor = null;
+      if (rows.length) nextCursor = { lastChatId: rows[rows.length - 1].lastChatID };
+      resolve({ items: rows, nextCursor });
+    });
+  });
+}
+// console.log(get_ALL_ChatRooms_project(1, 0).then(result => console.log(result)).catch(err => console.error(err)));
+
 const SELECTfilterTableChate = (ProjectID, Type, userName, count = 0) => {
   return new Promise((resolve, reject) => {
-    let Plus = parseInt(count) === 0 ? ">" : "<";
-    const Types = Number(Type) ? "StageID" : "Type";
-    const Table = Number(Type) ? "ChatSTAGE" : "Chat";
+    let Plus = parseInt(count) === 0 ? '>' : '<';
+    const Types = Number(Type) ? 'StageID' : 'Type';
+    const Table = Number(Type) ? 'ChatSTAGE' : 'Chat';
     // AND chatID > 772
     db.serialize(function () {
       db.all(
@@ -3215,18 +3194,18 @@ const SELECTfilterTableChate = (ProjectID, Type, userName, count = 0) => {
             // console.log(result)
             // resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 //  جلب مشاهدات رسائل الشات
-const SELECTTableViewChate = (chatID,userName,type="Views") => {
+const SELECTTableViewChate = (chatID, userName, type = 'Views') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
         `SELECT * FROM ${type} WHERE  chatID=? AND userName=?`,
-        [chatID,userName],
+        [chatID, userName],
         function (err, result) {
           if (err) {
             reject(err);
@@ -3234,21 +3213,21 @@ const SELECTTableViewChate = (chatID,userName,type="Views") => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 // AND DateDay BETWEEN strftime('%Y-%m-01',CURRENT_DATE )  AND CURRENT_DATE
-const SELECTTableNavigation = (data, names = [], where = "",equals="!=") => {
+const SELECTTableNavigation = (data, names = [], where = '', equals = '!=') => {
   return new Promise((resolve, reject) => {
     const lastId = Number(data[0] ?? 0);
     const numberCompany = data[1];
-    const op = lastId === 0 ? ">" : "<";
+    const op = lastId === 0 ? '>' : '<';
 
-    const placeholders = names.map(() => "?").join(",");
+    const placeholders = names.map(() => '?').join(',');
 
-   const namesFilter =
+    const namesFilter =
       names.length > 0
         ? `
           AND ca.tokens IS NOT NULL
@@ -3259,11 +3238,12 @@ const SELECTTableNavigation = (data, names = [], where = "",equals="!=") => {
             WHERE TRIM(value) IN (${placeholders})
           )
         `
-        : "";
+        : '';
 
-    const where2 = equals == '=' || equals == '!='
-      ? `AND ca.data IS NOT NULL AND json_valid(ca.data) AND json_extract(ca.data, '$.notification_type') ${equals} 'Chate'`
-      : equals;
+    const where2 =
+      equals == '=' || equals == '!='
+        ? `AND ca.data IS NOT NULL AND json_valid(ca.data) AND json_extract(ca.data, '$.notification_type') ${equals} 'Chate'`
+        : equals;
 
     const query = `
       WITH base AS (
@@ -3305,8 +3285,8 @@ const SELECTTableNavigation = (data, names = [], where = "",equals="!=") => {
     // console.log(query, params);
     db.all(query, params, (err, result) => {
       if (err) {
-        console.log("SQL ERR:", err.message);
-        console.log("PARAMS:", params);
+        console.log('SQL ERR:', err.message);
+        console.log('PARAMS:', params);
         return reject(err);
       }
       resolve(result);
@@ -3327,17 +3307,12 @@ const SELECTTableNavigationObjectOne = (IDCompany) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SELECTTableProjectdataforchat = (
-  PhoneNumber,
-  id,
-  disabled = "false",
-  type = "id"
-) => {
+const SELECTTableProjectdataforchat = (PhoneNumber, id, disabled = 'false', type = 'id') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
@@ -3350,25 +3325,21 @@ const SELECTTableProjectdataforchat = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 //  طلب اخر رقم في جدول العهد
-const SELECTTableMaxFinancialCustody = async (
-  id,
-  type = "max",
-  kindOpreation = "*"
-) => {
+const SELECTTableMaxFinancialCustody = async (id, type = 'max', kindOpreation = '*') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
-        type === "max"
+        type === 'max'
           ? `SELECT Max(idOrder) AS  last_id FROM FinancialCustody WHERE IDCompanySub=? `
-          : type === "count"
-          ? `SELECT ${kindOpreation} FROM FinancialCustody WHERE IDCompany=? AND OrderStatus="false" AND RejectionStatus="false"`
-          : `SELECT ${kindOpreation} FROM FinancialCustody WHERE id=? `,
+          : type === 'count'
+            ? `SELECT ${kindOpreation} FROM FinancialCustody WHERE IDCompany=? AND OrderStatus="false" AND RejectionStatus="false"`
+            : `SELECT ${kindOpreation} FROM FinancialCustody WHERE id=? `,
         [id],
         function (err, result) {
           if (err) {
@@ -3377,12 +3348,12 @@ const SELECTTableMaxFinancialCustody = async (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SELECTTableFinancialCustody = async (id, type = "") => {
+const SELECTTableFinancialCustody = async (id, type = '') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
@@ -3395,12 +3366,12 @@ const SELECTTableFinancialCustody = async (id, type = "") => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const selectdetailsFcialCustodforreport = async (IDCompany, type = "") => {
+const selectdetailsFcialCustodforreport = async (IDCompany, type = '') => {
   return new Promise((resolve, reject) => {
     let query = ` fy.id, fy.idOrder, fy.IDCompany, fy.IDCompanySub, CASE WHEN usersCompany.userName IS NULL THEN fy.Requestby ELSE  usersCompany.userName END AS Requestby,
   fy.Amount, fy.Statement, fy.Date, fy.Approvingperson, fy.ApprovalDate,
@@ -3443,12 +3414,12 @@ ORDER BY
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const selectCountFcialCustodforreport = async (IDCompany, type = "") => {
+const selectCountFcialCustodforreport = async (IDCompany, type = '') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
@@ -3482,16 +3453,12 @@ FROM f;
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SELECTTableBranchdeletionRequests = async (
-  IDCompany,
-  chack,
-  PhoneNumber
-) => {
+const SELECTTableBranchdeletionRequests = async (IDCompany, chack, PhoneNumber) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
@@ -3503,7 +3470,7 @@ const SELECTTableBranchdeletionRequests = async (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -3526,17 +3493,13 @@ const SELECT_Table_subscription_types = async () => {
 const SELECT_Table_subscription_types_one_object = async (id) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(
-        `SELECT * FROM subscription_types WHERE id=? `,
-        [id],
-        function (err, result) {
-          if (err) {
-            resolve([]);
-          } else {
-            resolve(result);
-          }
+      db.get(`SELECT * FROM subscription_types WHERE id=? `, [id], function (err, result) {
+        if (err) {
+          resolve([]);
+        } else {
+          resolve(result);
         }
-      );
+      });
     });
   });
 };
@@ -3553,7 +3516,7 @@ const Select_table_company_subscriptionsChack = async (project_id) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -3561,7 +3524,7 @@ const Select_table_company_subscriptionsChack = async (project_id) => {
 
 const Select_table_company_subscriptions_onObject = async (
   company_subscriptions_id,
-  type = "id"
+  type = 'id',
 ) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
@@ -3574,15 +3537,12 @@ const Select_table_company_subscriptions_onObject = async (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const Select_table_company_subscriptions_vs2 = async (
-  company_subscriptions_id,
-  type = "id"
-) => {
+const Select_table_company_subscriptions_vs2 = async (company_subscriptions_id, type = 'id') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
@@ -3594,16 +3554,13 @@ const Select_table_company_subscriptions_vs2 = async (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 
-const select_table_company_subscriptions = async (
-  ProjectID,
-  type = "project_id"
-) => {
+const select_table_company_subscriptions = async (ProjectID, type = 'project_id') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
@@ -3615,7 +3572,7 @@ const select_table_company_subscriptions = async (
           } else {
             resolve(true);
           }
-        }
+        },
       );
     });
   });
@@ -3635,7 +3592,7 @@ const chack_subscripation_project_exist = async (ProjectID) => {
           } else {
             resolve(1);
           }
-        }
+        },
       );
     });
   });
@@ -3653,7 +3610,7 @@ const SELECTTABLESUBSCRIPATION = async (IDCompany, StartDate) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -3693,7 +3650,7 @@ const SelectInvoicesubscripation = async (IDCompany, StartDate) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -3769,7 +3726,7 @@ GROUP BY
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -3902,7 +3859,10 @@ module.exports = {
   selectStagestypeforProject,
   selectStagestypeTemplet,
   Select_table_company_subscriptions_vs2,
+  getBranchRole,
   SELECTLastTableChatDontEmpty,
   getChatRooms,
-  get_ALL_ChatRooms
+  get_ALL_ChatRooms,
+  getChatRooms_project,
+  get_ALL_ChatRooms_project,
 };

@@ -38,6 +38,7 @@ const {
   SELECTTableStagesCUST_Image,
   SELECTTableStageStageSub,
   select_table_company_subscriptions,
+  getBranchRole,
 } = require("../../../../sql/selected/selected");
 const fs = require("fs");
 const path = require("path");
@@ -97,17 +98,29 @@ const BringProject = () => {
 
       if (!userSession) {
         return res.status(401).send("Invalid session");
-      };
+      }
 
       const { IDcompanySub, IDfinlty, type = "cache" } = req.query;
       const PhoneNumber = userSession.PhoneNumber;
+
+      // 1. نجلب المشاريع
       const projects = await getProjectsForUser(
         PhoneNumber,
         IDcompanySub,
         IDfinlty
       );
+
+
+      // 2. تحديد المسمى الوظيفي (Boss)
+
+      const currentBossRole = await getBranchRole(PhoneNumber, IDcompanySub);
       
-      const data = { success: true, data:projects[0]?.id ? projects: [], boss: projects[0]?.job };
+      const data = {
+        success: true,
+        data: projects,
+        boss: currentBossRole
+      };
+
       res.status(200).send(data);
 
     } catch (err) {
@@ -116,6 +129,7 @@ const BringProject = () => {
     }
   };
 };
+
 
 async function getProjectsForUser(PhoneNumber, IDcompanySub, IDfinlty) {
   const result = await selecttablecompanySubProjectall(
@@ -172,7 +186,7 @@ const FilterProject = () => {
         res.status(401).send("Invalid session");
         // console.log("Invalid session");
       }
-    
+
       const result = await SELECTTablecompanySubProjectFilter(
         search,
         IDCompanySub,
@@ -692,9 +706,8 @@ const BringStatmentFinancialforproject = () => {
 
       // 4.b توليد اسم ملف جديد ثابت
       const rand4 = Math.floor(1000 + Math.random() * 9000);
-      const baseName = `${totals?.ProjectID || "project"}${rand4}${
-        isAll ? "all" : "party"
-      }financial.pdf`;
+      const baseName = `${totals?.ProjectID || "project"}${rand4}${isAll ? "all" : "party"
+        }financial.pdf`;
 
       const localFilePath = path.join(__dirname, "../../upload", baseName);
       const remotePath = `${company?.CommercialRegistrationNumber}/report/${baseName}`;
@@ -878,7 +891,7 @@ const BringDataRequests = () => {
       if (!chack_for_subscription) {
         return res
           .status(200)
-          .send({  success: "Subscription inactive" });
+          .send({ success: "Subscription inactive" });
       };
 
 
@@ -964,12 +977,12 @@ const BringDataRequestsV2 = () => {
 
       const { ProjectID, Type, kind, Done, lastID } = req.query;
 
-      if(kind === 'part'){
+      if (kind === 'part') {
         const chack_for_subscription = await select_table_company_subscriptions(ProjectID);
         if (!chack_for_subscription) {
           return res
             .status(200)
-            .send({success:"Subscription inactive" });
+            .send({ success: "Subscription inactive" });
         };
       }
 
@@ -1207,8 +1220,8 @@ const BringReportforProject = () => {
         TotalDelayDay:
           DelayProject.length > 0
             ? DelayProject.map((item) => item.countdayDelay).reduce(
-                (item, r) => item + r
-              )
+              (item, r) => item + r
+            )
             : 0,
         DelayProject: DelayProject,
         boss: userdata.userName,
@@ -1235,11 +1248,11 @@ const BringreportTimeline = () => {
 
 
     const chack_for_subscription = await select_table_company_subscriptions(ProjectID);
-      if (!chack_for_subscription) {
-        return res
-          .status(200)
-          .send({ success: false, message: "Subscription inactive" });
-      }
+    if (!chack_for_subscription) {
+      return res
+        .status(200)
+        .send({ success: false, message: "Subscription inactive" });
+    }
 
 
     const company = await SELECTTablecompany(
@@ -1402,10 +1415,10 @@ const BringreportStage = () => {
 
     const chack_for_subscription = await select_table_company_subscriptions(ProjectID);
     if (!chack_for_subscription) {
-        return res
-          .status(200)
-          .send({ success: false, message: "Subscription inactive" });
-      };
+      return res
+        .status(200)
+        .send({ success: false, message: "Subscription inactive" });
+    };
 
 
 

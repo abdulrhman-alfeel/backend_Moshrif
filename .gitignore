@@ -16,3 +16,5 @@ logs/
 build/
 mydatabase.db
 mydatabase23.db
+mydatabase.db-shm
+mydatabase.db-wal

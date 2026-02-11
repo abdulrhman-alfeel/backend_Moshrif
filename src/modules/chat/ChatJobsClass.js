@@ -20,8 +20,10 @@ const {
   SELECTLastTableChatDontEmpty,
   getChatRooms,
   get_ALL_ChatRooms,
+  getChatRooms_project,
+  get_ALL_ChatRooms_project,
 } = require('../../../sql/selected/selected');
-const {  ChateNotficationdelete } = require('../notifications/NotifcationProject');
+const { ChateNotficationdelete } = require('../notifications/NotifcationProject');
 const { insertPostURL } = require('../posts/insertPost');
 const { deleteFileSingle } = require('../../../middleware/Fsfile');
 const { uploaddata, bucket } = require('../../../bucketClooud');
@@ -32,14 +34,8 @@ const { v4: uuidv4 } = require('uuid');
 const { GoogleAuth } = require('google-auth-library');
 const { Deleteposts } = require('../posts/updatPost');
 const moment = require('moment');
-const {
-  parsePositiveInt,
-  esc,
-  toISO,
-  View_type,
-} = require('../../../middleware/Aid');
+const { parsePositiveInt, esc, toISO, View_type } = require('../../../middleware/Aid');
 const { UpdateTableViewsChate } = require('../../../sql/update');
-
 
 //   عمليات استقبال وارسال ومشاهدة شات المراحل
 
@@ -446,8 +442,7 @@ const ClassChatOprationView = async (data, chate_type = 'Chat') => {
           await insertTableViewsChate([data.chatID, data.userName], 'ViewsCHATSTAGE');
         } else {
           await insertTableViewsChate([data.chatID, data.userName]);
-        };
-
+        }
       }
       resolve(true);
     } catch (err) {
@@ -638,57 +633,75 @@ const insertdatafile = () => {
   };
 };
 
-const Bring_chat_room =  () => {
+const Bring_chat_room = () => {
   return async (req, res) => {
+    try {
+      const { lastChatId = 0, ProjectID = 0 } = req.query;
+      const userSession = req.session.user;
 
-  try {
-    const { lastChatId = 0 } = req.query;
-    const userSession = req.session.user;
+      if (!userSession) {
+        res.status(401).send('Invalid session');
+        console.log('Invalid session');
+      }
+      let result;
+      if (ProjectID > 0) {
+        result = await getChatRooms_project(
+          userSession.userID,
+          userSession?.userName,
+          userSession?.PhoneNumber,
+          ProjectID,
+          lastChatId,
+        );
+      } else {
+        result = await getChatRooms(
+          userSession.userID,
+          userSession?.userName,
+          userSession?.PhoneNumber,
+          lastChatId,
+        );
+      }
 
-    if (!userSession) {
-      res.status(401).send('Invalid session');
-      console.log('Invalid session');
+      res.send(result).status(200);
+    } catch (err) {
+      res.send({ success: 'فشل تنفيذ المهمة' }).status(401);
     }
-
-    const result = await getChatRooms(userSession.userID, lastChatId);
-    res.send(result).status(200);
-  } catch (err) {
-    res.send({ success: 'فشل تنفيذ المهمة' }).status(401);
-  }
-}
+  };
 };
 
-
-const Bring_All_ChatRooms =  () => {
+const Bring_All_ChatRooms = () => {
   return async (req, res) => {
-  try {
-    const {  chatID = 0 } = req.query;
-  
-  const userSession = req.session.user;
+    try {
+      const { lastChatId = 0, ProjectID = 0 } = req.query;
 
-  if (!userSession) {
-    res.status(401).send('Invalid session');
-    console.log('Invalid session');
-  };
-  if(userSession.job !== 'Admin'){
-    res.status(403).send('Forbidden: Access is denied');
-    console.log('Forbidden: Access is denied');
-  };
-  try {
-    const result = await get_ALL_ChatRooms(userSession.IDCompany, chatID);
-    res.send(result).status(200);
+      const userSession = req.session.user;
 
-  } catch (err) {
-    console.log('Error fetching chat rooms:', err);
-    res.status(500).send({ success: 'Failed to fetch chat rooms' });  
-  }
-}catch  (err) {
-  console.log('Error in Bring_All_ChatRooms:', err);
-  res.status(500).send({ success: 'Failed to fetch chat rooms' });      
-}
-}
+      if (!userSession) {
+        res.status(401).send('Invalid session');
+        console.log('Invalid session');
+      }
+      if (userSession.job !== 'Admin') {
+        res.status(403).send('Forbidden: Access is denied');
+        console.log('Forbidden: Access is denied');
+      }
+      try {
+        let result;
+        if (ProjectID > 0) {
+          result = await get_ALL_ChatRooms_project(ProjectID, lastChatId);
+        } else {
+          result = await get_ALL_ChatRooms(userSession.IDCompany, lastChatId);
+        }
+        res.send(result).status(200);
+      } catch (err) {
+        console.log('Error fetching chat rooms:', err);
+        res.status(500).send({ success: 'Failed to fetch chat rooms' });
+      }
+    } catch (err) {
+      console.log('Error in Bring_All_ChatRooms:', err);
+      res.status(500).send({ success: 'Failed to fetch chat rooms' });
+    }
+  };
 };
-  
+
 module.exports = {
   ClassChatOprationView,
   ClassChackTableChat,
@@ -702,5 +715,5 @@ module.exports = {
   filterTableChat,
   sendNote,
   Bring_chat_room,
-  Bring_All_ChatRooms
+  Bring_All_ChatRooms,
 };
