@@ -226,14 +226,14 @@ const projectBrinshv2 = (uploadQueue) => {
         Project_Space,
         company_subscriptions_id = 0
       } = req.body || {};
-      // const chack_company = await chack_company_subscription(company_subscriptions_id);
+      const chack_company = await chack_company_subscription(company_subscriptions_id);
 
-      // if (!chack_company) {
-      //   return res.status(200).send({
-      //     success:  "الاشتراك غير صالح",
-      //     message: "الاشتراك غير صالح",
-      //   });
-      // }
+      if (!chack_company) {
+        return res.status(200).send({
+          success:  "الاشتراك غير صالح",
+          message: "الاشتراك غير صالح",
+        });
+      }
 
       // 2) تحقق أولي سريع (حتى لا نرمي على الدالة الداخلية مباشرة)
       const prelimErrors = {};
@@ -269,7 +269,7 @@ const projectBrinshv2 = (uploadQueue) => {
         Project_Space,
         userSession.IDCompany
       );
-      // await project_subscription(idProject, company_subscriptions_id);
+      await project_subscription(idProject, company_subscriptions_id);
 
       // 5) رد النجاح
       return res.status(200).send({
@@ -464,7 +464,7 @@ const InsertStage = (uploadQueue) => {
         console.warn("UpdaterateCost failed:", e);
       }
       try {
-        await Stageinsert(projectIdNum, 0, userSession.userName);
+        await Stageinsert(projectIdNum, 0, userSession.userID);
       } catch (e) {
         console.warn("Stageinsert failed:", e);
       }
@@ -536,7 +536,7 @@ const insertStageSub = (uploadQueue) => {
         console.warn("UpdaterateStage failed:", e);
       }
       try {
-        await StageSubinsert(projectIdNum, stageIdNum, userSession.userName);
+        await StageSubinsert(projectIdNum, stageIdNum, userSession.userID);
       } catch (e) {
         console.warn("StageSubinsert failed:", e);
       }
@@ -632,7 +632,7 @@ const insertStageSubv2 = (uploadQueue) => {
       // 7) تحديثات لاحقة (غير حرجة)
       try { await UpdaterateCost(projectIdNum); } catch (e) { console.warn("UpdaterateCost failed:", e); }
       try { await UpdaterateStage(projectIdNum, stageIdNum); } catch (e) { console.warn("UpdaterateStage failed:", e); }
-      try { await StageSubinsert(projectIdNum, stageIdNum, userSession.userName); } catch (e) { console.warn("StageSubinsert failed:", e); }
+      try { await StageSubinsert(projectIdNum, stageIdNum, userSession.userID); } catch (e) { console.warn("StageSubinsert failed:", e); }
 
       // 8) رد النجاح
       return res.status(200).send({
@@ -815,7 +815,7 @@ const NotesStage = (uploadQueue) => {
       ]);
 
       // 7) إجراءات لاحقة غير حرجة
-      try { await Delayinsert(projectIdNum, stageHomeId, userSession.userName); }
+      try { await Delayinsert(projectIdNum, stageHomeId, userSession.userID); }
       catch (e) { console.warn("Delayinsert failed:", e); }
 
       // 8) رد النجاح
@@ -929,7 +929,7 @@ const NotesStageSub = (uploadQueue) => {
           bringData.StagHOMID,
           stageSubIdNum,
           Note,
-          userSession.userName,
+          userSession.userID,
           type === "AddNote" ? "اضاف" : (type === "EditNote" ? "تعديل" : "حذف")
         );
       } catch (logErr) { console.warn("StageSubNote failed:", logErr); }
@@ -1179,6 +1179,7 @@ const AddORCanselAchievmentarrayall = (uploadQueue) => {
           await opreationAddAchivevment(
             id,
             userName,
+            userSession.userID,
             PhoneNumber,
             bringData,
             mode === "add" ? "alladd" : undefined
@@ -1217,6 +1218,7 @@ const AddORCanselAchievmentarrayall = (uploadQueue) => {
 const opreationAddAchivevment = async (
   StageSubID,
   userName,
+  userID,
   PhoneNumber,
   bringData,
   type = "single"
@@ -1230,10 +1232,10 @@ const opreationAddAchivevment = async (
     };
 
     if (type === "single") {
-      await opreationpartoneAchivement(data, bringData, StageSubID, userName);
+      await opreationpartoneAchivement(data, bringData, StageSubID, userID);
     } else {
       if (type === "alladd" && bringData.Done === "true") return;
-      await opreationpartoneAchivement(data, bringData, StageSubID, userName);
+      await opreationpartoneAchivement(data, bringData, StageSubID, userID);
     }
   } catch (error) {
     console.log(error);
@@ -1244,7 +1246,7 @@ const opreationpartoneAchivement = async (
   data,
   bringData,
   StageSubID,
-  userName
+  userID
 ) => {
   let Done;
   let CloseDate;
@@ -1279,7 +1281,7 @@ const opreationpartoneAchivement = async (
   );
   await AchievmentStageSubNote(
     StageSubID,
-    userName,
+    userID,
     types === "تم الانجاز" ? "إنجاز" : types
   );
 };
@@ -1361,7 +1363,7 @@ const ClassCloaseOROpenStage = (uploadQueue) => {
         await CloseOROpenStagenotifcation(
           projectIdNum,
           stageIdNum,
-          userSession.userName,
+          userSession.userID,
           !isCurrentlyDone ? "اغلاق" : "فتح"
         );
       } catch (e) {
@@ -1505,7 +1507,7 @@ const ExpenseInsert = (uploadQueue) => {
 
       // 7) تحديثات/إشعارات غير حرجة (لا تُسقط العملية عند الفشل)
       try {
-        await Financeinsertnotification(projectIdNum, "مصروفات", "إضافة", userSession.userName);
+        await Financeinsertnotification(projectIdNum, "مصروفات", "إضافة", userSession.userID);
       } catch (e) { console.warn("Financeinsertnotification failed:", e); }
       try {
         await UpdaterateCost(projectIdNum, "cost");
@@ -1596,7 +1598,7 @@ const RevenuesInsert = (uploadQueue) => {
 
       // 7) إشعار/تحديثات لاحقة (لا تُسقط العملية لو فشلت)
       try {
-        await Financeinsertnotification(projectIdNum, "عهد", "إضافة", userSession.userName);
+        await Financeinsertnotification(projectIdNum, "عهد", "إضافة", userSession.userID);
       } catch (e) { console.warn("Financeinsertnotification failed:", e); }
       try {
         await UpdaterateCost(projectIdNum, "cost");
@@ -1688,7 +1690,7 @@ const ReturnsInsert = (uploadQueue) => {
 
       // 7) إشعار/تحديثات غير حرجة (لا تُسقط العملية لو فشلت)
       try {
-        await Financeinsertnotification(projectIdNum, "مرتجعات", "إضافة", userSession.userName);
+        await Financeinsertnotification(projectIdNum, "مرتجعات", "إضافة", userSession.userID);
       } catch (e) { console.warn("Financeinsertnotification failed:", e); }
       try {
         await UpdaterateCost(projectIdNum, "cost");

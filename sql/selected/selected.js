@@ -405,7 +405,7 @@ SELECT
     ON st.id = ps.company_subscriptions_id
   AND st.status = 'active'
   WHERE ps.project_id = cS.id
-) THEN 'true' ELSE 'true' END AS status_subscription,
+) THEN 'true' ELSE 'false' END AS status_subscription,
 ( SELECT st.id
   FROM project_subscription ps
   JOIN company_subscriptions st
@@ -2911,7 +2911,7 @@ const SELECTLastTableChate = (ProjectID, Type, count = 80, kind = 'Chat') => {
   });
 };
 
-function getChatRooms(userId,userName,PhoneNumber, chatID = 0) {
+function getChatRooms(userId, userName, PhoneNumber, chatID = 0) {
   return new Promise((resolve, reject) => {
     const sql = `
       WITH last_msg AS (
@@ -2971,10 +2971,10 @@ function getChatRooms(userId,userName,PhoneNumber, chatID = 0) {
       WHERE
       uc.id != ? AND f.chatID > ?
       ORDER BY f.chatID ASC
-      LIMIT 20;
+      LIMIT 10;
     `;
 
-    const params = [userId, userId, userId, userId,PhoneNumber,userName, userId, chatID];
+    const params = [userId, userId, userId, userId, PhoneNumber, userName, userId, chatID];
 
     db.all(sql, params, (err, rows) => {
       if (err) return reject(err);
@@ -2986,9 +2986,6 @@ function getChatRooms(userId,userName,PhoneNumber, chatID = 0) {
     });
   });
 }
-
-
-
 
 // console.log(getChatRooms(1, 0,"Software Engineer",502464530).then(result => console.log(result)).catch(err => console.error(err)));
 
@@ -3019,7 +3016,9 @@ function get_ALL_ChatRooms(componentId, chatID = 0) {
     l.Sender    AS lastSender,
     l.message   AS lastMessage,
     l.Date      AS lastDate,
-    l.timeminet AS lastTimeminet
+    l.timeminet AS lastTimeminet,
+    ub.id AS receverid,
+    ua.id AS senderid
   FROM last_msg l
   LEFT JOIN usersCompany ua
     ON ua.id = l.userA
@@ -3029,7 +3028,7 @@ function get_ALL_ChatRooms(componentId, chatID = 0) {
   AND (l.companyId IS NULL OR ub.IDCompany = l.companyId)
   WHERE l.rn_last = 1  AND ub.IDCompany = ? AND l.chatID > ?
   ORDER BY l.chatID DESC 
-  LIMIT 50;
+  LIMIT 10;
     `;
 
     const params = [componentId, chatID];
@@ -3043,7 +3042,7 @@ function get_ALL_ChatRooms(componentId, chatID = 0) {
     });
   });
 }
-function getChatRooms_project(userId,userName,PhoneNumber,ProjectID, chatID = 0) {
+function getChatRooms_project(userId, userName, PhoneNumber, ProjectID, chatID = 0) {
   return new Promise((resolve, reject) => {
     const sql = `
       WITH last_msg AS (
@@ -3106,7 +3105,18 @@ function getChatRooms_project(userId,userName,PhoneNumber,ProjectID, chatID = 0)
       LIMIT 20;
     `;
 
-    const params = [userId, userId,ProjectID, userId, userId,PhoneNumber,ProjectID, userName, userId, chatID];
+    const params = [
+      userId,
+      userId,
+      ProjectID,
+      userId,
+      userId,
+      PhoneNumber,
+      ProjectID,
+      userName,
+      userId,
+      chatID,
+    ];
 
     db.all(sql, params, (err, rows) => {
       if (err) return reject(err);
@@ -3118,9 +3128,6 @@ function getChatRooms_project(userId,userName,PhoneNumber,ProjectID, chatID = 0)
     });
   });
 }
-
-
-
 
 // console.log(getChatRooms_project(1, "Software Engineer", 502464530, 1).then(result => console.log(result)).catch(err => console.error(err)));
 
@@ -3218,6 +3225,9 @@ const SELECTTableViewChate = (chatID, userName, type = 'Views') => {
     });
   });
 };
+
+
+
 // AND DateDay BETWEEN strftime('%Y-%m-01',CURRENT_DATE )  AND CURRENT_DATE
 const SELECTTableNavigation = (data, names = [], where = '', equals = '!=') => {
   return new Promise((resolve, reject) => {
@@ -3524,12 +3534,15 @@ const Select_table_company_subscriptionsChack = async (project_id) => {
 
 const Select_table_company_subscriptions_onObject = async (
   company_subscriptions_id,
+  state = `AND status='active'`,
   type = 'id',
 ) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
-        `SELECT *,code_subscription  AS name FROM company_subscriptions  WHERE ${type}=? AND status='active' `,
+        `SELECT *,(code_subscription || ' - ' || project_count || ' - ' || project_count_used)
+        AS name ,st.name AS name_package ,project_count, project_count_used   FROM company_subscriptions cs JOIN subscription_types st ON cs.subscription_type_id = st.id   WHERE ${type}=?  ${state}`,
+
         [company_subscriptions_id],
         function (err, result) {
           if (err) {
@@ -3542,11 +3555,11 @@ const Select_table_company_subscriptions_onObject = async (
     });
   });
 };
-const Select_table_company_subscriptions_vs2 = async (company_subscriptions_id, type = 'id') => {
+const Select_table_company_subscriptions_vs2 = async (company_subscriptions_id, type = 'cs.id',kind=`AND status='inactive'`) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
-        `SELECT *,code_subscription  AS name FROM company_subscriptions  WHERE ${type}=? AND status='inactive' `,
+        `SELECT cs.*,cs.code_subscription  AS name, c.NameCompany,c.StreetName, c.Country,c.City,uc.userName,uc.PhoneNumber FROM company_subscriptions cs JOIN company c ON cs.company_id = c.id  JOIN usersCompany uc ON uc.IDCompany = c.id  AND uc.job = 'Admin' WHERE ${type}=? ${kind} `,
         [company_subscriptions_id],
         function (err, result) {
           if (err) {
@@ -3568,7 +3581,7 @@ const select_table_company_subscriptions = async (ProjectID, type = 'project_id'
         [ProjectID],
         function (err, result) {
           if (result.length === 0 || err) {
-            resolve(true);
+            resolve(false);
           } else {
             resolve(true);
           }

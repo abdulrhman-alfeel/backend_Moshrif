@@ -228,6 +228,16 @@ const DeleteUserPrepare = (data) => {
     });
   });
 };
+const DeleteSubscriptionTypes = (data) => {
+  db.serialize(function () {
+    db.run(`Delete FROM subscription_types WHERE id=?`, data, function (err) {
+      if (err) {
+        console.error(err.message);
+      }
+      // console.log(`Row with the ID ${this.lastID} has been Deleteed.`);
+    });
+  });
+};
 
 const DeleteTablecompanySubProjectChate = () => {};
 
@@ -254,5 +264,6 @@ module.exports = {
   DeleteTablecompanySubProjectallapi,
   deletePostFromDatabase,
   DeleteuserBransh,
-  DeleteTablecompany_subscriptions
+  DeleteTablecompany_subscriptions,
+  DeleteSubscriptionTypes
 };

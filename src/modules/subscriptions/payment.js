@@ -9,6 +9,7 @@ const {
   Select_table_company_subscriptions_vs2,
 } = require("../../../sql/selected/selected");
 const { DeleteTablecompany_subscriptions } = require("../../../sql/delete");
+const path = require("path");
 
 /**
  * مهم جداً: نحتاج rawBody عشان Signature verification (HMAC على body)
@@ -64,7 +65,6 @@ const Creat_payment = () => {
         project_count,
         company_subscriptions_id = null,
       } = req.body || {};
-      // console.log('hello');
 
       const userSession = req.session.user;
       if (!userSession) {
@@ -99,12 +99,13 @@ const Creat_payment = () => {
 
       const { code_subscription, price } = result;
 
+
       const callbackUrl = `${process.env.BASE_URL}/payments/clickpay/ipn`;
       const returnUrl = `${process.env.BASE_URL}/payments/clickpay/return?cart_id=${code_subscription}&type=${chack}`;
+
       // const returnUrl = `${process.env.BASE_URL}/payments/clickpay/return`;
 
       const url = "https://secure.clickpay.com.sa/payment/request";
-
       // هذا نفس payload اللي عندك (وزدت callback + customer_details اختياريين)
       const data = {
         profile_id: Number(process.env.CLICKPAY_PROFILE_ID),
@@ -122,26 +123,26 @@ const Creat_payment = () => {
         return_using_get: true,
 
         customer_details: {
-          name: "Customer",
+          name: result?.NameCompany || "Customer Name",
           email: "customer@example.com",
-          phone: "0500000000",
-          street1: "Address",
-          city: "Riyadh",
-          state: "Riyadh",
-          country: "SA",
+          phone: result?.PhoneNumber || "0000000000",
+          street1: result?.StreetName || "Address",
+          city: result?.City || "City",
+          state: result?.City || "State",
+          country: result?.Country || "Country",
           zip: "00000",
           ip:
             req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
             req.socket.remoteAddress,
         },
       };
-
       const headers = {
         Authorization: process.env.CLICKPAY_SERVER_KEY, // نفس طريقتك :contentReference[oaicite:7]{index=7}
         "Content-Type": "application/json",
       };
 
       const response = await axios.post(url, data, { headers });
+
 
       // ClickPay يرجع redirect_url كرابط صفحة الدفع. :contentReference[oaicite:8]{index=8}
       const redirectUrl = response?.data?.redirect_url;
@@ -152,11 +153,12 @@ const Creat_payment = () => {
           message: "No redirect_url returned from ClickPay",
           raw: response?.data,
         });
-      }
+      };
       await Updatetran_ref_company_subscriptions(
         response?.data?.tran_ref,
         code_subscription
       );
+
       return res.json({
         ok: true,
         payment_url: redirectUrl,
@@ -164,6 +166,7 @@ const Creat_payment = () => {
         cart_id: code_subscription,
         raw: response.data,
       });
+
     } catch (err) {
       const raw = err?.response?.data || err?.message;
       console.error("Create payment error:", raw);
@@ -189,7 +192,7 @@ const clickpay_ipn = () => {
       // PayTabs/ClickPay عادةً: payment_result.response_status = A / D / ... :contentReference[oaicite:10]{index=10}
       const status = payload?.payment_result?.response_status;
       const message = payload?.payment_result?.response_message;
-
+console.log("ClickPay IPN:", { cartId, tranRef, status, message });
       // console.log("ClickPay IPN:", { cartId, tranRef, status, message });
 
       // TODO: update DB هنا
@@ -277,31 +280,39 @@ const validate_payment = async (tran_ref) => {
   }
 };
 
+
 const clickpay_return = () => {
   return async (req, res) => {
-    const { cart_id ,type} = req.query || {};
+    try {
+      const { cart_id, type } = req.query || {};
+      // console.log("ClickPay Return:", { cart_id, type }); 
+      const { tran_ref, price,vat } = await Select_table_company_subscriptions_vs2(
+        cart_id,
+        "code_subscription"
+      );
 
-    const { tran_ref,price } = await Select_table_company_subscriptions_vs2(
-      cart_id,
-      "code_subscription"
-    );
+      const data = await validate_payment(tran_ref);
+      // console.log("ClickPay Return Validation Result:", data);
+      const total = parseFloat(price) + parseFloat(vat);
+      // console.log("Total:", total, "Cart Amount:", data?.cart_amount);
+      const ok =
+        data?.payment_result?.response_status === "A" &&
+        parseInt(data?.cart_amount) === parseInt(total);
 
-    const data = await validate_payment(tran_ref);
-    if (data.payment_result.response_status === "A" && Number(data.cart_amount) === Number(price)) {
-      // الأفضل: لا تعتبر return هو المصدر الوحيد
-      // خليه فقط واجهة/تجربة مستخدم، والتأكيد النهائي من IPN أو Query API
-      if (cart_id) await UpdateState_company_subscriptions(cart_id);
-          res.send(
-      "Payment finished. You can close this page and return to the app."
-    );
-    } else {
+      if (ok) {
+        if (cart_id) await UpdateState_company_subscriptions(cart_id);
 
-     type === 'true' &&  await DeleteTablecompany_subscriptions(cart_id);
-         res.send(
-      ".......................... not Payment finished. You can close this page and return to the app."
-    );
+        // ✅ يفتح صفحة HTML مع باث يدل على النجاح
+        return res.redirect(`/payment/success?cart_id=${encodeURIComponent(cart_id || "")}`);
+      } else {
+        if (type === "true" && cart_id) await DeleteTablecompany_subscriptions(cart_id);
+
+        // ✅ يفتح صفحة HTML مع باث يدل على الفشل
+        return res.redirect(`/payment/failed?cart_id=${encodeURIComponent(cart_id || "")}`);
+      }
+    } catch (e) {
+      return res.redirect(`/payment/error`);
     }
-
   };
 };
 

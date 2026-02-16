@@ -85,6 +85,12 @@ const Likesinsert = () => {
 const Commentinsert = () => {
   return async (req, res) => {
     try {
+      const userSession = req.session.user;
+      if (!userSession) {
+        res.status(401).json({ success:false, message:'جلسة غير صالحة' });
+        console.log('Invalid session');
+        return;
+      }
       const PostId      = parsePositiveInt(req.body?.PostId);
       const commentText = String(req.body?.commentText ?? "").trim();
       const userName    = String(req.body?.userName ?? "").trim();
@@ -103,7 +109,7 @@ const Commentinsert = () => {
       ]);
 
       // إرسال الإشعار بعد الإدراج
-      try { await Postsnotification(PostId, "Comment", userName, "تعليق"); } catch {}
+      try { await Postsnotification(PostId, "Comment", userSession.userID, "تعليق"); } catch {}
 
       // إدراج نسخة في دردشة المرحلة (لا تُسقط العملية عند الفشل)
       try { await insertCommentinchat(PostId, commentText, userName); } catch {}

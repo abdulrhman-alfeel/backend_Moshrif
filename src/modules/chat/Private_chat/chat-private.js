@@ -93,7 +93,7 @@ function initChatPrivateNamespace(io, redis, persistQueue) {
           console.log(payload);
 
         // const messageId = await redis.incr("chat:global:id");
-        const result = await OpreactionSend_message(payload, 'Chat_private');
+        const result = await OpreactionSend_message(payload, 'Chat_private', userId);
         // 🔥 بث فوري للطرفين
         nsp.to(roomDM(payload.conversationId)).emit('received_message', result);
 

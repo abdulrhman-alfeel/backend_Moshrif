@@ -50,7 +50,6 @@ const {
   Updatesubscripationwhendeletproject,
 } = require("../../../../sql/update");
 const {
-  Projectinsert,
   Stageinsert,
   RearrangeStageProject,
   Financeinsertnotification,
@@ -65,7 +64,6 @@ const {
 } = require("../select/bringProject");
 
 const {
-  StageTempletXsl,
   Stage,
   AccountDays,
   Addusertraffic,
@@ -514,7 +512,7 @@ const RearrangeStage = (uploadQueue) => {
       await Stage(DataStage, baseISO, "update");
 
       // 6) أي إجراءات لاحقة (إشعارات/سجل تغييرات) — لا تُسقط العملية عند الفشل
-      try { await RearrangeStageProject(firstProjectId, userSession.userName); }
+      try { await RearrangeStageProject(firstProjectId, userSession.userID); }
       catch (e) { console.warn("RearrangeStageProject failed:", e); }
 
       // 7) نجاح
@@ -756,7 +754,7 @@ const UpdateDataStage = (uploadQueue) => {
       // 10) إجراءات لاحقة (لا تُسقط العملية عند الفشل)
       try { await UpdaterateCost(projectIdNum); } catch {}
       try { await UpdaterateStage(projectIdNum, stageIdNum); } catch {}
-      try { await Stageinsert(projectIdNum, stageIdNum, userSession.userName, "تعديل"); } catch {}
+      try { await Stageinsert(projectIdNum, stageIdNum, userSession.userID, "تعديل"); } catch {}
 
       // 11) الاستجابة
       return res.status(200).json({ success: message, message });
@@ -879,7 +877,7 @@ const UpdateDataStageSub = (uploadQueue) => {
       ]);
 
       // 9) (اختياري) سجلّ عملية/إشعار — لا تُسقط العملية عند الفشل
-      try { await StageSubinsert(current.ProjectID, current.StagHOMID, userSession.userName); } catch {}
+      try { await StageSubinsert(current.ProjectID, current.StagHOMID, userSession.userID); } catch {}
 
       // 10) نجاح
       return res.status(200).json({ success:  "تم تنفيذ العملية بنجاح", message: "تم تنفيذ العملية بنجاح" });
@@ -1675,7 +1673,7 @@ const UPDATEdataRequests = (uploadQueue) => {
       // 6) الرد + إشعار
       res.status(200).json({ success:"تمت العملية بنجاح", message:"تمت العملية بنجاح" });
       try {
-        await Financeinsertnotification(0, "طلب", "تعديل", userSession.userName, requestIdNum);
+        await Financeinsertnotification(0, "طلب", "تعديل", userSession.userID, requestIdNum);
       } catch {}
     } catch (error) {
       console.error(error);

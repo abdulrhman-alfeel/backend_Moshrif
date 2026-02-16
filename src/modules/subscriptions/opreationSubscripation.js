@@ -9,6 +9,7 @@ const {
   Select_table_company_subscriptions_onObject,
   SELECT_Table_subscription_types_one_object,
   Select_table_company_subscriptionsChack,
+  Select_table_company_subscriptions_vs2,
 } = require("../../../sql/selected/selected");
 const {
   UPDATE_project_subscriptions,
@@ -16,6 +17,7 @@ const {
   Update_subscription_types,
 } = require("../../../sql/update");
 const { generateSubscriptionCode } = require("../../../middleware/Aid");
+const { DeleteSubscriptionTypes } = require("../../../sql/delete");
 
 /**
  * إدراج نوع باقة اشتراك جديد في جدول subscription_types
@@ -99,6 +101,24 @@ const insert_subscription_types = () => {
   };
 };
 
+const Delete_subscription_types = () => {
+  return async (req, res) => {
+    try {
+      const { id } = req.query;
+      await DeleteSubscriptionTypes(id);
+      return res.status(200).json({
+        success: true,
+        message: "Subscription type deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting subscription type:", error);
+      return res.status(500).json({
+        success: false,
+        error: "Internal server error.",
+      });
+    }
+  };
+};
 
 const opreation_update_subscription = () => {
   return async (req, res) => {
@@ -170,14 +190,17 @@ const Subscripation_new = async (id,project_count,IDCompany,res,Status="active")
     
       // جلب بيانات نوع الباقة
       const data_types = await SELECT_Table_subscription_types_one_object(id);
-      if (data_types.length === 0) {
+      if (data_types?.length === 0) {
         return res
           .status(200)
           .json({ success: false, error: "Subscription type not found." });
       }
 
+      const price = project_count * data_types.price_per_project  * data_types.duration_in_months  ; // السعر مع الضريبة
+      const vat = (price * 15 / 100); // نسبة الضريبة (مثال: 15%)
+      const total = price + vat;
+      // console.log("Price:", price, "VAT:", vat, "Total:", total); 
       // حساب السعر الإجمالي للاشتراك
-      const price = project_count * data_types.price_per_project  * data_types.duration_in_months ;
       // حساب تاريخ انتهاء الاشتراك: اليوم + مدة الباقة بالأشهر
       const end_date = moment()
         .add(Number(data_types.duration_in_months || 0), "months")
@@ -186,19 +209,21 @@ const Subscripation_new = async (id,project_count,IDCompany,res,Status="active")
       // توليد كود اشتراك فريد
       const code_subscription = generateSubscriptionCode("MOSHRIF", [4, 4, 4]);
 
-      // حفظ اشتراك الشركة
+      // حفظ اشتراك الشركة  
       await insert_table_company_subscription([
         IDCompany,
         id,
         code_subscription,
         project_count,
         price,
+        vat,
         end_date,
         Status,
       ]);
-      return {code_subscription,price};
+      const data_campany  = await Select_table_company_subscriptions_vs2(IDCompany,'c.id');
+      return {code_subscription,price:total,...data_campany};
   }catch(error){
-    console.log(error)
+    console.log(error,'Error in Subscripation_new');
   }
 }
 
@@ -348,6 +373,8 @@ const convert_project_subscription_to_company_subscription = () => {
 const Bring_company_subscription = () => {
   return async (req, res) => {
     try {
+            const { type = 1 } = req.query;
+
       const userSession = req.session.user;
       if (!userSession) {
         return res
@@ -355,9 +382,12 @@ const Bring_company_subscription = () => {
           .json({ success: false, error: "Invalid session" });
       }
 
+
+      const typeStatus = type == 1 ? "AND status='active'" : ""; // نوع الجلب: حسب company_id أو حسب id الاشتراك نفسه
       // جلب اشتراكات الشركة (على حسب company_id)
       const data = await Select_table_company_subscriptions_onObject(
         userSession?.IDCompany,
+        typeStatus,
         "company_id"
       );
 
@@ -483,5 +513,6 @@ module.exports = {
   Bring_company_subscription,
   update_company_subscription_status,
   opreation_update_subscription,
-  Subscripation_new
+  Subscripation_new,
+  Delete_subscription_types
 };

@@ -3,6 +3,7 @@ const {
   selecttablecompanySubProjectall,
 } = require('../../../sql/selected/selected');
 const { SELECTTableusersCompanyonObject } = require('../../../sql/selected/selectuser');
+const { ChateNotfication } = require('../notifications/NotifcationProject');
 const {
   ClassChatOprationView,
   OpreactionSend_message,
@@ -103,12 +104,24 @@ const ChatOpration = async (io,redis, persistQueue) => {
           return cb?.({ ok: false, err: 'forbidden' });
         }
 
-        const result = await OpreactionSend_message(payload);
+        const result = await OpreactionSend_message(payload, 'chat', userId);
 
-        nsp.to(`${payload.ProjectID}:${payload?.StageID}`).timeout(50).emit('received_message', result);
+        
+    
 
         // 🔥 بث فوري للطرفين
-        nsp.to(roomDM(`${payload.ProjectID}:${payload?.StageID}`)).emit('received_message', result);
+        nsp.to(roomDM(`${payload.ProjectID}:${payload?.StageID}`)).timeout(50).emit('received_message', result);
+            
+        
+        await ChateNotfication(
+            payload.ProjectID,
+            payload?.StageID,
+            payload.message,
+            userId,
+            payload.Reply,
+            payload.File
+          );
+
 
         // 💾 حفظ Async
         // await persistQueue.add("persist", result);

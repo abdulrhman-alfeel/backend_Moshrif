@@ -1,4 +1,4 @@
-const db = require("./sqlite");
+const db = require('./sqlite');
 
 // ALTER TABLE companySubprojects ADD COLUMN numberBuilding INTEGER NULL;
 // ALTER TABLE companySubprojects ADD COLUMN Disabled INTEGER NULL DEFAULT 'true';
@@ -16,7 +16,9 @@ const CreateTable = () => {
   // PostgreSQL: DDL should be managed via migrations.
   // Running SQLite-specific CREATE TABLE / TRIGGER statements on Postgres will fail.
   if (process.env.DB_CLIENT && process.env.DB_CLIENT.toLowerCase() === 'postgres') {
-    console.log('ℹ️  DB_CLIENT=postgres: skipping SQLite auto-create tables. Use sql/migrations/postgres/*.sql');
+    console.log(
+      'ℹ️  DB_CLIENT=postgres: skipping SQLite auto-create tables. Use sql/migrations/postgres/*.sql',
+    );
     return;
   }
   db.run(`CREATE TABLE IF NOT EXISTS companyRegistration (
@@ -37,30 +39,30 @@ const CreateTable = () => {
   )`);
 
   db.run(
-    `CREATE TABLE IF NOT EXISTS Linkevaluation(id INTEGER PRIMARY KEY AUTOINCREMENT, IDcompanySub INTEGER NOT NULL ,urlLink TEXT NULL) `
+    `CREATE TABLE IF NOT EXISTS Linkevaluation(id INTEGER PRIMARY KEY AUTOINCREMENT, IDcompanySub INTEGER NOT NULL ,urlLink TEXT NULL) `,
   );
 
   db.run(
-    `CREATE TABLE IF NOT EXISTS usersCompany(id INTEGER PRIMARY KEY AUTOINCREMENT,IDCompany INTEGER NOT NULL,userName TEXT NOT NULL, IDNumber INTEGER NOT NULL,PhoneNumber TEXT NOT NULL, image TEXT NULL,jobdiscrption NOT NULL ,job TEXT NOT NULL,jobHOM TEXT  NULL, DateOFjoin DATE NULL DEFAULT CURRENT_DATE,Activation NULL DEFAULT 'true',Validity JSON NULL,FOREIGN KEY (IDCompany) REFERENCES company (id) ON DELETE RESTRICT ON UPDATE RESTRICT )`
+    `CREATE TABLE IF NOT EXISTS usersCompany(id INTEGER PRIMARY KEY AUTOINCREMENT,IDCompany INTEGER NOT NULL,userName TEXT NOT NULL, IDNumber INTEGER NOT NULL,PhoneNumber TEXT NOT NULL, image TEXT NULL,jobdiscrption NOT NULL ,job TEXT NOT NULL,jobHOM TEXT  NULL, DateOFjoin DATE NULL DEFAULT CURRENT_DATE,Activation NULL DEFAULT 'true',Validity JSON NULL,FOREIGN KEY (IDCompany) REFERENCES company (id) ON DELETE RESTRICT ON UPDATE RESTRICT )`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS usersBransh(id INTEGER PRIMARY KEY AUTOINCREMENT,idBransh INTEGER NOT NULL,user_id INTEGER NOT NULL, job TEXT NULL DEFAULT 'عضو',Acceptingcovenant TEXT NULL DEFAULT 'false',ValidityBransh JSON NULL,DateOFjoin DATE NULL DEFAULT CURRENT_DATE)`
+    `CREATE TABLE IF NOT EXISTS usersBransh(id INTEGER PRIMARY KEY AUTOINCREMENT,idBransh INTEGER NOT NULL,user_id INTEGER NOT NULL, job TEXT NULL DEFAULT 'عضو',Acceptingcovenant TEXT NULL DEFAULT 'false',ValidityBransh JSON NULL,DateOFjoin DATE NULL DEFAULT CURRENT_DATE)`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS usersProject(id INTEGER PRIMARY KEY AUTOINCREMENT,idBransh INTEGER NOT NULL,ProjectID INTEGER NOT NULL,user_id INTEGER NOT NULL, ValidityProject JSON NULL,DateOFjoin DATE NULL DEFAULT CURRENT_DATE)`
+    `CREATE TABLE IF NOT EXISTS usersProject(id INTEGER PRIMARY KEY AUTOINCREMENT,idBransh INTEGER NOT NULL,ProjectID INTEGER NOT NULL,user_id INTEGER NOT NULL, ValidityProject JSON NULL,DateOFjoin DATE NULL DEFAULT CURRENT_DATE)`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS LoginActivaty(id INTEGER PRIMARY KEY AUTOINCREMENT,IDCompany INTEGER NOT NULL,userName TEXT NOT NULL, IDNumber INTEGER NOT NULL,PhoneNumber TEXT NOT NULL, image TEXT NULL , DateOFlogin DATE NULL DEFAULT CURRENT_DATE,DateEndLogin DATE NULL,Activation NULL DEFAULT 'true',job TEXT NOT NULL,jobdiscrption TEXT NOT NULL,Validity JSON NULL,codeVerification INTEGER NOT NULL,token TEXT NULL)`
+    `CREATE TABLE IF NOT EXISTS LoginActivaty(id INTEGER PRIMARY KEY AUTOINCREMENT,IDCompany INTEGER NOT NULL,userName TEXT NOT NULL, IDNumber INTEGER NOT NULL,PhoneNumber TEXT NOT NULL, image TEXT NULL , DateOFlogin DATE NULL DEFAULT CURRENT_DATE,DateEndLogin DATE NULL,Activation NULL DEFAULT 'true',job TEXT NOT NULL,jobdiscrption TEXT NOT NULL,Validity JSON NULL,codeVerification INTEGER NOT NULL,token TEXT NULL)`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS companySubprojects(id INTEGER PRIMARY KEY AUTOINCREMENT,IDcompanySub INTEGER NOT NULL,Nameproject TEXT NOT NULL, Note TEXT NULL,TypeOFContract TEXT NOT NULL, GuardNumber INTEGER NULL ,LocationProject TEXT NULL , ProjectStartdate DATE NULL ,Imageproject TEXT NULL,Contractsigningdate DATE NULL DEFAULT CURRENT_DATE,numberBuilding INTEGER NULL,Disabled TEXT NULL DEFAULT 'true',Referencenumber INTEGER NULL,FOREIGN KEY (IDcompanySub) REFERENCES companySub (id) ON DELETE RESTRICT ON UPDATE RESTRICT)`
+    `CREATE TABLE IF NOT EXISTS companySubprojects(id INTEGER PRIMARY KEY AUTOINCREMENT,IDcompanySub INTEGER NOT NULL,Nameproject TEXT NOT NULL, Note TEXT NULL,TypeOFContract TEXT NOT NULL, GuardNumber INTEGER NULL ,LocationProject TEXT NULL , ProjectStartdate DATE NULL ,Imageproject TEXT NULL,Contractsigningdate DATE NULL DEFAULT CURRENT_DATE,numberBuilding INTEGER NULL,Disabled TEXT NULL DEFAULT 'true',Referencenumber INTEGER NULL,FOREIGN KEY (IDcompanySub) REFERENCES companySub (id) ON DELETE RESTRICT ON UPDATE RESTRICT)`,
   );
   db.run(
     `CREATE TABLE IF NOT EXISTS companySubprojectsAudite(id INTEGER PRIMARY KEY AUTOINCREMENT,ProjectID INTEGER NOT NULL,IDcompanySub INTEGER NOT NULL,Nameproject TEXT NOT NULL, Note TEXT NULL,TypeOFContract TEXT NOT NULL, GuardNumber INTEGER NULL ,LocationProject TEXT NULL , ProjectStartdate DATE NULL ,Imageproject TEXT NULL,Contractsigningdate DATE NULL DEFAULT CURRENT_DATE,numberBuilding INTEGER NULL,Disabled TEXT NULL DEFAULT 'true',Referencenumber INTEGER NULL,  action_type TEXT NULL,
-        action_date DATE NULL,FOREIGN KEY (IDcompanySub) REFERENCES companySub (id) ON DELETE RESTRICT ON UPDATE RESTRICT)`
+        action_date DATE NULL,FOREIGN KEY (IDcompanySub) REFERENCES companySub (id) ON DELETE RESTRICT ON UPDATE RESTRICT)`,
   );
 
-db.run(`
+  db.run(`
 CREATE TRIGGER IF NOT EXISTS utr_companySubprojects_audit_update
 AFTER UPDATE ON companySubprojects
 BEGIN
@@ -79,7 +81,7 @@ BEGIN
 END;
 `);
 
-db.run(`
+  db.run(`
 CREATE TRIGGER IF NOT EXISTS utr_companySubprojects_audit_delete
 AFTER DELETE ON companySubprojects
 BEGIN
@@ -101,115 +103,115 @@ END;
 
   // templet ****************************************
   db.run(
-    `CREATE TABLE IF NOT EXISTS Stagestype(id INTEGER PRIMARY KEY AUTOINCREMENT,IDCompany INTEGER NOT NULL,Type TEXT NULL )`
+    `CREATE TABLE IF NOT EXISTS Stagestype(id INTEGER PRIMARY KEY AUTOINCREMENT,IDCompany INTEGER NOT NULL,Type TEXT NULL )`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS StagesTemplet(StageIDtemplet INTEGER PRIMARY KEY AUTOINCREMENT,StageID TEXT NULL,Type nvarchar[50] NULL,StageName nvarchar[max] NOT NULL , Days INTEGER NULL,StartDate TEXT  NULL, EndDate TEXT NULL ,CloseDate TEXT NULL , OrderBy INTEGER NULL )`
+    `CREATE TABLE IF NOT EXISTS StagesTemplet(StageIDtemplet INTEGER PRIMARY KEY AUTOINCREMENT,StageID TEXT NULL,Type nvarchar[50] NULL,StageName nvarchar[max] NOT NULL , Days INTEGER NULL,StartDate TEXT  NULL, EndDate TEXT NULL ,CloseDate TEXT NULL , OrderBy INTEGER NULL )`,
   );
 
   db.run(
-    `CREATE TABLE IF NOT EXISTS StagesSubTemplet(StageSubID INTEGER PRIMARY KEY AUTOINCREMENT,StageID TEXT NULL,StageSubName nvarchar[max] NULL,attached TEXT NULL , CloseDate TEXT NULL)`
+    `CREATE TABLE IF NOT EXISTS StagesSubTemplet(StageSubID INTEGER PRIMARY KEY AUTOINCREMENT,StageID TEXT NULL,StageSubName nvarchar[max] NULL,attached TEXT NULL , CloseDate TEXT NULL)`,
   );
 
   // CUSTOMER TEBLE *************************************
   db.run(
-    `CREATE TABLE IF NOT EXISTS StagesCUST(StageCustID INTEGER PRIMARY KEY AUTOINCREMENT,StageID INTEGER  NULL ,ProjectID INTEGER NULL ,Type nvarchar[50]  NULL,StageName TEXT NOT NULL, Days INTEGER NULL,StartDate DATE NOT NULL, EndDate DATE NULL ,CloseDate TEXT NULL , OrderBy INTEGER NULL ,Difference decimal NULL,Done NULL DEFAULT 'false',NoteOpen TEXT NULL,OpenBy nvarchar[50] NULL,NoteClosed TEXT NULL,ClosedBy nvarchar[50] NULL)`
+    `CREATE TABLE IF NOT EXISTS StagesCUST(StageCustID INTEGER PRIMARY KEY AUTOINCREMENT,StageID INTEGER  NULL ,ProjectID INTEGER NULL ,Type nvarchar[50]  NULL,StageName TEXT NOT NULL, Days INTEGER NULL,StartDate DATE NOT NULL, EndDate DATE NULL ,CloseDate TEXT NULL , OrderBy INTEGER NULL ,Difference decimal NULL,Done NULL DEFAULT 'false',NoteOpen TEXT NULL,OpenBy nvarchar[50] NULL,NoteClosed TEXT NULL,ClosedBy nvarchar[50] NULL)`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS StagesCUST_Image(id INTEGER PRIMARY KEY AUTOINCREMENT,StageID INTEGER  NULL ,ProjectID INTEGER NULL ,url nvarchar[50]  NULL, addedby TEXT NOT NULL , Date DATE NULL DEFAULT CURRENT_DATE)`
+    `CREATE TABLE IF NOT EXISTS StagesCUST_Image(id INTEGER PRIMARY KEY AUTOINCREMENT,StageID INTEGER  NULL ,ProjectID INTEGER NULL ,url nvarchar[50]  NULL, addedby TEXT NOT NULL , Date DATE NULL DEFAULT CURRENT_DATE)`,
   );
   db.run(
     `CREATE TABLE IF NOT EXISTS StageNotes(StageNoteID INTEGER PRIMARY KEY AUTOINCREMENT,StagHOMID INTEGER  NULL ,ProjectID INTEGER NULL ,Type nvarchar[50] NULL,Note nvarchar[max] NULL, DateNote NULL DEFAULT CURRENT_DATE,
-      RecordedBy nvarchar[50] NULL, UpdatedDate NULL DEFAULT CURRENT_DATE,countdayDelay INTEGER NULL ,ImageAttachment TEXT NULL )`
+      RecordedBy nvarchar[50] NULL, UpdatedDate NULL DEFAULT CURRENT_DATE,countdayDelay INTEGER NULL ,ImageAttachment TEXT NULL )`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS StagesSub(StageSubID INTEGER PRIMARY KEY AUTOINCREMENT,StagHOMID INTEGER NULL,ProjectID INTEGER NULL ,StageSubName nvarchar[max] NULL,CloseDate TEXT NULL,Done NULL DEFAULT 'false', Note JSON NULL , closingoperations JSON NULL )`
+    `CREATE TABLE IF NOT EXISTS StagesSub(StageSubID INTEGER PRIMARY KEY AUTOINCREMENT,StagHOMID INTEGER NULL,ProjectID INTEGER NULL ,StageSubName nvarchar[max] NULL,CloseDate TEXT NULL,Done NULL DEFAULT 'false', Note JSON NULL , closingoperations JSON NULL )`,
   );
 
   //  مصروفات
   db.run(
-    `CREATE TABLE IF NOT EXISTS Expense(Expenseid INTEGER PRIMARY KEY AUTOINCREMENT, projectID INTEGER NOT NULL, InvoiceNo INTEGER NULL ,Amount DECIMAL NULL, Date DATE NULL DEFAULT CURRENT_DATE , Data nvarchar[max] NULL, ClassificationName TEXT NULL , Image JSON NULL, Taxable nvarchar[10] NULL ,CreatedDate NULL DEFAULT CURRENT_DATE , Referencenumberfinanc INTEGER NULL) `
+    `CREATE TABLE IF NOT EXISTS Expense(Expenseid INTEGER PRIMARY KEY AUTOINCREMENT, projectID INTEGER NOT NULL, InvoiceNo INTEGER NULL ,Amount DECIMAL NULL, Date DATE NULL DEFAULT CURRENT_DATE , Data nvarchar[max] NULL, ClassificationName TEXT NULL , Image JSON NULL, Taxable nvarchar[10] NULL ,CreatedDate NULL DEFAULT CURRENT_DATE , Referencenumberfinanc INTEGER NULL) `,
   );
   // العهد
   db.run(
-    `CREATE TABLE IF NOT EXISTS Revenue(RevenueId INTEGER PRIMARY KEY AUTOINCREMENT, projectID INTEGER NOT NULL ,Amount DECIMAL NULL, Date DATE NULL DEFAULT CURRENT_DATE , Data nvarchar[max] NULL, Bank DECIMAL[18,2] NULL,Image JSON NULL ,Referencenumberfinanc INTEGER NULL) `
+    `CREATE TABLE IF NOT EXISTS Revenue(RevenueId INTEGER PRIMARY KEY AUTOINCREMENT, projectID INTEGER NOT NULL ,Amount DECIMAL NULL, Date DATE NULL DEFAULT CURRENT_DATE , Data nvarchar[max] NULL, Bank DECIMAL[18,2] NULL,Image JSON NULL ,Referencenumberfinanc INTEGER NULL) `,
   );
   //  المرتجع
   db.run(
-    `CREATE TABLE IF NOT EXISTS Returns(ReturnsId INTEGER PRIMARY KEY AUTOINCREMENT, projectID INTEGER NOT NULL ,Amount DECIMAL, Date DATE NULL DEFAULT CURRENT_DATE , Data nvarchar[max] NULL,Image JSON NULL,Referencenumberfinanc INTEGER NULL) `
+    `CREATE TABLE IF NOT EXISTS Returns(ReturnsId INTEGER PRIMARY KEY AUTOINCREMENT, projectID INTEGER NOT NULL ,Amount DECIMAL, Date DATE NULL DEFAULT CURRENT_DATE , Data nvarchar[max] NULL,Image JSON NULL,Referencenumberfinanc INTEGER NULL) `,
   );
   // حفظ اخر عملية pdf
   db.run(
-    `CREATE TABLE IF NOT EXISTS Savepdf(id INTEGER PRIMARY KEY AUTOINCREMENT, projectID INTEGER NOT NULL ,namefileall TEXT NULL,namefileparty TEXT NULL , Date DATE NULL DEFAULT CURRENT_DATE ,Total INTEGER NULL,TotalExpense INTEGER NULL) `
+    `CREATE TABLE IF NOT EXISTS Savepdf(id INTEGER PRIMARY KEY AUTOINCREMENT, projectID INTEGER NOT NULL ,namefileall TEXT NULL,namefileparty TEXT NULL , Date DATE NULL DEFAULT CURRENT_DATE ,Total INTEGER NULL,TotalExpense INTEGER NULL) `,
   );
   // الارشيف
   db.run(
-    `CREATE TABLE IF NOT EXISTS Archives(ArchivesID INTEGER PRIMARY KEY AUTOINCREMENT,ProjectID INTEGER NOT NULL,FolderName TEXT NOT NULL ,Date DATE NULL DEFAULT CURRENT_DATE ,children JSON NULL,ActivationHome NULL DEFAULT 'true',Activationchildren DEFAULT 'true' )`
+    `CREATE TABLE IF NOT EXISTS Archives(ArchivesID INTEGER PRIMARY KEY AUTOINCREMENT,ProjectID INTEGER NOT NULL,FolderName TEXT NOT NULL ,Date DATE NULL DEFAULT CURRENT_DATE ,children JSON NULL,ActivationHome NULL DEFAULT 'true',Activationchildren DEFAULT 'true' )`,
   );
 
   //  الطلبيات
   db.run(
-    `CREATE TABLE IF NOT EXISTS Requests(RequestsID INTEGER PRIMARY KEY AUTOINCREMENT,ProjectID INTEGER NOT NULL,Type TEXT NOT NULL, Data nvarchar[max] NOT NULL,Date DATE NULL DEFAULT CURRENT_DATE,Done TEXT NULL DEFAULT 'false',InsertBy navrchar[50] NULL,Implementedby narchar[10] NULL,Image JSON NULL,checkorderout TEXT NULL DEFAULT 'false',DateTime DATE NULL) `
+    `CREATE TABLE IF NOT EXISTS Requests(RequestsID INTEGER PRIMARY KEY AUTOINCREMENT,ProjectID INTEGER NOT NULL,Type TEXT NOT NULL, Data nvarchar[max] NOT NULL,Date DATE NULL DEFAULT CURRENT_DATE,Done TEXT NULL DEFAULT 'false',InsertBy navrchar[50] NULL,Implementedby narchar[10] NULL,Image JSON NULL,checkorderout TEXT NULL DEFAULT 'false',DateTime DATE NULL) `,
   );
 
   //العامة منشورات
   db.run(
-    `CREATE TABLE IF NOT EXISTS Post (PostID INTEGER PRIMARY KEY AUTOINCREMENT , postBy TEXT NOT NULL, Date DATE NULL DEFAULT CURRENT_DATE, url TEXT NOT NULL , Type TEXT NOT NULL ,Data TEXT NOT NULL,timeminet DATE NULL,  StageID INTEGER NOT NULL, ProjectID INTEGER NOT NULL ,brunshCommpanyID INTEGER NOT NULL , CommpanyID INTEGER NOT NULL)`
+    `CREATE TABLE IF NOT EXISTS Post (PostID INTEGER PRIMARY KEY AUTOINCREMENT , postBy TEXT NOT NULL, Date DATE NULL DEFAULT CURRENT_DATE, url TEXT NOT NULL , Type TEXT NOT NULL ,Data TEXT NOT NULL,timeminet DATE NULL,  StageID INTEGER NOT NULL, ProjectID INTEGER NOT NULL ,brunshCommpanyID INTEGER NOT NULL , CommpanyID INTEGER NOT NULL)`,
   );
   //  التعليقات
   db.run(
-    `CREATE TABLE IF NOT EXISTS Comment (CommentID INTEGER PRIMARY KEY AUTOINCREMENT, PostId INTEGER NOT NULL , commentText TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE,userName TEXT NOT NULL,FOREIGN KEY (PostId) REFERENCES Post (PostID) ON DELETE RESTRICT ON UPDATE RESTRICT)`
+    `CREATE TABLE IF NOT EXISTS Comment (CommentID INTEGER PRIMARY KEY AUTOINCREMENT, PostId INTEGER NOT NULL , commentText TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE,userName TEXT NOT NULL,FOREIGN KEY (PostId) REFERENCES Post (PostID) ON DELETE RESTRICT ON UPDATE RESTRICT)`,
   );
   //  الاعجابات
   db.run(
-    `CREATE TABLE IF NOT EXISTS Likes (LikesID INTEGER PRIMARY KEY AUTOINCREMENT, PostId INTEGER NOT NULL ,  Date DATE DEFAULT CURRENT_DATE,userName TEXT NOT NULL,FOREIGN KEY (PostId) REFERENCES Post (PostID) ON DELETE RESTRICT ON UPDATE RESTRICT)`
+    `CREATE TABLE IF NOT EXISTS Likes (LikesID INTEGER PRIMARY KEY AUTOINCREMENT, PostId INTEGER NOT NULL ,  Date DATE DEFAULT CURRENT_DATE,userName TEXT NOT NULL,FOREIGN KEY (PostId) REFERENCES Post (PostID) ON DELETE RESTRICT ON UPDATE RESTRICT)`,
   );
   // دردشة المراحل
   db.run(
-    `CREATE TABLE IF NOT EXISTS ChatSTAGE(chatID INTEGER PRIMARY KEY AUTOINCREMENT ,idSendr TEXT NOT NULL, StageID INTEGER NOT NULL ,ProjectID INTEGER NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL )`
+    `CREATE TABLE IF NOT EXISTS ChatSTAGE(chatID INTEGER PRIMARY KEY AUTOINCREMENT ,idSendr TEXT NOT NULL, StageID INTEGER NOT NULL ,ProjectID INTEGER NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL )`,
   );
   //  مشاهدة دردشة المراحل
   db.run(
-    `CREATE TABLE IF NOT EXISTS ViewsCHATSTAGE(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE, FOREIGN KEY (chatID) REFERENCES ChatSTAGE (chatID) ON DELETE RESTRICT ON UPDATE RESTRICT) `
+    `CREATE TABLE IF NOT EXISTS ViewsCHATSTAGE(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE, FOREIGN KEY (chatID) REFERENCES ChatSTAGE (chatID) ON DELETE RESTRICT ON UPDATE RESTRICT) `,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS Views_Private(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE) `
+    `CREATE TABLE IF NOT EXISTS Views_Private(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE) `,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS Views_Project(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE) `
+    `CREATE TABLE IF NOT EXISTS Views_Project(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE) `,
   );
   // الدردشة
   db.run(
-    `CREATE TABLE IF NOT EXISTS Chat(chatID INTEGER PRIMARY KEY AUTOINCREMENT , idSendr TEXT NOT NULL,Type TEXT NULL ,ProjectID INTEGER NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL)`
+    `CREATE TABLE IF NOT EXISTS Chat(chatID INTEGER PRIMARY KEY AUTOINCREMENT , idSendr TEXT NOT NULL,Type TEXT NULL ,ProjectID INTEGER NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL)`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS Chat_private(chatID INTEGER PRIMARY KEY AUTOINCREMENT , conversationId TEXT NOT NULL,companyId INTEGER NULL ,idSendr TEXT NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL)`
+    `CREATE TABLE IF NOT EXISTS Chat_private(chatID INTEGER PRIMARY KEY AUTOINCREMENT , conversationId TEXT NOT NULL,companyId INTEGER NULL ,idSendr TEXT NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL)`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS Chat_project(chatID INTEGER PRIMARY KEY AUTOINCREMENT , conversationId TEXT NOT NULL,ProjectID INTEGER NULL ,idSendr TEXT NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL)`
+    `CREATE TABLE IF NOT EXISTS Chat_project(chatID INTEGER PRIMARY KEY AUTOINCREMENT , conversationId TEXT NOT NULL,ProjectID INTEGER NULL ,idSendr TEXT NOT NULL,Sender TEXT NOT NULL ,message TEXT NULL,Date DATE DEFAULT CURRENT_DATE,timeminet DATE NULL,File JSON NULL , Reply JSON NULL)`,
   );
   //  المشاهدات
   db.run(
-    `CREATE TABLE IF NOT EXISTS Views(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE, FOREIGN KEY (chatID) REFERENCES Chat (chatID) ON DELETE RESTRICT ON UPDATE RESTRICT) `
+    `CREATE TABLE IF NOT EXISTS Views(viewsID INTEGER PRIMARY KEY AUTOINCREMENT, chatID INTEGER NOT NULL, userName TEXT NOT NULL, Date DATE DEFAULT CURRENT_DATE, FOREIGN KEY (chatID) REFERENCES Chat (chatID) ON DELETE RESTRICT ON UPDATE RESTRICT) `,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS Navigation(id INTEGER PRIMARY KEY AUTOINCREMENT,IDCompanySub INTEGER NULL,ProjectID INTEGER NULL, notification JSON NULL, tokens JSON NULL,data JSON NULL, Date DATE DEFAULT CURRENT_DATE,DateDay DATE DEFAULT CURRENT_DATE)`
+    `CREATE TABLE IF NOT EXISTS Navigation(id INTEGER PRIMARY KEY AUTOINCREMENT,IDCompanySub INTEGER NULL,ProjectID INTEGER NULL, notification JSON NULL, tokens JSON NULL,data JSON NULL, Date DATE DEFAULT CURRENT_DATE,DateDay DATE DEFAULT CURRENT_DATE)`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS Projectdataforchat(id INTEGER PRIMARY KEY AUTOINCREMENT,ProjectID INTEGER NULL,Nameproject TEXT NULL,PhoneNumber TEXT NULL ,Disabled TEXT NULL DEFAULT 'false',  Date DATE DEFAULT CURRENT_DATE)`
+    `CREATE TABLE IF NOT EXISTS Projectdataforchat(id INTEGER PRIMARY KEY AUTOINCREMENT,ProjectID INTEGER NULL,Nameproject TEXT NULL,PhoneNumber TEXT NULL ,Disabled TEXT NULL DEFAULT 'false',  Date DATE DEFAULT CURRENT_DATE)`,
   );
   db.run(
     `CREATE TABLE IF NOT EXISTS FinancialCustody (id INTEGER PRIMARY KEY AUTOINCREMENT , idOrder INTEGER NOT NULL ,IDCompany INTEGER NOT NULL, IDCompanySub INTEGER NOT NULL , Requestby TEXT NOT NULL , Amount DECIMAL NOT NULL ,Statement TEXT NOT NULL ,Date DATE DEFAULT CURRENT_TIMESTAMP,Approvingperson TEXT NULL 
-    ,ApprovalDate DATE NULL,OrderStatus TEXT NULL DEFAULT 'false',RejectionStatus TEXT NULL DEFAULT 'false', Reasonforrejection TEXT NULL  , Dateofrejection DATE NULL)`
+    ,ApprovalDate DATE NULL,OrderStatus TEXT NULL DEFAULT 'false',RejectionStatus TEXT NULL DEFAULT 'false', Reasonforrejection TEXT NULL  , Dateofrejection DATE NULL)`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS Prepare (id INTEGER PRIMARY KEY AUTOINCREMENT ,IDCompany INTEGER NOT NULL, idUser INTEGER NOT NULL,Dateday DATE DEFAULT CURRENT_DATE ,CheckIntime DATE  NULL, CheckInFile JSON NULL , CheckOUTtime DATE NULL , CheckoutFile JSON NULL , Numberofworkinghours INTEGER NULL,Overtimeassignment TEXT DEFAULT "false" ,Numberofovertimehours INTEGER NULL)`
+    `CREATE TABLE IF NOT EXISTS Prepare (id INTEGER PRIMARY KEY AUTOINCREMENT ,IDCompany INTEGER NOT NULL, idUser INTEGER NOT NULL,Dateday DATE DEFAULT CURRENT_DATE ,CheckIntime DATE  NULL, CheckInFile JSON NULL , CheckOUTtime DATE NULL , CheckoutFile JSON NULL , Numberofworkinghours INTEGER NULL,Overtimeassignment TEXT DEFAULT "false" ,Numberofovertimehours INTEGER NULL)`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS Flowmove (id INTEGER PRIMARY KEY AUTOINCREMENT ,userName TEXT NOT NULL, PhoneNumber TEXT NOT NULL,Movementtype TEXT NULL,Time DATE DEFAULT CURRENT_DATE)`
+    `CREATE TABLE IF NOT EXISTS Flowmove (id INTEGER PRIMARY KEY AUTOINCREMENT ,userName TEXT NOT NULL, PhoneNumber TEXT NOT NULL,Movementtype TEXT NULL,Time DATE DEFAULT CURRENT_DATE)`,
   );
   db.run(
-    `CREATE TABLE IF NOT EXISTS UserPrepare (id INTEGER PRIMARY KEY AUTOINCREMENT,idUser INTEGER NOT NULL,IDCompany INTEGER NOT NULL,Time DATE DEFAULT CURRENT_DATE)`
+    `CREATE TABLE IF NOT EXISTS UserPrepare (id INTEGER PRIMARY KEY AUTOINCREMENT,idUser INTEGER NOT NULL,IDCompany INTEGER NOT NULL,Time DATE DEFAULT CURRENT_DATE)`,
   );
   db.run(`CREATE TABLE IF NOT EXISTS UpdateSystem (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -226,7 +228,7 @@ END;
 
   db.run(sql, (err) => {
     if (err) {
-      console.error("SQL Error:", err);
+      console.error('SQL Error:', err);
     }
   });
 
@@ -247,7 +249,8 @@ END;
     code_subscription TEXT NOT NULL,
     subscription_type_id INTEGER NOT NULL,
     project_count INTEGER NOT NULL,   -- يحدده المستخدم
-    price DECIMAL NOT NULL,            -- السعر النهائي المحسوب
+    price DECIMAL(18,2) NOT NULL,            -- السعر النهائي المحسوب
+    vat DECIMAL(10,2) NULL,
     start_date DATE DEFAULT CURRENT_DATE,
     end_date DATE  NULL,
     project_count_used INTEGER DEFAULT 0, -- عدد المشاريع المستخدمة من قبل الشركة
@@ -263,7 +266,8 @@ END;
     code_subscription TEXT NOT NULL,
     subscription_type_id INTEGER NOT NULL,
     project_count INTEGER NOT NULL,   -- يحدده المستخدم
-    price DECIMAL NOT NULL,            -- السعر النهائي المحسوب
+    price DECIMAL(18,2) NOT NULL,            -- السعر النهائي المحسوب
+    vat DECIMAL(10,2) NULL,
     start_date DATE DEFAULT CURRENT_DATE,
     end_date DATE  NULL,
     project_count_used INTEGER DEFAULT 0, -- عدد المشاريع المستخدمة من قبل الشركة
@@ -284,6 +288,7 @@ BEGIN
         subscription_type_id,
         project_count,
         price,
+        vat,
         start_date,
         end_date,
         project_count_used,
@@ -299,6 +304,7 @@ BEGIN
         NEW.subscription_type_id,
         NEW.project_count,
         NEW.price,
+        NEW.vat,
         NEW.start_date,
         NEW.end_date,
         NEW.project_count_used,
@@ -322,6 +328,7 @@ BEGIN
         subscription_type_id,
         project_count,
         price,
+        vat,
         start_date,
         end_date,
         project_count_used,
@@ -337,6 +344,7 @@ BEGIN
         OLD.subscription_type_id,
         OLD.project_count,
         OLD.price,
+        OLD.vat,
         OLD.start_date,
         OLD.end_date,
         OLD.project_count_used,
@@ -357,84 +365,78 @@ END;
     startDate DATE DEFAULT CURRENT_DATE);
 `);
 
-// create index
+  // create index
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_csp_branch_disabled_id
+  db.run(`CREATE INDEX IF NOT EXISTS idx_csp_branch_disabled_id
 ON companySubprojects (IDcompanySub, Disabled, id);
-`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_usersCompany_phone
-ON usersCompany (PhoneNumber);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_usersBransh_user_branch_job
-ON usersBransh (user_id, idBransh, job);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_usersProject_user_branch_project
-ON usersProject (user_id, idBransh, ProjectID);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_usersProject_ProjectID
-ON usersProject (ProjectID);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Post_company_date_postid
-ON Post (CommpanyID, Date, PostID);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Post_project_stage_postid
-ON Post (ProjectID, StageID, PostID);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Comment_PostId
-ON Comment (PostId);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Likes_PostId
-ON Likes (PostId);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Likes_PostId_userName
-ON Likes (PostId, userName);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_StagesCUST_ProjectID_OrderBy
-ON StagesCUST (ProjectID, OrderBy);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_StagesSub_Project_Stage
+`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_usersCompany_phone
+ON usersCompany (PhoneNumber);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_usersBransh_user_branch_job
+ON usersBransh (user_id, idBransh, job);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_usersProject_user_branch_project
+ON usersProject (user_id, idBransh, ProjectID);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_usersProject_ProjectID
+ON usersProject (ProjectID);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Post_company_date_postid
+ON Post (CommpanyID, Date, PostID);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Post_project_stage_postid
+ON Post (ProjectID, StageID, PostID);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Comment_PostId
+ON Comment (PostId);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Likes_PostId
+ON Likes (PostId);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Likes_PostId_userName
+ON Likes (PostId, userName);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_StagesCUST_ProjectID_OrderBy
+ON StagesCUST (ProjectID, OrderBy);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_StagesSub_Project_Stage
 ON StagesSub (ProjectID, StagHOMID);
-`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_StagesSub_Project_Stage_Done
-ON StagesSub (ProjectID, StagHOMID, Done);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_StagesSub_done_true_only
+`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_StagesSub_Project_Stage_Done
+ON StagesSub (ProjectID, StagHOMID, Done);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_StagesSub_done_true_only
 ON StagesSub (ProjectID, StagHOMID)
-WHERE Done = 'true';`)
+WHERE Done = 'true';`);
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Chat_ProjectID_Type_timeminet
-ON Chat (ProjectID, Type, timeminet);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_ViewsCHATSTAGE_chatID_user
-ON ViewsCHATSTAGE (chatID, userName);`)
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Chat_ProjectID_Type_timeminet
+ON Chat (ProjectID, Type, timeminet);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_ViewsCHATSTAGE_chatID_user
+ON ViewsCHATSTAGE (chatID, userName);`);
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_ViewsCHATSTAGE_chatID
-ON ViewsCHATSTAGE (chatID);`)
+  db.run(`CREATE INDEX IF NOT EXISTS idx_ViewsCHATSTAGE_chatID
+ON ViewsCHATSTAGE (chatID);`);
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Navigation_ProjectID_DateDay
-ON Navigation (ProjectID, DateDay);`)
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Navigation_ProjectID_DateDay
+ON Navigation (ProjectID, DateDay);`);
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Navigation_ProjectID_id
-ON Navigation (ProjectID, id);`)
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Navigation_ProjectID_id
+ON Navigation (ProjectID, id);`);
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_ChatSTAGE_ProjectID_StageID
-ON ChatSTAGE (ProjectID, StageID);`)
+  db.run(`CREATE INDEX IF NOT EXISTS idx_ChatSTAGE_ProjectID_StageID
+ON ChatSTAGE (ProjectID, StageID);`);
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_ChatSTAGE_ProjectID_StageID_timeminet
-ON ChatSTAGE (ProjectID, StageID, timeminet);`)
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Chat_ProjectID_Type
-ON Chat (ProjectID, Type);`)
+  db.run(`CREATE INDEX IF NOT EXISTS idx_ChatSTAGE_ProjectID_StageID_timeminet
+ON ChatSTAGE (ProjectID, StageID, timeminet);`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Chat_ProjectID_Type
+ON Chat (ProjectID, Type);`);
 
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Views_chatID_user
+ON Views (chatID, userName);`);
 
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Views_chatID
+ON Views (chatID);`);
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Views_chatID_user
-ON Views (chatID, userName);`)
-
-    db.run(`CREATE INDEX IF NOT EXISTS idx_Views_chatID
-ON Views (chatID);`)
-
-
-
-db.run(`
+  db.run(`
 CREATE INDEX IF NOT EXISTS idx_Navigation_IDCompanySub_DateDay
-ON Navigation (IDCompanySub, DateDay);`)
+ON Navigation (IDCompanySub, DateDay);`);
 
-db.run(`CREATE INDEX IF NOT EXISTS idx_Navigation_IDCompanySub_id
-ON Navigation (IDCompanySub, id);`)
+  db.run(`CREATE INDEX IF NOT EXISTS idx_Navigation_IDCompanySub_id
+ON Navigation (IDCompanySub, id);`);
 
-db.run(`CREATE INDEX IF NOT EXISTS idx_chat_private_room_last
+  db.run(`CREATE INDEX IF NOT EXISTS idx_chat_private_room_last
 ON Chat_private (conversationId, chatID);
-`)
-
-
+`);
 
   // price = project_count * price_per_project
   // end_date = start_date + duration_in_months
@@ -444,6 +446,9 @@ ON Chat_private (conversationId, chatID);
 
   // جديد
 
+  // db.run(`
+  //   ALTER TABLE company_subscriptions
+  //   ADD COLUMN vat DECIMAL(10,2) NULL `)
   // db.run(`
   //   ALTER TABLE LoginActivaty
   //   ADD COLUMN userID INTEGER NULL `)
@@ -464,8 +469,7 @@ ON Chat_private (conversationId, chatID);
   //   ALTER TABLE Chat_project
   //   ADD COLUMN read_message TEXT 'false' `)
 
-
-  // قديم 
+  // قديم
   // db.run(`
   //   ALTER TABLE StagesCUST
   //   ADD COLUMN Ratio TEXT NULL DEFAULT 0;`)

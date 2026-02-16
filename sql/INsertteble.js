@@ -18,24 +18,36 @@ const insertTablecompanycompanyRegistration = async (data) => {
     });
   });
 };
-const insertTablecompany = async (data) => {
+const insertTablecompany = (data) => {
   return new Promise((resolve, reject) => {
-    db.serialize(function () {
-      db.run(
-        `INSERT INTO company (CommercialRegistrationNumber,NameCompany, BuildingNumber, StreetName,NeighborhoodName,PostalCode,City,Country,TaxNumber,Api,NumberOFbranchesAllowed,NumberOFcurrentBranches) VALUES (?,?,?,?,?,?,?,?,?,?,0,0)`,
-        data,
-        function (err) {
-          if (err) {
-            resolve(false);
-            console.error(err.message);
-          } else {
-            resolve(true);
-          }
-        }
-      );
+    const sql = `
+      INSERT INTO company (
+        CommercialRegistrationNumber,
+        NameCompany,
+        BuildingNumber,
+        StreetName,
+        NeighborhoodName,
+        PostalCode,
+        City,
+        Country,
+        TaxNumber,
+        Api,
+        NumberOFbranchesAllowed,
+        NumberOFcurrentBranches
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,0,0)
+    `;
+
+    db.run(sql, data, function (err) {
+      if (err) {
+        console.error("Insert Error:", err.message);
+        reject(err);   // 👈 better
+      } else {
+        resolve(this.lastID);
+      }
     });
   });
 };
+
 const insertTablecompanySub = async (data) => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
@@ -954,6 +966,7 @@ const insert_table_subscription_types = (data) => {
 
 const insert_table_company_subscription = (data) => {
   try {
+
     db.serialize(function () {
       db.run(
         `INSERT INTO company_subscriptions (
@@ -962,11 +975,12 @@ const insert_table_company_subscription = (data) => {
          code_subscription,
          project_count, 
          price, 
-         end_date,status) VALUES (?,?,?,?,?,?,?)`,
+         vat,
+         end_date,status) VALUES (?,?,?,?,?,?,?,?)`,
         data,
         function (err) {
           if (err) {
-            console.log(err.message,data);
+            console.log(err.message,data,'insert_table_company_subscription');
           }
         }
       );

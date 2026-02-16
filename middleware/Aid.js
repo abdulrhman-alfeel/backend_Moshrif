@@ -12,6 +12,7 @@ const moment = require("moment-timezone");
 require("dotenv").config();
 const crypto = require("crypto");
 
+const db = require('../sql/sqlite');
 
 
 
@@ -23,7 +24,7 @@ function roomKey (ProjectID,StageID){
 
 
 function View_type (chate_type) {
-       
+
   let view_type =
         chate_type === 'Chat_private'
           ? 'Views_Private'
@@ -442,7 +443,6 @@ const AccountDays = (numberBuilding, Days) => {
 };
 const xlsx = require("xlsx");
 const { SELECTTableusersCompanyall } = require("../sql/selected/selectuser");
-// const { UPDATECONVERTDATE } = require("../sql/update");
 
 const StageTempletXsl2 = async (
   type = "StagesTempletEXcel.xlsx",
@@ -661,11 +661,117 @@ const moveviltayeuseer = () => {
     }
   });
 };
+const selectNavigation_all =()=>{
+  return new Promise((resolve, reject) => {
+    db.serialize(function () {
+      db.all(
+        `SELECT tokens,id FROM Navigation`,
+        function (err, result) {
+          if (err) {
+            reject(err);
+            console.log(err.message);
+          }
+            else {
+            resolve(result);
+          }
+        }
+      );
+    });
+  });
+
+}
+
+const changeData_Navigation = async () => {
+  try {
+
+    const data = await selectNavigation_all();
+
+    for (const element of data) {
+      const tokensArray = JSON.parse(element.tokens); // هذا Array
+
+      if (!Array.isArray(tokensArray)) continue;
+
+      // تنظيف الفراغات
+      const cleanedTokens = tokensArray.map(name => name.trim());
+      let allExist = [];
+      // التأكد من وجود كل اسم
+      for (const name of cleanedTokens) {
+        await new Promise((resolve, reject) => {
+          
+          db.get(
+            `SELECT id FROM usersCompany WHERE trim(userName) = trim(?)`,
+            [name],
+            (err, row) => {
+              if (err) {
+                console.error(err.message);
+                reject(err);
+              } else if (row) {
+                // console.log(`✅ "${row.id}" exists`);
+                allExist.push(row.id);
+                resolve();
+              } else {
+                // console.log(`❌ "${name}" not found`);
+                resolve();
+              }
+            }
+          );
+        });
+      }
+      // console.log(`Checking "${cleanedTokens}"...`);
+
+      // تحديث السجل (مهم جداً إضافة WHERE id = ?)
+      console.log(`Updating Navigation id ${element.id} with tokens: ${JSON.stringify(allExist)}`);
+      await new Promise((resolve, reject) => {
+        db.run(
+          `UPDATE Navigation SET tokens = ? WHERE id = ?`,
+          [JSON.stringify(allExist), element.id],
+          function (err) {
+            if (err) {
+              console.error(err.message);
+              reject(err);
+            } else {
+              resolve();
+            }
+          }
+        );
+      });
+    }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+
+
+
+// changeData_Navigation()
+
+
+
+
+
+
+
+
+
+
+
 // moveviltayeuseer()
 // تحويل صيغة التاريخ
 // UPDATECONVERTDATE("StartDate");
 // اضافة المعرفات والانواع لجدول الانواع
 // insertTableallStagestype();
+
+
+
+
+
+
+
+
 
 module.exports = {
   calculateDaysDifference,

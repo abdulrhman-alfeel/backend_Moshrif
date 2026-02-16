@@ -96,10 +96,20 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],             // ✅ يسمح بملف js من نفس الدومين
+      styleSrc: ["'self'", "'unsafe-inline'"], // ✅ لأن عندك style inline في body
+      imgSrc: ["'self'", "data:"],
       connectSrc: ["'self'", "https://mushrf.net"],
     },
   })
 );
+
+app.use("/payment", express.static(path.join(__dirname, "views/payment"), {
+  // اختياري: يساعد في الديبق
+  setHeaders(res, filePath) {
+    if (filePath.endsWith(".js")) res.setHeader("Content-Type", "application/javascript; charset=utf-8");
+  }
+}));
 
 app.use(cookieparser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -234,7 +244,7 @@ app.use(limiter);
 
 app.use(errorHandler);
 
-app.all("*", (req, res) => {
+app.all("/", (req, res) => {
   if (req.accepts("html")) {
     res.status(404);
     res.sendFile(path.join(__dirname, "views", "404.html"));
@@ -259,8 +269,13 @@ ChatOpration(io,redis, persistQueue);
 // Error handling middleware
 app.use(handleUploadErrors);
 
+// ✅ 2) نتيجة الدفع (HTML)
+app.get("/payment/:status(success|failed)", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/payment", "result.html"));
+});
 
-
+// ✅ 3) favicon لتصفية أخطاء الكونسل
+app.get("/favicon.ico", (req, res) => res.status(204).end());
 // ---- Cron jobs (disable in multi-instance deployments by setting RUN_CRON=false)
   // Runs daily at 00:00
   cron.schedule("0 0 * * *", async () => {

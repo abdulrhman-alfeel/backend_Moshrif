@@ -159,17 +159,13 @@ const FilterProjectdashbord = () => {
         0,
         'dashbord'
       );
-      const arrayReturnProject = await BringTotalbalance(
-        IDCompanySub,
-        IDCompany,
-        result
-      );
+ 
       let findproject = false;
 
       const massage = !findproject
         ? "لاتوجد بيانات في اطار صلاحياتك بهذا الاسم "
         : "تمت العملية بنجاح";
-      res.send({ success: massage, data: arrayReturnProject }).status(200);
+      res.send({ success: massage, data: result }).status(200);
     } catch (error) {
       res.send({ success: "فشل تنفيذ العملية", data: [] }).status(501);
       console.log(error);

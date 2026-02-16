@@ -1,10 +1,10 @@
-const { insertTableNavigation } = require("../../../sql/INsertteble");
+const { insertTableNavigation } = require('../../../sql/INsertteble');
 const {
   SELECTTableIDcompanytoPost,
   SELECTTableNavigation,
   SELECTTableNavigationObjectOne,
   SelectVerifycompanyexistence,
-} = require("../../../sql/selected/selected");
+} = require('../../../sql/selected/selected');
 
 const InsertNotifcation = async (
   token,
@@ -13,8 +13,8 @@ const InsertNotifcation = async (
   navigationId,
   data,
   id,
-  type = "pr.id",
-  select = "pr.id"
+  type = 'pr.id',
+  select = 'pr.id',
 ) => {
   try {
     // await DeleteTableNotifcation();
@@ -38,7 +38,7 @@ const InsertNotifcation = async (
     ];
     await insertTableNavigation(endData);
     const maxData = await SELECTTableNavigationObjectOne(
-      parseInt(type === true ? result?.id : result?.NumberCompany)
+      parseInt(type === true ? result?.id : result?.NumberCompany),
     );
     return maxData?.id;
   } catch (error) {
@@ -53,24 +53,19 @@ const BringDataNotifcation = () => {
       const LastID = req.query.LastID;
       const userSession = req.session.user;
       if (!userSession) {
-        res.status(401).send("Invalid session");
-        console.log("Invalid session");
+        res.status(401).send('Invalid session');
+        console.log('Invalid session');
       }
       const result = await SELECTTableNavigation([
         parseInt(LastID),
         parseInt(userSession.IDCompany),
       ]);
 
-      const arrayNotifcation = await Sortdatauserfromnotification(
-        result,
-        userSession.userName
-      );
-      res
-        .send({ success: "تمت العملية بنجاح", data: arrayNotifcation })
-        .status(200);
+      const arrayNotifcation = await Sortdatauserfromnotification(result, userSession.userName);
+      res.send({ success: 'تمت العملية بنجاح', data: arrayNotifcation }).status(200);
     } catch (error) {
       console.log(error);
-      res.send({ success: "فشل تنفيذ العملية العملية بنجاح" }).status(401);
+      res.send({ success: 'فشل تنفيذ العملية العملية بنجاح' }).status(401);
     }
   };
 };
@@ -83,24 +78,19 @@ const FilterNotifcation = () => {
         const { LastID, from, to } = req.query;
         const userSession = req.session.user;
         if (!userSession) {
-          res.status(401).send("Invalid session");
-          console.log("Invalid session");
+          res.status(401).send('Invalid session');
+          console.log('Invalid session');
         }
         const result = await SELECTTableNavigation(
           [parseInt(LastID), parseInt(userSession.IDCompany), from, to],
-          `AND Date(DateDay) BETWEEN ?  AND ?`
+          `AND Date(DateDay) BETWEEN ?  AND ?`,
         );
-        const arrayNotifcation = await Sortdatauserfromnotificationv2(
-          result,
-          userSession.userName
-        );
+        const arrayNotifcation = await Sortdatauserfromnotificationv2(result, userSession.userName);
 
-        res
-          .send({ success: "تمت العملية بنجاح", data: arrayNotifcation })
-          .status(200);
+        res.send({ success: 'تمت العملية بنجاح', data: arrayNotifcation }).status(200);
       } catch (error) {
         console.log(error);
-        res.send({ success: "فشل تنفيذ العملية العملية بنجاح" }).status(401);
+        res.send({ success: 'فشل تنفيذ العملية العملية بنجاح' }).status(401);
       }
     } catch (error) {
       console.log(error);
@@ -108,49 +98,39 @@ const FilterNotifcation = () => {
   };
 };
 
-async function kind_opreation(IDCompanySub,ProjectID,type){ 
-       return   type === "bransh"
-            ? `AND ca.IDCompanySub=${IDCompanySub}`
-            : type === "project"
-            ? `AND ca.ProjectID=${ProjectID}`
-            : type === "chat"
-            ? "="
-            : "!=";
+async function kind_opreation(IDCompanySub, ProjectID, type) {
+  return type === 'bransh'
+    ? `AND ca.IDCompanySub=${IDCompanySub}`
+    : type === 'project'
+      ? `AND ca.ProjectID=${ProjectID}`
+      : type === 'chat'
+        ? '='
+        : '!=';
 }
 
 const BringDataNotifcationv2 = () => {
   return async (req, res) => {
     try {
-      const {
-        LastID,
-        type = "notifc",
-        ProjectID = 0,
-        IDCompanySub = 0,
-      } = req.query;
+      const { LastID, type = 'notifc', ProjectID = 0, IDCompanySub = 0 } = req.query;
       const userSession = req.session.user;
 
       if (!userSession) {
-        res.status(401).send("Invalid session");
-        console.log("Invalid session");
+        res.status(401).send('Invalid session');
+        console.log('Invalid session');
       }
-      const kind = await kind_opreation(IDCompanySub,ProjectID,type);
+      const kind = await kind_opreation(IDCompanySub, ProjectID, type);
 
       const result = await SELECTTableNavigation(
         [parseInt(LastID), parseInt(userSession.IDCompany)],
-        [userSession.userName],
-        "",
-        kind
+        [userSession.userID],
+        '',
+        kind,
       );
-      const arrayNotifcation = await Sortdatauserfromnotificationv2(
-        result,
-        userSession.userName
-      );
-      res
-        .send({ success: "تمت العملية بنجاح", data: arrayNotifcation })
-        .status(200);
+      const arrayNotifcation = await Sortdatauserfromnotificationv2(result);
+      res.send({ success: 'تمت العملية بنجاح', data: arrayNotifcation }).status(200);
     } catch (error) {
       console.log(error);
-      res.send({ success: "فشل تنفيذ العملية العملية بنجاح" }).status(401);
+      res.send({ success: 'فشل تنفيذ العملية العملية بنجاح' }).status(401);
     }
   };
 };
@@ -159,31 +139,26 @@ const BringDataNotifcationv2 = () => {
 const FilterNotifcationv2 = () => {
   return async (req, res) => {
     try {
-      const { LastID, from, to, ProjectID = 0, IDCompanySub = 0, type = "notifc" } = req.query;
+      const { LastID, from, to, ProjectID = 0, IDCompanySub = 0, type = 'notifc' } = req.query;
       const userSession = req.session.user;
       if (!userSession) {
-        res.status(401).send("Invalid session");
-        console.log("Invalid session");
+        res.status(401).send('Invalid session');
+        console.log('Invalid session');
       }
-      const kind = await kind_opreation(IDCompanySub,ProjectID,type);
+      const kind = await kind_opreation(IDCompanySub, ProjectID, type);
 
       const result = await SELECTTableNavigation(
         [parseInt(LastID), parseInt(userSession.IDCompany), from, to],
-        [userSession.userName],
+        [userSession.userID],
         `AND Date(DateDay) BETWEEN ?  AND ?`,
-        kind
+        kind,
       );
 
-      const arrayNotifcation = await Sortdatauserfromnotificationv2(
-        result,
-        userSession.userName
-      );
-      res
-        .send({ success: "تمت العملية بنجاح", data: arrayNotifcation })
-        .status(200);
+      const arrayNotifcation = await Sortdatauserfromnotificationv2(result, userSession.userName);
+      res.send({ success: 'تمت العملية بنجاح', data: arrayNotifcation }).status(200);
     } catch (error) {
       console.log(error);
-      res.send({ success: "فشل تنفيذ العملية العملية بنجاح" }).status(401);
+      res.send({ success: 'فشل تنفيذ العملية العملية بنجاح' }).status(401);
     }
   };
 };
@@ -216,7 +191,7 @@ const Sortdatauserfromnotification = (result, userName) => {
   }
   return arrayNotifcation;
 };
-const Sortdatauserfromnotificationv2 = (result, userName) => {
+const Sortdatauserfromnotificationv2 = (result) => {
   let arrayNotifcation = [];
   if (result.length > 0) {
     result.forEach(async (pic) => {
@@ -232,7 +207,7 @@ const Sortdatauserfromnotificationv2 = (result, userName) => {
         page: dataNotifction?.notification_type,
         color: color,
         IDcompanySub:
-          dataNotifction?.notification_type === "CovenantBrinsh"
+          dataNotifction?.notification_type === 'CovenantBrinsh'
             ? dataNotifction?.navigationId
             : JSON.parse(dataNotifction?.data)?.IDcompanySub,
         Date: pic.Date,
@@ -244,10 +219,10 @@ const Sortdatauserfromnotificationv2 = (result, userName) => {
 };
 
 const switchColor = (job) => {
-  const arrayRed = ["مالك", "Admin", "مدير عام"];
-  if (arrayRed.includes(job)) return "#FF0F0F";
-  if (job === "مدير الفرع") return "#10B982";
-  return "#f6f8fe";
+  const arrayRed = ['مالك', 'Admin', 'مدير عام'];
+  if (arrayRed.includes(job)) return '#FF0F0F';
+  if (job === 'مدير الفرع') return '#10B982';
+  return '#f6f8fe';
 };
 module.exports = {
   InsertNotifcation,

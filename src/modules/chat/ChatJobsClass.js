@@ -64,7 +64,7 @@ function shouldCreatePostForStage(stageId) {
   return !['قرارات', 'استشارات', 'اعتمادات'].includes(s);
 }
 
-const OpreactionSend_message = async (data, type = 'chat') => {
+const OpreactionSend_message = async (data, type = 'chat', userID = null) => {
   let result = {
     ...data,
 
@@ -97,7 +97,7 @@ const OpreactionSend_message = async (data, type = 'chat') => {
       if (!chackdata) return null;
 
       // حذف من جداول الشات/المستخدمين
-      result = await DeleteChatfromdatabaseanddatabaseuser(chackdata, type);
+      result = await DeleteChatfromdatabaseanddatabaseuser(chackdata, type,userID);
 
       if (
         Object.entries(chackdata?.File).length > 0 &&
@@ -196,7 +196,7 @@ const sendNote = async (ProjectID, messages, Files, user, Reply = {}) => {
     kind: 'new',
   };
 
-  const result = await OpreactionSend_message(objectMasseg);
+  const result = await OpreactionSend_message(objectMasseg, 'chat', user.userID);
   io.to(`${ProjectID}:طلبيات`).timeout(50).emit('received_message', result);
 };
 
@@ -219,44 +219,7 @@ const bringdatachate = async (data, type = 'new', kind_opreation = 'chat') => {
   return chackdata;
 };
 
-const PostFilemassage = () => {
-  return async (req, res) => {
-    try {
-      const videofile = req.file;
 
-      if (!videofile) {
-        return res.status(400).send('No video file uploaded');
-      }
-
-      const data = JSON.parse(req.body.data);
-      const result = await OpreactionSend_message(data);
-
-      res.status(200).send({ success: 'Full request', chatID: result.chatID });
-
-      io.to(`${parseInt(data.ProjectID)}:${data?.StageID}`)
-        .timeout(50)
-        .emit('received_message', result);
-
-      await uploaddata(videofile);
-      // Check if the uploaded file is a video
-      if (videofile.mimetype === 'video/mp4' || videofile.mimetype === 'video/quicktime') {
-        const timePosition = '00:00:00.100';
-        let matchvideo = videofile.filename.match(/\.([^.]+)$/)[1];
-        let filename = String(videofile.filename).replace(matchvideo, 'png');
-
-        const pathdir = path.dirname(videofile.path);
-        const tempFilePathtimp = `${pathdir}/${filename}`;
-
-        await fFmpegFunction(tempFilePathtimp, videofile.path, timePosition);
-        await bucket.upload(tempFilePathtimp);
-      }
-      // حذف الملف
-      await deleteFileSingle(data.File.name, 'upload', data.File.type);
-    } catch (error) {
-      res.status(402).send({ success: 'فشلة عملية رفع الملف' });
-    }
-  };
-};
 
 const Datadistribution = (data) => {
   try {
@@ -294,7 +257,7 @@ const Datadistribution_Chat_private = (data) => {
 };
 
 // عمليات حذف الرساله
-const DeleteChatfromdatabaseanddatabaseuser = async (data, type) => {
+const DeleteChatfromdatabaseanddatabaseuser = async (data, type,userID) => {
   try {
     const chatID = data.chatID;
 
@@ -319,7 +282,7 @@ const DeleteChatfromdatabaseanddatabaseuser = async (data, type) => {
         data.ProjectID,
         data?.StageID || data.Type,
         data.message,
-        data.Sender,
+        userID,
         chatID,
       );
     } else {
@@ -609,7 +572,11 @@ const insertdatafile = () => {
   return async (req, res) => {
     try {
       const { chate_type = 'Chat' } = req.query;
-
+      const userSession = req.session.user;
+      if (!userSession) {
+        res.status(401).send('Invalid session');
+        console.log('Invalid session');
+      }
       let result = req.body ?? {};
       let chat = chate_type === 'Chat';
       const conversationId = chat
@@ -618,10 +585,10 @@ const insertdatafile = () => {
 
       console.log('conversationId:', chate_type);
       if (chat) {
-        result = await OpreactionSend_message(req.body);
+        result = await OpreactionSend_message(req.body,'chat', userSession.userID);
         io.to(conversationId).timeout(50).emit('received_message', result);
       } else {
-        result = await OpreactionSend_message(req.body, chate_type);
+        result = await OpreactionSend_message(req.body, chate_type,userSession.userID);
         const nap = io.of(`/${chate_type}`);
         nap.to(`dm:${conversationId}`).timeout(50).emit('received_message', result);
       }
@@ -707,7 +674,6 @@ module.exports = {
   ClassChackTableChat,
   ClassViewChat,
   ClassreceiveMessageViews,
-  PostFilemassage,
   OpreactionSend_message,
   initializeUpload,
   insertdatafile,

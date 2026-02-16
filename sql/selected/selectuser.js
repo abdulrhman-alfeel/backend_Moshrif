@@ -448,6 +448,7 @@ const SELECTTableusersCompanySub = (
 
     const query = `
 SELECT DISTINCT
+    ca.userID,
     ca.token,
     ca.userName,
     ca.Validity,

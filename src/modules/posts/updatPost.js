@@ -32,7 +32,7 @@ const CommentUpdate = () => {
 
       // 5) إشعار (لا تسقط العملية عند فشل الإشعار)
       try {
-        await Postsnotification(0, "Comment", userSession.userName, "تعديل تعليقه", CommentID);
+        await Postsnotification(0, "Comment", userSession.userID, "تعديل تعليقه", CommentID);
       } catch {}
 
       return res.status(200).json({ success:"تم تعديل التعليق", message:"تم تعديل التعليق" });

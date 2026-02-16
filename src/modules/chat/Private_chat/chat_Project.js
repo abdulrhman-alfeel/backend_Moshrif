@@ -96,7 +96,7 @@ function initChatProjectNamespace(io, redis, persistQueue) {
         };
 
         // const messageId = await redis.incr("chat:global:id");
-        const result = await OpreactionSend_message(payload, 'Chat_project');
+        const result = await OpreactionSend_message(payload, 'Chat_project', userId);
        console.log('🚀 Chat_project namespace initialized',result);
 
         // 🔥 بث فوري للطرفين

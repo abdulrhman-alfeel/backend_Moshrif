@@ -100,13 +100,13 @@ const Projectinsert = async (companySubId,Nameproject, userName, type = "إنش�
  * إرسال إشعار عند إنشاء أو تعديل مرحلة في مشروع
  * @param {number|string} projectId - رقم المشروع
  * @param {number|string} stageId - رقم المرحلة (افتراضي = 0)
- * @param {string} userName - اسم المستخدم الذي قام بالفعل
+ * @param {string} userID - معرف المستخدم الذي قام بالفعل
  * @param {string} type - نوع العملية (إنشاء | تعديل) - القيمة الافتراضية "إنشاء"
  */
 const Stageinsert = async (
   projectId,
   stageId = 0,
-  userName,
+  userID,
   type = "إنشاء"
 ) => {
   try {
@@ -138,7 +138,7 @@ const Stageinsert = async (
       stageData.NumberCompany,
       stageData.IDcompanySub,
       projectId,
-      userName
+      userID
     );
 
     if (!arraynameuser || arraynameuser.length === 0) {
@@ -151,7 +151,7 @@ const Stageinsert = async (
       title: `${type} مرحلة ${
         type === "إنشاء" ? "جديدة" : "في " + stageData.Nameproject
       }`,
-      body: `لقد قام ${userName} ب${type} مرحلة ${
+      body: `لقد قام ${userID} ب${type} مرحلة ${
         type === "إنشاء" ? "جديدة" : ""
       } في مشروع "${stageData.Nameproject}"`,
     };
@@ -162,7 +162,7 @@ const Stageinsert = async (
     )}`;
 
     let data = {
-      userName,
+      userID,
       ProjectID: projectId,
       type: `StagesCUST ${type}`,
       data: stageObject,
@@ -198,13 +198,13 @@ const Stageinsert = async (
  * إرسال إشعار عند إنشاء أو تعديل مرحلة فرعية في مشروع
  * @param {number|string} ProjectID - رقم المشروع
  * @param {number|string} StageID - رقم المرحلة (افتراضي = 0)
- * @param {string} userName - اسم المستخدم الذي قام بالفعل
+ * @param {string} userID - معرف المستخدم الذي قام بالفعل
  * @param {string} type - نوع العملية (إنشاء | تعديل) - القيمة الافتراضية "إنشاء"
  */
 const StageSubinsert = async (
   ProjectID,
   StageID = 0,
-  userName,
+  userID,
   type = "إنشاء"
 ) => {
   try {
@@ -239,7 +239,7 @@ const StageSubinsert = async (
       projectHome.NumberCompany,
       stageResult[0].IDcompanySub,
       ProjectID,
-      userName
+      userID
     );
 
     // تجهيز إشعار المستخدم
@@ -247,7 +247,7 @@ const StageSubinsert = async (
       title: `${type} مرحلة فرعية ${
         type === "إنشاء" ? "جديدة" : "في " + stageResult[0].StageName
       }`,
-      body: `قام ${userName} ب${type} مرحلة ${
+      body: `قام ${userID} ب${type} مرحلة ${
         type === "إنشاء" ? "جديدة" : ""
       } في مشروع "${stageResult[0].Nameproject}" ضمن المرحلة "${
         stageResult[0].StageName
@@ -262,7 +262,7 @@ const StageSubinsert = async (
 
     // تجهيز بيانات الإشعار
     let data = {
-      userName,
+      userID,
       ProjectID,
       type: `StagesSub ${type}`,
       data: resultObject,
@@ -297,7 +297,7 @@ const StageSubinsert = async (
  * @param {number|string} StageID - رقم المرحلة الرئيسية
  * @param {number|string} StageSubID - رقم المرحلة الفرعية
  * @param {string} note - نص الملاحظة
- * @param {string} userName - اسم المستخدم الذي قام بالفعل
+ * @param {string} userID - اسم المستخدم الذي قام بالفعل
  * @param {string} type - نوع العملية (اضاف | تعديل) - القيمة الافتراضية "اضاف"
  */
 const StageSubNote = async (
@@ -305,7 +305,7 @@ const StageSubNote = async (
   StageID,
   StageSubID,
   note,
-  userName,
+  userID,
   type = "اضاف"
 ) => {
   try {
@@ -344,12 +344,12 @@ const StageSubNote = async (
       projectHome.NumberCompany,
       stageSubResult[0].IDcompanySub,
       ProjectID,
-      userName
+      userID
     );
 
     // تجهيز إشعار المستخدم
     const notification = {
-      title: `قام ${userName} ب${type} ملاحظة`,
+      title: `قام ${userID} ب${type} ملاحظة`,
       body: note,
       // image: 'https://storage.googleapis.com/demo_backendmoshrif_bucket-2/Vector.png',
     };
@@ -359,7 +359,7 @@ const StageSubNote = async (
 
     // تجهيز بيانات الإشعار
     const data = {
-      userName,
+      userID,
       ProjectID,
       type: `StagesSub ${type}`,
       data: resultObject,
@@ -378,13 +378,13 @@ const StageSubNote = async (
  * إرسال إشعار عند إغلاق أو فتح مرحلة في مشروع
  * @param {number|string} ProjectID - رقم المشروع
  * @param {number|string} StageID - رقم المرحلة
- * @param {string} userName - اسم المستخدم الذي قام بالفعل
+ * @param {string} userID - معرف المستخدم الذي قام بالفعل
  * @param {string} type - نوع العملية (اغلاق | فتح) - القيمة الافتراضية "اغلاق"
  */
 const CloseOROpenStagenotifcation = async (
   ProjectID,
   StageID,
-  userName,
+  userID,
   type = "اغلاق"
 ) => {
   try {
@@ -401,13 +401,13 @@ const CloseOROpenStagenotifcation = async (
       projectHome.NumberCompany,
       projectHome.IDcompanySub,
       ProjectID,
-      userName
+      userID
     );
 
     // تجهيز الإشعار
     const notification = {
-      title: `قام ${userName} ب${type} المرحلة`,
-      body: `قام ${userName} ب${type} مرحلة ${projectHome.StageName}`,
+      title: `قام ${userID} ب${type} المرحلة`,
+      body: `قام ${userID} ب${type} مرحلة ${projectHome.StageName}`,
       // image: 'https://storage.googleapis.com/demo_backendmoshrif_bucket-2/Vector.png',
     };
 
@@ -416,7 +416,7 @@ const CloseOROpenStagenotifcation = async (
 
     // تجهيز بيانات الإشعار
     let data = {
-      userName,
+      userID,
       ProjectID,
       type: `StagesCUST ${type}`,
       IDcompanySub: projectHome.IDcompanySub,
@@ -446,10 +446,10 @@ const CloseOROpenStagenotifcation = async (
 /**
  * إرسال إشعار عند إنجاز مرحلة فرعية في مشروع
  * @param {number|string} StageSubID - رقم المرحلة الفرعية
- * @param {string} userName - اسم المستخدم الذي قام بالفعل
+ * @param {string} userID - اسم المستخدم الذي قام بالفعل
  * @param {string} type - نوع العملية (إنجاز) - القيمة الافتراضية "إنجاز"
  */
-const AchievmentStageSubNote = async (StageSubID, userName, type = "إنجاز") => {
+const AchievmentStageSubNote = async (StageSubID, userID, type = "إنجاز") => {
   try {
     // جلب بيانات المرحلة الفرعية
     const result = await SELECTTablecompanySubProjectStagesSub(
@@ -484,13 +484,13 @@ const AchievmentStageSubNote = async (StageSubID, userName, type = "إنجاز")
       projectHome?.NumberCompany,
       stageSub.IDcompanySub,
       stageSub.ProjectID,
-      userName
+      userID
     );
 
     // إعداد الإشعار
     const notification = {
-      title: `قام ${userName} ب${type} المرحلة الفرعية`,
-      body: `قام ${userName} ب${type} المرحلة الفرعية ${stageSub.StageSubName}`,
+      title: `قام ${userID} ب${type} المرحلة الفرعية`,
+      body: `قام ${userID} ب${type} المرحلة الفرعية ${stageSub.StageSubName}`,
       // image: 'https://storage.googleapis.com/demo_backendmoshrif_bucket-2/Vector.png',
     };
 
@@ -499,7 +499,7 @@ const AchievmentStageSubNote = async (StageSubID, userName, type = "إنجاز")
 
     // بيانات الإشعار
     const data = {
-      userName,
+      userID,
       ProjectID: stageSub.ProjectID,
       type: `StagesSub ${type}`,
       data: resultObject,
@@ -516,10 +516,10 @@ const AchievmentStageSubNote = async (StageSubID, userName, type = "إنجاز")
  * إرسال إشعار عند إضافة أو تعديل تأخير في مرحلة مشروع
  * @param {number|string} idProject - رقم المشروع
  * @param {number|string} StageID - رقم المرحلة
- * @param {string} userName - اسم المستخدم الذي قام بالفعل
+ * @param {string} userID - اسم المستخدم الذي قام بالفعل
  * @param {string} type - نوع العملية (إضافة | تعديل) - القيمة الافتراضية "إضافة"
  */
-const Delayinsert = async (idProject, StageID, userName, type = "إضافة") => {
+const Delayinsert = async (idProject, StageID, userID, type = "إضافة") => {
   try {
     // جلب بيانات التأخير
     const result = await SELECTTablecompanySubProjectStageNotesOneObject(
@@ -546,13 +546,13 @@ const Delayinsert = async (idProject, StageID, userName, type = "إضافة") =>
       result.NumberCompany,
       result.IDcompanySub,
       idProject,
-      userName
+      userID
     );
 
     // إعداد الإشعار
     const notification = {
       title: `${type} تأخيرات ${type === "إضافة" ? "جديد" : ""}`,
-      body: `لقد قام ${userName} ب${type} تأخيرات ${
+      body: `لقد قام ${userID} ب${type} تأخيرات ${
         type === "إضافة" ? "جديد" : ""
       } في مرحلة "${result.StageName}" من مشروع "${result.Nameproject}"`,
       image:
@@ -566,7 +566,7 @@ const Delayinsert = async (idProject, StageID, userName, type = "إضافة") =>
 
     // بيانات الإشعار
     let data = {
-      userName,
+      userID,
       ProjectID: result.ProjectID,
       type: `Delays ${type}`,
       data: resultObject,
@@ -598,9 +598,9 @@ const Delayinsert = async (idProject, StageID, userName, type = "إضافة") =>
 /**
  * إرسال إشعار عند إعادة ترتيب مراحل مشروع
  * @param {number|string} idProject - رقم المشروع
- * @param {string} userName - اسم المستخدم الذي قام بالفعل
+ * @param {string} userID - اسم المستخدم الذي قام بالفعل
  */
-const RearrangeStageProject = async (idProject, userName) => {
+const RearrangeStageProject = async (idProject, userID) => {
   try {
     // جلب بيانات المشروع
     const result = await SELECTTablecompanySubProjectStageCUSTONe(
@@ -624,13 +624,13 @@ const RearrangeStageProject = async (idProject, userName) => {
       result.NumberCompany,
       result.IDcompanySub,
       idProject,
-      userName
+      userID
     );
 
     // إعداد الإشعار
     const notification = {
       title: `إعادة ترتيب المراحل`,
-      body: `لقد قام ${userName} بإعادة ترتيب مراحل مشروع "${result.Nameproject}"`,
+      body: `لقد قام ${userID} بإعادة ترتيب مراحل مشروع "${result.Nameproject}"`,
     };
 
     const notification_type = "PageHomeProject";
@@ -640,7 +640,7 @@ const RearrangeStageProject = async (idProject, userName) => {
 
     // بيانات الإشعار
     let data = {
-      userName,
+      userID,
       ProjectID: idProject,
       type: `RearrangeStageProject`,
       IDcompanySub: result.IDcompanySub,
@@ -673,14 +673,14 @@ const RearrangeStageProject = async (idProject, userName) => {
  * @param {number|string} projectID - رقم المشروع
  * @param {string} kind - نوع العملية المالية (مصروفات | مرتجعات | عهد | طلب)
  * @param {string} type - نوع الإجراء (إضافة | تعديل) - القيمة الافتراضية "إضافة"
- * @param {string} userName - اسم المستخدم الذي قام بالفعل
+ * @param {string} userID - اسم المستخدم الذي قام بالفعل
  * @param {number|null} idEdit - معرف العنصر عند التعديل، القيمة الافتراضية null
  */
 const Financeinsertnotification = async (
   projectID,
   kind = "مصروفات",
   type = "إضافة",
-  userName,
+  userID,
   idEdit = null
 ) => {
   try {
@@ -728,7 +728,7 @@ const Financeinsertnotification = async (
       result.NumberCompany,
       result.IDcompanySub,
       result.projectID,
-      userName,
+      userID,
       kind === "طلب" ? "chate" : "Finance",
       "sub"
     );
@@ -736,7 +736,7 @@ const Financeinsertnotification = async (
     // إعداد الإشعار
     const notification = {
       title: `${type} ${kind} ${type === "إضافة" ? "جديد" : ""}`,
-      body: `لقد قام ${userName} ب${type} ${kind} ${
+      body: `لقد قام ${userID} ب${type} ${kind} ${
         type === "إضافة" ? "جديد" : ""
       } في مشروع "${result.Nameproject}" <<${result.Data}>>`,
     };
@@ -747,7 +747,7 @@ const Financeinsertnotification = async (
     // بيانات الإشعار
     let data = {
       ProjectID: result.projectID,
-      userName,
+      userID,
       kind,
       type,
       data: resultObject,
@@ -779,14 +779,14 @@ const Financeinsertnotification = async (
  * إرسال إشعار عند إضافة أو تعديل منشور أو تعليق أو إعجاب
  * @param {number|string} PostID - معرف المنشور
  * @param {string} type - نوع الإجراء (Comment | Likes)
- * @param {string} userName - اسم المستخدم الذي قام بالفعل
+ * @param {string} userID - اسم المستخدم الذي قام بالفعل
  * @param {string} kind - نوع المحتوى (تعليق | اعجاب) - القيمة الافتراضية "تعليق"
  * @param {number|null} idEdit - معرف التعليق عند التعديل، القيمة الافتراضية null
  */
 const Postsnotification = async (
   PostID,
   type,
-  userName,
+  userID,
   kind = "تعليق",
   idEdit = null
 ) => {
@@ -807,7 +807,7 @@ const Postsnotification = async (
       result.CommpanyID,
       0,
       result.ProjectID,
-      result.userName,
+      userID,
       "PublicationsBransh"
     );
 
@@ -824,7 +824,7 @@ const Postsnotification = async (
     // إعداد الإشعار
     const notification = {
       title: `${kind} ${actionText}`,
-      body: `لقد قام ${result.userName} ب${kind} ${actionText} ${
+      body: `لقد قام ${result.userID} ب${kind} ${actionText} ${
         idEdit === null ? result.postBy : ""
       } ${commentText}`,
     };
@@ -838,7 +838,7 @@ const Postsnotification = async (
     // بيانات الإشعار
     let data = {
       ProjectID: result.ProjectID,
-      userName,
+      userID,
       kind,
       type,
       data: {...resultObject, jobUser},
@@ -868,13 +868,13 @@ const Postsnotification = async (
  * إرسال إشعار عند إلغاء الإعجاب على منشور
  * @param {number|string} PostID - معرف المنشور
  * @param {string} type - نوع العملية (مثل "Likes")
- * @param {string} userName - اسم المستخدم الذي قام بالإلغاء
+ * @param {string} userID - اسم المستخدم الذي قام بالإلغاء
  * @param {string} kind - وصف العملية، القيمة الافتراضية "إلغاء الاعجاب"
  */
 const PostsnotificationCansle = async (
   PostID,
   type,
-  userName,
+  userID,
   kind = "إلغاء الاعجاب"
 ) => {
   try {
@@ -887,14 +887,14 @@ const PostsnotificationCansle = async (
       result.CommpanyID,
       0,
       result.ProjectID,
-      userName,
+      userID,
       "PublicationsBransh"
     );
 
     // إعداد الإشعار
     const notification = {
       title: `إلغاء الاعجاب بمنشور`,
-      body: `لقد قام ${userName} بإلغاء الاعجاب على منشور ${result.postBy}`,
+      body: `لقد قام ${userID} بإلغاء الاعجاب على منشور ${result.postBy}`,
     };
 
     const notification_type = "PublicationsBransh";
@@ -903,7 +903,7 @@ const PostsnotificationCansle = async (
     // بيانات الإشعار
     let data = {
       ProjectID: result.ProjectID,
-      userName,
+      userID,
       kind,
       type,
       data: [], // لا يوجد بيانات إضافية هنا
@@ -938,7 +938,7 @@ const PostsnotificationCansle = async (
  * @param {number|string} idProject - معرف المشروع
  * @param {number|string} StageID - معرف المرحلة أو اسم القسم
  * @param {string} massgs - نص الرسالة
- * @param {string} userName - اسم المستخدم الذي أرسل الرسالة
+ * @param {string} userID - اسم المستخدم الذي أرسل الرسالة
  * @param {object} Reply - بيانات الرد في حال كانت الرسالة ردًا
  * @param {object} File - بيانات الملف المرفق إن وجد
  */
@@ -946,7 +946,7 @@ const ChateNotfication = async (
   idProject,
   StageID,
   massgs,
-  userName = "",
+  userID = "",
   Reply = {},
   File = {}
 ) => {
@@ -979,7 +979,7 @@ const ChateNotfication = async (
         Project.NumberCompany,
         Project?.IDcompanySub,
         idProject,
-        userName
+        userID
       );
 
       arrayuser = arraynameuser;
@@ -992,7 +992,7 @@ const ChateNotfication = async (
         company.id,
         StageID,
         idProject,
-        userName,
+        userID,
       );
 
       arrayuser = arraynameuser;
@@ -1005,8 +1005,8 @@ const ChateNotfication = async (
 
     const title =
       Object.keys(Reply).length === 0
-        ? userName
-        : `لقد قام ${userName} بالرد على رسالة ${Reply.Sender}`;
+        ? userID
+        : `لقد قام ${userID} بالرد على رسالة ${Reply.Sender}`;
 
     const notification_type = "Chate";
     const navigationId = `${StageID}/${idProject}/${nameChate}/${Nameproject}/navigation`;
@@ -1035,7 +1035,7 @@ const ChateNotfication = async (
 
     let data = {
       ProjectID: idProject,
-      userName: userName,
+      userName: userID,
       type: `chate`,
       kind: "new",
       nameRoom: nameChate,
@@ -1077,14 +1077,14 @@ const ChateNotfication = async (
  * @param {number|string} idProject - معرف المشروع
  * @param {number|string} StageID - معرف المرحلة أو اسم القسم
  * @param {string} massgs - نص الرسالة المحذوفة
- * @param {string} userName - اسم المستخدم الذي حذف الرسالة
+ * @param {string} userID - اسم المستخدم الذي حذف الرسالة
  * @param {string|number} chatID - معرف الرسالة المحذوفة
  */
 const ChateNotficationdelete = async (
   idProject,
   StageID,
   massgs,
-  userName = "",
+  userID = "",
   chatID
 ) => {
   try {
@@ -1107,10 +1107,10 @@ const ChateNotficationdelete = async (
 
       const Project = await SELECTProjectStartdate(idProject);
       const { token, arraynameuser } = await Bringtokenuser(
-        company.id,
+        Project.NumberCompany,
         0,
         idProject,
-        userName,
+        userID,
         StageID
       );
 
@@ -1123,7 +1123,7 @@ const ChateNotficationdelete = async (
         company.id,
         0,
         idProject,
-        userName,
+        userID,
         StageID
       );
 
@@ -1135,7 +1135,7 @@ const ChateNotficationdelete = async (
     }
 
     const notification = {
-      title: `لقد قام ${userName} بحذف الرسالة`,
+      title: `لقد قام ${userID} بحذف الرسالة`,
       body: bodymassge + `< ${String(massgs).length > 0 ? massgs : ""} >`,
     };
 
@@ -1144,7 +1144,7 @@ const ChateNotficationdelete = async (
 
     let data = {
       ProjectID: idProject,
-      userName,
+      userID,
       StageID,
       type: `delete`,
       nameRoom: nameChate,
@@ -1174,66 +1174,7 @@ const ChateNotficationdelete = async (
   }
 };
 
-// ChateNotfication(1,'طلبات','كيف الحال');
 
-// اشعارات اضافة مستخدم او حذفة
-
-/**
- * إضافة أو تحديث مستخدم وإرسال إشعار
- * @param {string} PhoneNumber - رقم هاتف المستخدم
- * @param {any} Validity - بيانات الصلاحية أو الحالة للمستخدم
- * @param {string} type - نوع العملية (مثل: "إضافة" أو "تحديث")
- * @param {string} userName - اسم المستخدم الذي قام بالفعل
- */
-const AddOrUpdatuser = async (PhoneNumber, Validity, type, userName) => {
-  try {
-    // جلب بيانات المستخدم الحالي
-    const result = await SELECTTableLoginActivatActivaty(PhoneNumber);
-
-    // إعداد الإشعار
-    const notification = {
-      title: type,
-      body: `لقد قام ${userName} ب${type}`,
-    };
-
-    // بيانات الإشعار للتنقل
-    const data = {
-      ProjectID: 0,
-      userName: userName,
-      type: `user`,
-      data: Validity,
-    };
-
-    // تحضير البيانات لإدراجها في جدول التنقل
-    const endData = [
-      0,
-      0,
-      JSON.stringify(notification),
-      JSON.stringify([userName]),
-      JSON.stringify({
-        notification_type: "user",
-        navigationId: "user",
-        data: JSON.stringify(data),
-      }),
-      new Date().toUTCString(),
-    ];
-
-    // إدراج البيانات في جدول التنقل
-    await insertTableNavigation(endData);
-
-    // تحديث صلاحية المستخدم في قاعدة البيانات
-    await UpdateTableLoginActivatyValidityORtoken(
-      JSON.stringify(Validity),
-      PhoneNumber,
-      "Validity"
-    );
-
-    // إرسال الإشعار للمستخدم عبر التوكن
-    await massges([String(result.token)], notification, "", "", data);
-  } catch (error) {
-    console.error("Error in AddOrUpdatuser:", error);
-  }
-};
 
 // طلبات العهد
 /**
@@ -1263,7 +1204,7 @@ const CovenantNotfication = async (
         result.IDCompany,
         IDCompanySubs,
         0,
-        result.userName,
+        result.userID,
         "all",
         "CovenantBrinsh"
       );
@@ -1275,14 +1216,14 @@ const CovenantNotfication = async (
       const datacovenent = await SELECTTableMaxFinancialCustody(id, "all");
       result = await SELECTTableLoginActivatActivaty(datacovenent.Requestby);
       tokens = [String(result.token)];
-      arraynameusers = [result.userName];
+      arraynameusers = [result.userID];
       IDCompanySubs = datacovenent.IDCompanySub;
     }
 
     // إعداد عنوان الإشعار بناءً على نوع العملية
     let title =
       type === "request"
-        ? `لقد قام ${result.userName} بطلب عهده`
+        ? `لقد قام ${result.userID} بطلب عهده`
         : type === "acceptance"
         ? `لقد قام ${PhoneNumber} بقبول عهدتك`
         : `لقد قام ${PhoneNumber} برفض عهدتك`;
@@ -1297,7 +1238,7 @@ const CovenantNotfication = async (
 
     const data = {
       ProjectID: 0,
-      userName: result.userName,
+      userName: result.userID,
       IDCompanySub: IDCompanySubs,
       type:
         type === "request"
@@ -1336,7 +1277,7 @@ const CovenantNotfication = async (
  * جلب توكنات المستخدمين وأسماؤهم المرتبطين بمشروع أو شركة فرعية
  * @param {number|string} IDCompany - رقم الشركة
  * @param {number|string} ProjectID - رقم المشروع
- * @param {string} userName - اسم المستخدم الذي قام بالفعل (يُستثنى من الإشعار)
+ * @param {string} userID - رقم المستخدم الذي قام بالفعل (يُستثنى من الإشعار)
  * @param {string} [type="all"] - نوع التصفية ("all" | "PublicationsBransh" ...)
  * @returns {Promise<{ token: string[], users: object[], arraynameuser: string[], jobUser: string }>}
  */
@@ -1344,7 +1285,7 @@ const Bringtokenuser = async (
   IDCompany,
   IDcompanySub,
   ProjectID,
-  userName,
+  userID,
   type = "all",
   kind = "sub"
 ) => {
@@ -1363,11 +1304,11 @@ const Bringtokenuser = async (
   await Promise.all(
     users.map(async (item) => {
       // استثناء المستخدم الحالي (الذي قام بالفعل)
-      if (item.userName === userName) {
+      if (item.userID === userID) {
         jobUser = item.job;
       } else {
         token.push(item.token);
-        arraynameuser.push(item.userName);
+        arraynameuser.push(item.id);
       }
     })
   
@@ -1389,7 +1330,7 @@ module.exports = {
   ChateNotfication,
   Financeinsertnotification,
   Postsnotification,
-  AddOrUpdatuser,
+  // AddOrUpdatuser,
   PostsnotificationCansle,
   ChateNotficationdelete,
   CovenantNotfication,

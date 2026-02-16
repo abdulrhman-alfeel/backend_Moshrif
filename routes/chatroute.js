@@ -3,7 +3,6 @@ const {
   ClassChackTableChat,
   ClassViewChat,
   ClassreceiveMessageViews,
-  PostFilemassage,
   initializeUpload,
   insertdatafile,
   generateResumableUrl,
@@ -23,7 +22,6 @@ const chatroute = ({ uploadQueue }) => {
   const router = express.Router();
   router.use(verifyJWT);
   router.route("/").get(ClassChackTableChat(uploadQueue));
-  router.route("/v2/file").post(uploads.single("filechate"), PostFilemassage(uploadQueue));
   router.route("/ChateView").get(ClassViewChat(uploadQueue));
   router.route("/filterTableChat").get(filterTableChat(uploadQueue));
   router.route("/Viewed").post(ClassreceiveMessageViews(uploadQueue));
