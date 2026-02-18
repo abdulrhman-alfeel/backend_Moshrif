@@ -117,11 +117,15 @@ const BringProject = () => {
       
       const data = {
         success: true,
-        data: projects,
+        data: projects ?? [],
         boss: currentBossRole
       };
 
+      console.log(projects.map(item => item.Nameproject));
+
       res.status(200).send(data);
+
+
 
     } catch (err) {
       console.error(err);

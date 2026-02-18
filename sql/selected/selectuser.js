@@ -1,4 +1,4 @@
-const db = require("../sqlite");
+const db = require('../sqlite');
 
 //  مستخدمي الشركة
 const SELECTTableusersall = () => {
@@ -31,11 +31,11 @@ const SELECTTableusersCompanyall = () => {
 };
 const SELECTTableusersCompany = (
   id,
-  type = "",
-  LIMIT = "ORDER BY us.id ASC LIMIT 20",
-  kind = "",
-  add = "",
-  pro = ""
+  type = '',
+  LIMIT = 'ORDER BY us.id ASC LIMIT 20',
+  kind = '',
+  add = '',
+  pro = '',
 ) => {
   return new Promise((resolve, reject) => {
     db.serialize(async () => {
@@ -71,27 +71,23 @@ GROUP BY us.id ${LIMIT}
               const user = {
                 ...row,
                 Validity: row.Validity ? JSON.parse(row.Validity) : [], // فك المصفوفة JSON هنا
-                ValidityProject: row.ValidityProject
-                  ? JSON.parse(row.ValidityProject)
-                  : [], // فك المصفوفة JSON هنا
-                ValidityBransh: row.ValidityBransh
-                  ? JSON.parse(row.ValidityBransh)
-                  : [], // فك المصفوفة JSON هنا
+                ValidityProject: row.ValidityProject ? JSON.parse(row.ValidityProject) : [], // فك المصفوفة JSON هنا
+                ValidityBransh: row.ValidityBransh ? JSON.parse(row.ValidityBransh) : [], // فك المصفوفة JSON هنا
               };
               array.push(user);
             });
             resolve(array);
           }
-        }
+        },
       );
     });
   });
 };
 const SELECTTableusersBransh = (
   data,
-  table = "usersBransh",
-  type1 = "user_id",
-  type2 = "idBransh"
+  table = 'usersBransh',
+  type1 = 'user_id',
+  type2 = 'idBransh',
 ) => {
   return new Promise((resolve, reject) => {
     db.serialize(async () => {
@@ -105,16 +101,12 @@ const SELECTTableusersBransh = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SELECTTableusersBranshmanger = (
-  data,
-  table = "usersBransh",
-  type2 = "idBransh"
-) => {
+const SELECTTableusersBranshmanger = (data, table = 'usersBransh', type2 = 'idBransh') => {
   return new Promise((resolve, reject) => {
     db.serialize(async () => {
       db.get(
@@ -127,14 +119,14 @@ const SELECTTableusersBranshmanger = (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 
 //  مستخدم الشركة
-const SELECTTableusersCompanyonObject = (PhoneNumber, type = "*") => {
+const SELECTTableusersCompanyonObject = (PhoneNumber, type = '*') => {
   return new Promise((resolve, reject) => {
     db.serialize(async () => {
       db.get(
@@ -147,7 +139,7 @@ const SELECTTableusersCompanyonObject = (PhoneNumber, type = "*") => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -167,7 +159,7 @@ const SELECTusersCompany = (userName, IDCompany) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -186,7 +178,7 @@ const SELECTTableusersCompanyVerification = (PhoneNumber) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -204,7 +196,7 @@ const SELECTTablevalidityuserinBransh = (PhoneNumber, idBransh, number) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -223,7 +215,7 @@ const SELECTTableusersCompanyVerificationobject = (PhoneNumber, ProjectID) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -243,7 +235,7 @@ const SELECTTableusersCompanyboss = (IDCompany) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -262,7 +254,7 @@ const SELECTTableusersCompanyVerificationIDUpdate = (PhoneNumber, id) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -280,12 +272,12 @@ const SELECTTableusersCompanyVerificationID = (id) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const specialStages = ["قرارات", "استشارات", "اعتمادات"];
+const specialStages = ['قرارات', 'استشارات', 'اعتمادات'];
 
 //  التحقق من صلاحيات المستخد
 // const SELECTTableusersCompanySub = (
@@ -365,8 +357,7 @@ const specialStages = ["قرارات", "استشارات", "اعتمادات"];
 //     uC.id AS UserCompanyID,
 //     uC.job AS UserJob,
 
-    
-//     `} 
+//     `}
 // FROM LoginActivaty ca
 // LEFT JOIN company RE           ON RE.id = ca.IDCompany
 // LEFT JOIN usersCompany uC      ON uC.PhoneNumber = ca.PhoneNumber
@@ -389,17 +380,35 @@ const specialStages = ["قرارات", "استشارات", "اعتمادات"];
 //   });
 // };
 
+const selectTableuseronly = (userID) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+SELECT 
+    ca.token,
+    ca.userName,
+    ca.job
+FROM LoginActivaty ca
+WHERE ca.userID = ?
+`;
 
-
-
-
+    db.serialize(() => {
+      db.get(query, [userID], (err, result) => {
+        if (err) {
+          console.error(err);
+          return reject(err);
+        }
+        resolve(result);
+      });
+    });
+  });
+};
 
 const SELECTTableusersCompanySub = (
   IDCompany,
   IDcompanySub,
   ProjectID,
-  type = "all",
-  kind = "sub"
+  type = 'all',
+  kind = 'sub',
 ) => {
   return new Promise((resolve, reject) => {
     const params = [IDCompany];
@@ -407,10 +416,10 @@ const SELECTTableusersCompanySub = (
     // نجمع الشروط (OR) داخل قوس واحد
     const filters = ["uC.job = 'Admin'"];
 
-    if(specialStages.includes(IDcompanySub)){
+    if (specialStages.includes(IDcompanySub)) {
       // صلاحيات خاصة للمراحل
       filters.push(`ca.jobdiscrption = 'موظف' `);
-    }else if (IDcompanySub == null || IDcompanySub === 0) {
+    } else if (IDcompanySub == null || IDcompanySub === 0) {
       // بدون تقييد على فرع معيّن
       filters.push("uC.job = 'مدير الفرع'");
     } else {
@@ -419,18 +428,20 @@ const SELECTTableusersCompanySub = (
     }
 
     // المنشورات (الموظفون) – مشروع مطلوب لأي من الوظيفتين
-    if (ProjectID != null && type !== "Finance") {
-      filters.push("((ca.jobdiscrption = 'موظف' OR ca.jobdiscrption = 'مستخدم') AND uP.ProjectID = ?)");
+    if (ProjectID != null && type !== 'Finance') {
+      filters.push(
+        "((ca.jobdiscrption = 'موظف' OR ca.jobdiscrption = 'مستخدم') AND uP.ProjectID = ?)",
+      );
       params.push(ProjectID);
     }
 
     // العهد
-    if (kind === "CovenantBrinsh") {
+    if (kind === 'CovenantBrinsh') {
       filters.push("(ca.job IN ('مالية') OR uB.Acceptingcovenant = 'true')");
     }
 
     // المالية
-    if (type === "Finance" && ProjectID != null) {
+    if (type === 'Finance' && ProjectID != null) {
       filters.push(`(
           EXISTS (
             SELECT 1
@@ -440,7 +451,7 @@ const SELECTTableusersCompanySub = (
               AND uP2.ValidityProject LIKE ?
           )
         )`);
-      params.push("%إشعارات المالية%");
+      params.push('%إشعارات المالية%');
       params.push(ProjectID);
     }
 
@@ -472,7 +483,7 @@ LEFT JOIN companySub Su        ON Su.id = uB.idBransh
 LEFT JOIN usersProject uP      ON uP.idBransh = Su.id AND uP.user_id = uC.id AND uP.ProjectID= ${ProjectID}
 LEFT JOIN companySubprojects cS ON cS.id = uP.ProjectID
 WHERE ca.IDCompany = ?
-  AND (${filters.join(" OR ")})
+  AND (${filters.join(' OR ')})
   GROUP BY uC.id
 `;
 
@@ -515,13 +526,13 @@ const SELECTTableLoginActivaty = (codeVerification, PhoneNumber) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 //  التحقق من انتهاء صلاحية دخول المستخدم
-const SELECTTableLoginActivatActivaty = (PhoneNumber, type = "*") => {
+const SELECTTableLoginActivatActivaty = (PhoneNumber, type = '*') => {
   return new Promise((resolve, reject) => {
     db.serialize(async () => {
       db.get(
@@ -534,12 +545,12 @@ const SELECTTableLoginActivatActivaty = (PhoneNumber, type = "*") => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
-const SELECTTableLoginActivatActivatyall = (type = "*") => {
+const SELECTTableLoginActivatActivatyall = (type = '*') => {
   return new Promise((resolve, reject) => {
     db.serialize(async () => {
       db.all(
@@ -552,21 +563,15 @@ const SELECTTableLoginActivatActivatyall = (type = "*") => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 
-const SELECTTABLEHR = async (
-  IDCompany,
-  Dateday,
-  LastID,
-  search = "",
-  LIMIT = "LIMIT 10"
-) => {
+const SELECTTABLEHR = async (IDCompany, Dateday, LastID, search = '', LIMIT = 'LIMIT 10') => {
   return new Promise((resolve, reject) => {
-    const plase = parseInt(LastID) === 0 ? ">" : "<";
+    const plase = parseInt(LastID) === 0 ? '>' : '<';
 
     db.serialize(function () {
       db.all(
@@ -579,13 +584,13 @@ const SELECTTABLEHR = async (
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
 };
 
-const SELECTTABLEObjectHR = async (IDCompany, Dateday, search = "") => {
+const SELECTTABLEObjectHR = async (IDCompany, Dateday, search = '') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.get(
@@ -597,7 +602,7 @@ const SELECTTABLEObjectHR = async (IDCompany, Dateday, search = "") => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -615,7 +620,7 @@ const SELECTTABLEHRuser = async (IDCompany, idUser, DateDay) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -632,7 +637,7 @@ const SELECTuserjustforHR = async (IDCompany, idUser) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -661,7 +666,7 @@ const SELECTUserPrepare = async (IDCompany, type) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -680,7 +685,7 @@ const SelectTableUserPrepareObject = async (IDCompany, idUser) => {
           } else {
             resolve(result?.idUser || null);
           }
-        }
+        },
       );
     });
   });
@@ -698,7 +703,7 @@ const SelectTableUserPrepareObjectcheck = async (IDCompany, PhoneNumber) => {
           } else {
             resolve(result?.idUser || null);
           }
-        }
+        },
       );
     });
   });
@@ -727,7 +732,7 @@ const Select_report_prepare = async () => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
     });
   });
@@ -758,4 +763,5 @@ module.exports = {
   SELECTTableusersBranshmanger,
   SELECTTablevalidityuserinBransh,
   Select_report_prepare,
+  selectTableuseronly
 };

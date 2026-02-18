@@ -435,7 +435,7 @@ WHERE
             SELECT 1
             FROM usersProject up1
             WHERE up1.user_id   = uC.id
-              AND up1.idBransh  = ${id}       AND cS.IDcompanySub = ${id}
+              AND up1.idBransh  = ${id}  AND cS.IDcompanySub = ${id}
               AND up1.ProjectID = cS.id
       )
   )
@@ -467,9 +467,7 @@ ${Limit}
           if (err) {
             reject(err);
             // console.log(err.message);
-          } else {
-            resolve([{ job: 'مدير فرع' }]);
-          }
+          } 
         },
       );
     });
@@ -3232,7 +3230,6 @@ const SELECTTableViewChate = (chatID, userName, type = 'Views') => {
 const SELECTTableNavigation = (data, names = [], where = '', equals = '!=') => {
   return new Promise((resolve, reject) => {
     const lastId = Number(data[0] ?? 0);
-    const numberCompany = data[1];
     const op = lastId === 0 ? '>' : '<';
 
     const placeholders = names.map(() => '?').join(',');
@@ -3252,7 +3249,9 @@ const SELECTTableNavigation = (data, names = [], where = '', equals = '!=') => {
 
     const where2 =
       equals == '=' || equals == '!='
-        ? `AND ca.data IS NOT NULL AND json_valid(ca.data) AND json_extract(ca.data, '$.notification_type') ${equals} 'Chate'`
+        ? `AND ca.data IS NOT NULL AND json_valid(ca.data) AND json_extract(ca.data, '$.notification_type') ${equals} 'Chate' 
+        OR json_extract(ca.data, '$.notification_type') ${equals} 'Chat_private' 
+        OR json_extract(ca.data, '$.notification_type') ${equals} 'Chat_project' `
         : equals;
 
     const query = `

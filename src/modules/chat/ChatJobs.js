@@ -114,6 +114,7 @@ const ChatOpration = async (io,redis, persistQueue) => {
             
         
         await ChateNotfication(
+          companyId,
             payload.ProjectID,
             payload?.StageID,
             payload.message,

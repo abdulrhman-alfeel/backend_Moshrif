@@ -19,13 +19,21 @@ const InsertNotifcation = async (
   try {
     // await DeleteTableNotifcation();
     let result;
-    if (type === true) {
-      result = await SelectVerifycompanyexistence(id);
+    let number;
+
+    if (['Chat_private', 'Chat_project'].includes(notification_type)) {
+      number = 1;
     } else {
-      result = await SELECTTableIDcompanytoPost(id, type, select);
-    }
+      if (type === true) {
+        result = await SelectVerifycompanyexistence(id);
+      } else {
+        result = await SELECTTableIDcompanytoPost(id, type, select);
+      }
+      number = type === true ? result?.id : result?.NumberCompany;
+    };
+
     const endData = [
-      type === true ? result?.id : result?.NumberCompany,
+      number,
       type === true ? id : result?.id,
       JSON.stringify(notification),
       token.length > 0 ? JSON.stringify(token) : null,
@@ -37,10 +45,6 @@ const InsertNotifcation = async (
       new Date().toUTCString(),
     ];
     await insertTableNavigation(endData);
-    const maxData = await SELECTTableNavigationObjectOne(
-      parseInt(type === true ? result?.id : result?.NumberCompany),
-    );
-    return maxData?.id;
   } catch (error) {
     console.log(error);
   }
@@ -122,11 +126,13 @@ const BringDataNotifcationv2 = () => {
 
       const result = await SELECTTableNavigation(
         [parseInt(LastID), parseInt(userSession.IDCompany)],
-        [userSession.userID],
+        [String(userSession.userID)],
         '',
         kind,
       );
       const arrayNotifcation = await Sortdatauserfromnotificationv2(result);
+      console.log([parseInt(LastID), parseInt(userSession.IDCompany)],
+        [String(userSession.userID)]);
       res.send({ success: 'تمت العملية بنجاح', data: arrayNotifcation }).status(200);
     } catch (error) {
       console.log(error);

@@ -1,5 +1,8 @@
 // src/ws/chat-private.js
+const { ChateNotfication_private } = require('../../notifications/NotifcationProject');
 const { OpreactionSend_message, ClassChatOprationView } = require('../ChatJobsClass');
+
+console.log("1:3".split(":").find(item => item !== "3"))
 function initChatPrivateNamespace(io, redis, persistQueue) {
   const nsp = io.of('/Chat_private');
   const GW_ID = process.env.GW_ID || `gw-${process.pid}`;
@@ -96,6 +99,7 @@ function initChatPrivateNamespace(io, redis, persistQueue) {
         const result = await OpreactionSend_message(payload, 'Chat_private', userId);
         // 🔥 بث فوري للطرفين
         nsp.to(roomDM(payload.conversationId)).emit('received_message', result);
+        ChateNotfication_private(payload,userId,"Chat_private")
 
         // 💾 حفظ Async
         // await persistQueue.add("persist", result);

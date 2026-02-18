@@ -274,13 +274,12 @@ const validate_payment = async (tran_ref) => {
     };
 
     const response = await axios.post(url, data, { headers });
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.log(error);
   }
 };
-
-
 const clickpay_return = () => {
   return async (req, res) => {
     try {
