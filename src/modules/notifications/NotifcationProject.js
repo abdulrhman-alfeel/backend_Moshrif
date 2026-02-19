@@ -915,7 +915,7 @@ const ChateNotfication_private = async (poyload, userID = '', chatType = 'Chate'
       jobUser: job,
     };
 
-    const idmax = await InsertNotifcation(
+    await InsertNotifcation(
       [Number(receiverid)],
       notification,
       chatType,
@@ -924,7 +924,6 @@ const ChateNotfication_private = async (poyload, userID = '', chatType = 'Chate'
       poyload.ProjectID ?? 0,
       insertnavigation,
     );
-    data = { ...data, id: idmax };
     await massges([token], notification, chatType, navigationId, data);
   } catch (error) {
     console.error('Error in ChateNotfication:', error);

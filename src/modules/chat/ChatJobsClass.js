@@ -71,26 +71,7 @@ const OpreactionSend_message = async (data, type = 'chat', userID = null) => {
     arrived: true,
   };
   try {
-    // if (type === 'Chat_private') {
-    //   result = {
-    //     conversationId: data.conversationId ,
-    //     companyId: data.companyId ,
-    //     ...result,
-    //   };
-    // } else if (type === 'Chat_project') {
-    //   result = {
-    //     conversationId: data.conversationId ,
-    //     ProjectID: data.ProjectID ,
-    //     ...result,
-    //   };
-    // }else{
-    //   result = {
-    //     ProjectID: data.ProjectID ,
-    //     StageID: data?.StageID ,
-    //     ...result,
-    //   };
-    // }
-
+ 
     if (data?.kind === 'delete') {
       // ===== مسار الحذف =====
       const chackdata = await bringdatachate(data, 'delete', type);

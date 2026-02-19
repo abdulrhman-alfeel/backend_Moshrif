@@ -5,7 +5,21 @@ const db = require('../sqlite');
 const SELECTTablecompany = (id, type = '*') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.get(`SELECT ${type} FROM company WHERE id=?`, [id], function (err, result) {
+      db.get(`SELECT 
+  c.${type},
+  COALESCE(SUM(cs.project_count_used),0) AS used_total,
+  COALESCE(SUM(cs.project_count),0) AS allowed_total,
+  COALESCE(SUM(cs.project_count_used),0) >= 
+  COALESCE(SUM(cs.project_count),0) AS is_limit_reached
+
+FROM company c
+LEFT JOIN company_subscriptions cs 
+  ON cs.company_id = c.id
+  AND cs.status != 'inactive'
+
+WHERE c.id = ?
+GROUP BY c.id;
+`, [id], function (err, result) {
         if (err) {
           reject(err);
           // console.error(err.message);
@@ -16,6 +30,7 @@ const SELECTTablecompany = (id, type = '*') => {
     });
   });
 };
+
 const SELECTTablecompanyall = (type = '*') => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
@@ -3232,7 +3247,10 @@ const SELECTTableNavigation = (data, names = [], where = '', equals = '!=') => {
     const lastId = Number(data[0] ?? 0);
     const op = lastId === 0 ? '>' : '<';
 
-    const placeholders = names.map(() => '?').join(',');
+const ids = Array.isArray(names) ? names : [names]; // تأكد مصفوفة
+const inPlaceholders = ids.map(() => '?').join(','); // ?,?,?
+
+    console.log(inPlaceholders,names);
 
     const namesFilter =
       names.length > 0
@@ -3242,16 +3260,16 @@ const SELECTTableNavigation = (data, names = [], where = '', equals = '!=') => {
           AND EXISTS (
             SELECT 1
             FROM json_each(ca.tokens)
-            WHERE TRIM(value) IN (${placeholders})
+            WHERE TRIM(value) IN (${inPlaceholders})
           )
         `
         : '';
 
     const where2 =
       equals == '=' || equals == '!='
-        ? `AND ca.data IS NOT NULL AND json_valid(ca.data) AND json_extract(ca.data, '$.notification_type') ${equals} 'Chate' 
+        ? `AND ca.data IS NOT NULL AND json_valid(ca.data) AND (json_extract(ca.data, '$.notification_type') ${equals} 'Chate' 
         OR json_extract(ca.data, '$.notification_type') ${equals} 'Chat_private' 
-        OR json_extract(ca.data, '$.notification_type') ${equals} 'Chat_project' `
+        OR json_extract(ca.data, '$.notification_type') ${equals} 'Chat_project' )`
         : equals;
 
     const query = `
@@ -3291,7 +3309,6 @@ const SELECTTableNavigation = (data, names = [], where = '', equals = '!=') => {
     `;
 
     const params = [...data, ...names];
-    // console.log(query, params);
     db.all(query, params, (err, result) => {
       if (err) {
         console.log('SQL ERR:', err.message);
@@ -3489,7 +3506,7 @@ const SELECTTableBranchdeletionRequests = async (IDCompany, chack, PhoneNumber) 
 const SELECT_Table_subscription_types = async () => {
   return new Promise((resolve, reject) => {
     db.serialize(function () {
-      db.all(`SELECT * FROM subscription_types`, function (err, result) {
+      db.all(`SELECT * FROM subscription_types WHERE id != 1 `, function (err, result) {
         if (err) {
           resolve([]);
         } else {
@@ -3539,10 +3556,38 @@ const Select_table_company_subscriptions_onObject = async (
   return new Promise((resolve, reject) => {
     db.serialize(function () {
       db.all(
-        `SELECT *,(code_subscription || ' - ' || project_count || ' - ' || project_count_used)
-        AS name ,st.name AS name_package ,project_count, project_count_used   FROM company_subscriptions cs JOIN subscription_types st ON cs.subscription_type_id = st.id   WHERE ${type}=?  ${state}`,
+        `SELECT cs.*,(code_subscription || ' - ' || project_count || ' - ' || project_count_used)
+        AS name ,st.name AS name_package ,project_count, project_count_used   FROM company_subscriptions cs JOIN subscription_types st ON cs.subscription_type_id = st.id   WHERE cs.${type}=?  ${state}`,
 
         [company_subscriptions_id],
+        function (err, result) {
+          if (err) {
+            resolve([]);
+          } else {
+            resolve(result);
+          }
+        },
+      );
+    });
+  });
+};
+const Check_if_packages_are_available_or_not = async (
+  id,
+) => {
+  return new Promise((resolve, reject) => {
+    db.serialize(function () {
+      db.all(
+        `SELECT
+  COALESCE(SUM(cs.project_count_used), 0) AS used_total,
+  COALESCE(SUM(cs.project_count), 0) AS allowed_total,
+  CASE
+    WHEN COALESCE(SUM(cs.project_count_used), 0) >= COALESCE(SUM(cs.project_count), 0)
+    THEN 1 ELSE 0
+  END AS is_limit_reached
+FROM company_subscriptions cs
+WHERE cs.company_id = ?  AND cs.status != 'inactive' `,
+
+        [id],
         function (err, result) {
           if (err) {
             resolve([]);
@@ -3877,4 +3922,5 @@ module.exports = {
   get_ALL_ChatRooms,
   getChatRooms_project,
   get_ALL_ChatRooms_project,
+  Check_if_packages_are_available_or_not
 };

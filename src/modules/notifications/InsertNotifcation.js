@@ -132,7 +132,7 @@ const BringDataNotifcationv2 = () => {
       );
       const arrayNotifcation = await Sortdatauserfromnotificationv2(result);
       console.log([parseInt(LastID), parseInt(userSession.IDCompany)],
-        [String(userSession.userID)]);
+        [String(userSession.userID)],result);
       res.send({ success: 'تمت العملية بنجاح', data: arrayNotifcation }).status(200);
     } catch (error) {
       console.log(error);

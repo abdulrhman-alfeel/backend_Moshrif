@@ -316,6 +316,7 @@ const convert_project_subscription_to_company_subscription = () => {
       const chack_boucket = await Select_table_company_subscriptions_onObject(
         company_subscriptions_id
       );
+
       if (
         chack_boucket.length > 0 &&
         chack_boucket[0].project_count_used < chack_boucket[0].project_count
@@ -345,6 +346,7 @@ const convert_project_subscription_to_company_subscription = () => {
           message: message,
         });
       } else {
+        
         return res.status(200).json({
           success: false,
           message:
@@ -390,6 +392,7 @@ const Bring_company_subscription = () => {
         typeStatus,
         "company_id"
       );
+      console.log(data);
 
       return res.status(200).json({
         data,

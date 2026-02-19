@@ -1049,8 +1049,8 @@ const update_company_subscription = (id,plus='+') => {
   return new Promise((resolve,reject)=>{
     db.run(
       `UPDATE company_subscriptions SET 
-      project_count_used=project_count_used ${plus} 1 
-      WHERE id=?  AND project_count_used < project_count`,  
+      project_count_used=project_count_used ${plus} 1
+      WHERE id=?  AND project_count_used < project_count `,  
       [id],
       function (err) {
         if (err) {
